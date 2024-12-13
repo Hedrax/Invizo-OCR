@@ -1,0 +1,156 @@
+/* General Styling */
+.root {
+    -fx-font-family: 'Arial';
+    -fx-background-color: #F9FAFB; /* Light gray background */
+}
+
+/* Header Styling */
+.header {
+    -fx-background-color: #69CAA6; /* Green header */
+}
+
+.main_body{
+    -fx-background-color:#F7F9FC;
+}
+
+/* Welcome Text Styling */
+.welcome-text {
+    -fx-font-family: Zen Kaku Gothic Antique;
+    -fx-font-size: 32px;
+    -fx-font-weight: 400;
+    -fx-line-height: 92.67px;
+    -fx-text-align: left;
+    -fx-text-underline-position: from-font;
+    -fx-text-decoration-skip-ink: none;
+    -fx-text-fill: #333333; /* Dark gray */
+    -fx-padding: 20 0 10 20; /* Top, Right, Bottom, Left */
+}
+
+/* Recent Items Section */
+.recent-items {
+    -fx-background-color: #FFFFFF; /* White card */
+    -fx-border-color: #E0E0E0; /* Light gray border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.sub-title{
+    -fx-font-family: Zen Kaku Gothic Antique;
+    -fx-font-size: 26px;
+    -fx-text-align: left;
+    -fx-text-underline-position: from-font;
+    -fx-text-decoration-skip-ink: none;
+
+}
+.item {
+    -fx-background-color: #F9FAFB; /* Light gray */
+    -fx-border-color: #E0E0E0; /* Light gray border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+.item-label {
+    -fx-font-family: Zen Kaku Gothic Antique;
+    -fx-font-size: 24px;
+    -fx-text-align: left;
+    -fx-text-underline-position: from-font;
+    -fx-text-decoration-skip-ink: none;
+}
+.item-label-count{
+    -fx-font-family: Zen Kaku Gothic Antique;
+    -fx-font-size: 13px;
+    -fx-font-weight: 400;
+    -fx-text-align: left;
+    -fx-text-underline-position: from-font;
+    -fx-text-decoration-skip-ink: none;
+}
+.item-label-date{
+    -fx-font-family: Zen Kaku Gothic Antique;
+    -fx-font-size: 13px;
+    -fx-font-weight: 400;
+    -fx-text-align: left;
+    -fx-text-underline-position: from-font;
+    -fx-text-decoration-skip-ink: none;
+}
+
+.item-details {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666; /* Medium gray */
+}
+
+/* Button Styling */
+.button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #18A661; /* Green */
+    -fx-background-radius: 38px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 3, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.button:disabled {
+    -fx-background-color: #E0E0E0; /* Gray */
+    -fx-text-fill: #999999; /* Light gray text */
+    -fx-cursor: default;
+}
+
+/* Confirm All Button */
+.confirm-all {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #18A661; /* Green */
+    -fx-border-color: #18A661; /* Green border */
+    -fx-border-width: 1px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.confirm-all:hover {
+    -fx-background-color: #18A661; /* Green hover */
+    -fx-text-fill: white;
+}
+
+/* Profile Icon */
+.profile-icon {
+    -fx-background-color: #CCCCCC; /* Light gray circle */
+    -fx-background-radius: 50%;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+}
+
+/* Scroll Bar */
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: #E0E0E0;
+}
+
+.scroll-pane .scroll-bar .thumb {
+    -fx-background-color: #CCCCCC;
+}
+
+/* View Items Button */
+.view-items-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #333333; /* Dark gray background */
+    -fx-background-radius: 5px; /* Rounded corners */
+    -fx-padding: 12px 24px; /* Padding */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.view-items-button:hover {
+    -fx-background-color: #444444; /* Slightly lighter gray on hover */
+}
+
+.list-view .list-cell:focused {
+}
+
+/* Remove selection highlight */
+.list-view .list-cell:selected {
+    -fx-background-color: #000000; /* Slightly lighter gray on hover */
+}
