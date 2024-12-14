@@ -4,14 +4,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="634.0" styleClass="list-cell" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ApprovalListCellController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#ViewItem" prefHeight="100.0" prefWidth="634.0" styleClass="list-cell" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ApprovalListCellController">
    <children>
-      <ImageView fitHeight="19.0" fitWidth="22.0" layoutX="594.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="37.0">
-         <Image url="@../images/chevron-right.png" />
-      </ImageView>
-      <Label id="item_button" layoutX="466.0" layoutY="32.0" prefHeight="35.0" prefWidth="126.0" styleClass="button" text="Comfirm" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="31.0" />
+      <Pane layoutX="441.0" layoutY="6.0" onMouseClicked="#ViewItem" prefHeight="94.0" prefWidth="52.0" styleClass="list_cell_view_item_button" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="16.0">
+         <children>
+            <ImageView fitHeight="19.0" fitWidth="22.0" layoutX="17.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
+               <Image url="@../images/chevron-right.png" />
+            </ImageView>
+         </children>
+      </Pane>
+      <Label fx:id="confirm" layoutX="466.0" layoutY="32.0" onMouseClicked="#Confirm" prefHeight="35.0" prefWidth="126.0" styleClass="button" text="Confirm" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="31.0" />
       <HBox alignment="CENTER" layoutX="40.0" layoutY="17.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="33.0" AnchorPane.topAnchor="14.0">
          <ImageView fx:id="item_image" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
             <Image url="@../images/approval_request_default.png" />
@@ -34,6 +37,5 @@
             <Insets />
          </opaqueInsets>
       </HBox>
-      <Line endX="600.0" endY="90.0" startX="29.0" startY="90.0" stroke="#dadada" strokeMiterLimit="1.0" AnchorPane.bottomAnchor="-4.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" />
    </children>
 </AnchorPane>

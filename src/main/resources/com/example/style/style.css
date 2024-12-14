@@ -8,7 +8,9 @@
 .header {
     -fx-background-color: #69CAA6; /* Green header */
 }
-
+.profile_banner:hover{
+    -fx-cursor: hand;
+}
 .main_body{
     -fx-background-color:#F7F9FC;
 }
@@ -34,7 +36,6 @@
     -fx-border-radius: 5px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }
-
 .sub-title{
     -fx-font-family: Zen Kaku Gothic Antique;
     -fx-font-size: 26px;
@@ -147,10 +148,44 @@
     -fx-background-color: #444444; /* Slightly lighter gray on hover */
 }
 
+.main_listView{
+    -fx-background-color:#FFFFFF;
+}
+.list-cell {
+    -fx-background-color:#FFFFFF;
+    -fx-border-color:#CACACA;
+    -fx-border-width: 0.5px;
+
+}
 .list-view .list-cell:focused {
+
 }
 
 /* Remove selection highlight */
 .list-view .list-cell:selected {
-    -fx-background-color: #000000; /* Slightly lighter gray on hover */
+    -fx-background-color: #CACACA; /* Slightly lighter gray on hover */
 }
+
+
+/* Side menu background */
+#sideMenu {
+    -fx-background-color: #F7F9FC;
+}
+
+/* Menu item text */
+.menu-label {
+    -fx-font-size: 18px;
+    -fx-background-color:#FFFFFF;
+    -fx-text-fill: #000000;
+    -fx-border-color: #00000055;
+    -fx-border-width: 0.5px;
+}
+.menu-label:hover {
+    -fx-background-color: #EEEEEE;
+    -fx-cursor: hand;/* Slightly lighter gray on hover */
+}
+
+.list_cell_view_item_button:hover {
+    -fx-cursor: hand;/* Slightly lighter gray on hover */
+}
+
