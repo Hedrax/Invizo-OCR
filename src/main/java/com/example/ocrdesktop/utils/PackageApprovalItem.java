@@ -4,11 +4,11 @@ import javafx.scene.image.Image;
 
 public class PackageApprovalItem {
 
-    public final String title;
-    public final String date;
-    public final Integer count;
-    public final STATUS status;
-    public final String headImagePath;
+    public String title;
+    public String date;
+    public Integer count;
+    public STATUS status;
+    public String headImagePath;
 
     public PackageApprovalItem(String title, String date, Integer count, STATUS status, String headImagePath){
         this.title = title;
