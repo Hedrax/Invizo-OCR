@@ -1,4 +1,4 @@
-package com.example.ocrdesktop;
+package com.example.ocrdesktop.ui.subelements;
 
 import com.example.ocrdesktop.utils.PackageApprovalItem;
 import javafx.beans.property.ReadOnlyObjectProperty;

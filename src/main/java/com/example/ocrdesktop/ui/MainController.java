@@ -1,5 +1,6 @@
-package com.example.ocrdesktop;
+package com.example.ocrdesktop.ui;
 
+        import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
         import com.example.ocrdesktop.utils.PackageApprovalItem;
         import javafx.collections.FXCollections;
         import javafx.collections.ObservableList;
@@ -35,7 +36,7 @@ public class MainController{
                 } else {
                     try {
                         // Load the custom cell layout
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("ApprovalListCell.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/ApprovalListCell.fxml"));
                         AnchorPane cellLayout = loader.load();
 
                         // Set data for the custom cell

@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#ViewItem" prefHeight="100.0" prefWidth="634.0" styleClass="list-cell" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ApprovalListCellController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#ViewItem" prefHeight="100.0" prefWidth="634.0" styleClass="list-cell" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.ApprovalListCellController">
    <children>
       <Pane layoutX="441.0" layoutY="6.0" onMouseClicked="#ViewItem" prefHeight="94.0" prefWidth="52.0" styleClass="list_cell_view_item_button" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="16.0">
          <children>

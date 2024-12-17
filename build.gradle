@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'com.example.ocrdesktop'
-    mainClass = 'com.example.ocrdesktop.HelloApplication'
+    mainClass = 'com.example.ocrdesktop.Main'
 }
 
 javafx {
