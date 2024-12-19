@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="root" prefHeight="563.0" prefWidth="871.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.LoginController">
+
+
+    <!-- Login Form Section -->
+    <AnchorPane id="login-form" layoutX="200.0" layoutY="150.0" prefHeight="300.0" prefWidth="450.0" styleClass="login-form" AnchorPane.topAnchor="100.0" AnchorPane.leftAnchor="200.0">
+
+        <!-- Custom Clickable Pane with Google Logo -->
+        <Pane fx:id="loginGooglePane" layoutX="70.0" layoutY="20.0" prefHeight="40.0" prefWidth="300.0" onMouseClicked="#handleGoogleLogin" styleClass="google-login-pane">
+            <!-- HBox to align the image and text -->
+            <HBox spacing="10" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="300.0">
+                <!-- Google Logo -->
+                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/logo_google.png" />
+                </ImageView>
+                <!-- Button Text -->
+                <Label text="Sign in with Google" />
+            </HBox>
+        </Pane>
+
+
+        <!-- Username and Password Fields with Centered Line Text -->
+        <HBox alignment="CENTER" spacing="10" layoutX="70.0" layoutY="100.0">
+            <Line startX="0" endX="100" stroke="#333333" strokeWidth="1" />
+            <Text fx:id="orUseText" text="Or use Email" styleClass="or-use-text" />
+            <Line startX="0" endX="100" stroke="#333333" strokeWidth="1" />
+        </HBox>
+
+        <!-- Username Field -->
+        <TextField fx:id="usernameField" layoutX="70.0" layoutY="160.0" promptText="Username" prefHeight="40.0" prefWidth="300.0" />
+
+        <!-- Password Field -->
+        <PasswordField fx:id="passwordField" layoutX="70.0" layoutY="220.0" promptText="Password" prefHeight="40.0" prefWidth="300.0" />
+
+        <!-- Login Button -->
+        <Button fx:id="loginButton" layoutX="70.0" layoutY="280.0" text="Login" prefHeight="40.0" prefWidth="300.0" onAction="#handleLogin" styleClass="login-button" />
+
+    </AnchorPane>
+
+</AnchorPane>
