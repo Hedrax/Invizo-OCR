@@ -9,7 +9,7 @@
     <children>
         <!-- Google Sign-Up Button -->
         <!-- Custom Clickable Pane with Google Logo -->
-        <Pane fx:id="loginGooglePane" prefHeight="40.0" prefWidth="300.0" onMouseClicked="#handleGoogleLogin" styleClass="google-login-pane" AnchorPane.topAnchor="40.0" AnchorPane.leftAnchor="70.0">
+        <Pane fx:id="signUpGooglePane" prefHeight="40.0" prefWidth="300.0" onMouseClicked="#handleGoogleLogin" styleClass="google-login-pane" AnchorPane.topAnchor="40.0" AnchorPane.leftAnchor="70.0">
             <!-- HBox to align the image and text -->
             <HBox spacing="10" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="300.0">
                 <!-- Google Logo -->
@@ -17,7 +17,7 @@
                     <Image url="@../images/logo_google.png" />
                 </ImageView>
                 <!-- Button Text -->
-                <Label text="Sign in with Google" />
+                <Label text="Sign up with Google" />
             </HBox>
         </Pane>
 
@@ -43,10 +43,21 @@
             </ImageView>
         </HBox>
 
-
+        <!-- Confirm Password Field -->
+        <HBox layoutX="50" layoutY="310" alignment="CENTER" prefWidth="350" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5;">
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" prefHeight="40" prefWidth="300" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 14;" />
+            <ImageView fx:id="confirmEyeIcon" fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" onMouseClicked="#toggleConfirmPasswordVisibility">
+                <Image url="@../images/eye_logo.png" />
+            </ImageView>
+        </HBox>
 
         <!-- Sign Up Button -->
-        <Button text="LOGIN" layoutX="50" layoutY="310" prefWidth="350" prefHeight="50" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 14; -fx-border-radius: 5; -fx-background-radius: 5;" />
+        <Button text="SIGN UP" layoutX="50" layoutY="400" prefWidth="350" prefHeight="50" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 14; -fx-border-radius: 5; -fx-background-radius: 5;" />
 
+        <!-- Already have an account -->
+        <HBox layoutX="50" layoutY="470" alignment="CENTER" prefWidth="350">
+            <Label text="Already have an account?" style="-fx-font-size: 12; -fx-text-fill: #b3b3b3;" />
+            <Hyperlink text="LOG IN" style="-fx-font-size: 12; -fx-text-fill: #0078d7;" />
+        </HBox>
     </children>
 </AnchorPane>
