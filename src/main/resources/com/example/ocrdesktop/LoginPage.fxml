@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.LoginController" prefWidth="1080" prefHeight="720" stylesheets="@../style/style.css" style="-fx-background-color: #69CAA6;">
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.LoginConroller" prefWidth="1080" prefHeight="720" stylesheets="@../style/style.css" style="-fx-background-color: #69CAA6;">
     <children>
         <!-- App Logo outside the box -->
         <ImageView fx:id="logo" fitWidth="200" fitHeight="200" pickOnBounds="true" preserveRatio="true" layoutX="440" layoutY="40">
@@ -44,7 +44,7 @@
             </HBox>
 
 
-            <!-- Sign Up Button -->
+            <!-- Login Button -->
             <Button text="LOGIN" prefWidth="450" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" />
 
         </VBox>
