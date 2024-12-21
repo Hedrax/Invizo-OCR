@@ -188,4 +188,32 @@
 .list_cell_view_item_button:hover {
     -fx-cursor: hand;/* Slightly lighter gray on hover */
 }
+.google-login-pane {
+    -fx-background-color: #4285F4; /* Google Blue */
+    -fx-background-radius: 20px; /* Rounded corners for the pane */
+    -fx-border-radius: 20px; /* Border rounding to match the background */
+    -fx-padding: 5px; /* Optional padding for spacing inside the button */
+}
+
+.google-login-pane HBox {
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+
+.google-login-pane Label {
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 14px; /* Adjust font size */
+    -fx-font-weight: bold; /* Optional, for bold text */
+}
+.login-button {
+    -fx-background-color: black; /* Black background */
+    -fx-text-fill: white; /* White text */
+    -fx-background-radius: 5px; /* Rounded corners */
+    -fx-font-size: 14px; /* Font size */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-padding: 10px; /* Optional padding */
+    -fx-border-width: 0; /* Remove border */
+}
+
+
 

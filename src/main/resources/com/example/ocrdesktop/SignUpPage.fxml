@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.LoginController" prefWidth="1080" prefHeight="720" stylesheets="@../style/style.css" style="-fx-background-color: #69CAA6;">
+    <children>
+        <!-- App Logo outside the box -->
+        <ImageView fx:id="logo" fitWidth="200" fitHeight="200" pickOnBounds="true" preserveRatio="true" layoutX="440" layoutY="40">
+            <Image url="@../images/Logo.png" />
+        </ImageView>
+
+        <!-- Box containing all other children -->
+        <VBox layoutX="265" layoutY="100" prefWidth="550" prefHeight="600" spacing="20" alignment="CENTER" style="-fx-background-color: #ffffff; -fx-border-radius: 15; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0, 0);">
+            <!-- Google Sign-Up Button -->
+            <Pane fx:id="signUpGooglePane" prefHeight="60.0" prefWidth="450.0" onMouseClicked="#handleGoogleSignUp" styleClass="google-login-pane">
+                <HBox spacing="15" alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="450.0">
+                    <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/logo_google.png" />
+                    </ImageView>
+                    <Label text="Sign up with Google" style="-fx-font-size: 18;" />
+                </HBox>
+            </Pane>
+
+            <!-- Divider with "Or use Email" -->
+            <HBox alignment="CENTER" spacing="20" prefWidth="450">
+                <Separator prefWidth="150" />
+                <Label text="Or use Email" style="-fx-font-size: 14; -fx-text-fill: #b3b3b3;" />
+                <Separator prefWidth="150" />
+            </HBox>
+
+            <!-- Email Field -->
+            <HBox alignment="CENTER" prefWidth="450" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
+                <TextField fx:id="emailFieldSignUp" promptText="Email" prefHeight="50" prefWidth="400" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 16;" />
+            </HBox>
+
+            <!-- Password Field -->
+            <HBox alignment="CENTER" prefWidth="450" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
+                <PasswordField fx:id="passwordFieldSignUp" promptText="Password" prefHeight="50" prefWidth="400" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 16;" />
+                <ImageView fx:id="eyeIcon" fitHeight="25" fitWidth="25" pickOnBounds="true" preserveRatio="true" onMouseClicked="#togglePasswordVisibility">
+                    <Image url="@../images/closed_eye.png" />
+                </ImageView>
+            </HBox>
+
+            <!-- Confirm Password Field -->
+            <HBox alignment="CENTER" prefWidth="450" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
+                <PasswordField fx:id="confirmPasswordFieldSignUp" promptText="Confirm Password" prefHeight="50" prefWidth="400" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 16;" />
+                <ImageView fx:id="confirmEyeIcon" fitHeight="25" fitWidth="25" pickOnBounds="true" preserveRatio="true" onMouseClicked="#toggleConfirmPasswordVisibility">
+                    <Image url="@../images/closed_eye.png" />
+                </ImageView>
+            </HBox>
+
+            <!-- Sign Up Button -->
+            <Button text="SIGN UP" prefWidth="450" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+            <!-- Already have an account -->
+            <HBox alignment="CENTER" spacing="5">
+                <Label text="Already have an account?" style="-fx-font-size: 14; -fx-text-fill: #b3b3b3;" />
+                <Hyperlink text="LOG IN" style="-fx-font-size: 14; -fx-text-fill: #0078d7;" onAction="#navigateToLoginPage"/>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>
