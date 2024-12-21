@@ -6,10 +6,10 @@ import javafx.collections.ObservableList;
 // but never modify without notifying the rest of the team
 
 public class Item {
-    Sheet sheet;
-    ObservableList<String> values;
-    String image_path;
-    String date;
+    public Sheet sheet;
+    public ObservableList<String> values;
+    public String image_path;
+    public String date;
     public Item(Sheet sheet, ObservableList<String> values, String image_path, String date){
         this.image_path = image_path;
         this.values = values;
