@@ -1,4 +1,4 @@
-package com.example.ocrdesktop.ui.subelements;
+package com.example.ocrdesktop.ui;
 
 
 import javafx.beans.property.SimpleStringProperty;
