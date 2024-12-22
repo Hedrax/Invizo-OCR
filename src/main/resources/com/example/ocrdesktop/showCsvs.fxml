@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.ShowCsvsController" prefWidth="1080" prefHeight="720" stylesheets="@../style/style.css" style="-fx-background-color: #69CAA6;">
+    <children>
+        <!-- App Logo -->
+        <ImageView fx:id="logo" fitWidth="200" fitHeight="200" pickOnBounds="true" preserveRatio="true" layoutX="440" layoutY="20">
+            <Image url="@../images/Logo.png" />
+        </ImageView>
+
+        <!-- Main Box -->
+        <VBox layoutX="140" layoutY="100" prefWidth="800" prefHeight="600" spacing="20" alignment="CENTER" style="-fx-background-color: #ffffff; -fx-border-radius: 15; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 0, 0);">
+            <!-- Title -->
+            <Label text="Show CSV" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #333;" />
+
+            <!-- Receipt Type Selection -->
+            <HBox alignment="CENTER" spacing="15" prefWidth="700" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
+                <Label text="Receipt:" style="-fx-font-size: 16; -fx-text-fill: #555;" />
+                <ComboBox fx:id="receiptTypeCombo" promptText="Select Receipt" prefWidth="500" style="-fx-background-color: transparent; -fx-font-size: 16;" />
+            </HBox>
+
+            <!-- Date Range Inputs -->
+            <HBox alignment="CENTER" spacing="20">
+                <HBox alignment="CENTER" prefWidth="300" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
+                    <TextField fx:id="startDateField" promptText="Start Date (YYYY-MM-DD)" prefHeight="50" prefWidth="300" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 14;" />
+                </HBox>
+                <HBox alignment="CENTER" prefWidth="300" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
+                    <TextField fx:id="endDateField" promptText="End Date (YYYY-MM-DD)" prefHeight="50" prefWidth="300" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 14;" />
+                </HBox>
+            </HBox>
+
+            <!-- Load CSV Button -->
+            <Button fx:id="loadCsvButton" text="LOAD CSV" prefWidth="700" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" onMouseClicked="#loadCsv" />
+
+            <!-- CSV Table -->
+            <TableView fx:id="csvTable" prefHeight="350" prefWidth="700" style="-fx-border-color: #ddd; -fx-border-width: 1; -fx-background-color: #f9f9f9;">
+                <columns>
+                    <!-- Columns will be added dynamically in the controller -->
+                </columns>
+            </TableView>
+
+            <!-- Download CSV Button -->
+            <Button fx:id="downloadCsvButton" text="DOWNLOAD CSV" prefWidth="700" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" onMouseClicked="#downloadCsv" />
+        </VBox>
+    </children>
+</AnchorPane>
