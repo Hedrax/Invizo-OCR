@@ -52,7 +52,7 @@
             </HBox>
 
             <!-- Sign Up Button -->
-            <Button text="SIGN UP" prefWidth="450" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" />
+            <Button fx:id="SignUpButton" text="SIGN UP" prefWidth="450" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" onMouseClicked="#signUp" />
 
             <!-- Already have an account -->
             <HBox alignment="CENTER" spacing="5">

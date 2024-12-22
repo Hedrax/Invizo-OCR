@@ -45,7 +45,7 @@
 
 
             <!-- Login Button -->
-            <Button text="LOGIN" prefWidth="450" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" />
+            <Button fx:id="LoginButton" text="LOGIN" prefWidth="450" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" onMouseClicked="#login" />
 
         </VBox>
     </children>
