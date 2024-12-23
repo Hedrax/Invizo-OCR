@@ -14,7 +14,7 @@ public class LoginController {
 //
     @FXML
     private TextField emailFieldLogin;
-
+//
     @FXML
     private PasswordField passwordFieldLogin;
 
@@ -23,7 +23,7 @@ public class LoginController {
 
     @FXML
     private TextField emailFieldSignUp;
-
+///
     @FXML
     private PasswordField passwordFieldSignUp;
 
