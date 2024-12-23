@@ -1,6 +1,7 @@
 package com.example.ocrdesktop;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.stage.Stage;
 
 
 //Note: that you can append variables to the class based on the required,
@@ -9,6 +10,7 @@ public class AppContext {
 
     // Private static instance of the class
     private static AppContext instance;
+    private Stage stage;
 
     // Properties to store globally accessible objects
     private final ReadOnlyObjectWrapper<Double> stageWidth = new ReadOnlyObjectWrapper<>(0.0);
@@ -27,10 +29,13 @@ public class AppContext {
     public double getStageWidth() {
             return stageWidth.get();
     }
+    public double getStageHeight() {
+        return stageHeight.get();
+    }
     public ReadOnlyObjectWrapper<Double> getWidthReadProperty(){return stageWidth;}
 
     // Example: Add more properties as needed
-    public void setWeight(double newWidth) {
+    public void setWidth(double newWidth) {
         this.stageWidth.set(newWidth);
     }
 

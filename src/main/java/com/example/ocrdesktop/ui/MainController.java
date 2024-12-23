@@ -1,5 +1,6 @@
 package com.example.ocrdesktop.ui;
 
+        import com.example.ocrdesktop.control.NavigationManager;
         import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
         import com.example.ocrdesktop.utils.PackageApprovalItem;
         import javafx.collections.FXCollections;
@@ -26,6 +27,7 @@ public class MainController{
     private ListView<PackageApprovalItem> customListView = new ListView<>();
 
     public void initialize() {
+        // Set data for the custom cell
         customListView.setCellFactory((ListView<PackageApprovalItem> param) -> new ApprovalListCellController() {
             @Override
             protected void updateItem(PackageApprovalItem item, boolean empty) {
@@ -96,7 +98,8 @@ public class MainController{
     @FXML
     private void navigateToAllRequests(){}
     @FXML
-    private void navigateToSheets(){}
+    private void navigateToSheets(){
+        NavigationManager.getInstance().navigateToSHOWCSVs();}
     @FXML
     private void navigateToUsersManger(){}
     @FXML

@@ -1,7 +1,7 @@
 package com.example.ocrdesktop.ui;
 
 import com.example.ocrdesktop.AppContext;
-import com.example.ocrdesktop.control.Navigation;
+import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.RequestItemBoxController;
 import com.example.ocrdesktop.utils.Item;
 import com.example.ocrdesktop.utils.Receipt;
@@ -30,7 +30,7 @@ public class DetailItemsController {
     public Request request;
     //Others
     public AnchorPane mainContent;
-    private final Navigation navigationController = new Navigation();
+    private final NavigationManager navigationController = NavigationManager.getInstance();
     public HBox horizontalItemsView;
     public ScrollPane horizontalScrollPane;
     public StackPane sliding_button_right;
