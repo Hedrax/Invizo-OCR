@@ -185,6 +185,23 @@
     -fx-cursor: hand;/* Slightly lighter gray on hover */
 }
 
+.request-view-title-label{
+-fx-font-family: Zen Kaku Gothic Antique;
+-fx-font-size: 30px;
+}
+
+.request-view-date-label{
+-fx-font-family: Zen Kaku Gothic Antique;
+-fx-font-size: 15px;
+}
+
+.hover-hand:hover{
+    -fx-cursor: hand;
+}
+
+.detail_request-main_body{
+-fx-background-color:#e8eaed;
+}
 .list_cell_view_item_button:hover {
     -fx-cursor: hand;/* Slightly lighter gray on hover */
 }
