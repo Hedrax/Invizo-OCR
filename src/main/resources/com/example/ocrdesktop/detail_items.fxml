@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.DetailItemsController">
+    <AnchorPane fx:id="mainContent" styleClass="detail_request-main_body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox id="header" alignment="CENTER" prefHeight="56.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane id="header" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
+                <ImageView fitHeight="47.0" fitWidth="88.0" layoutX="55.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="55.0">
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                    <Image url="@../images/Logo.png" />
+                </ImageView>
+                <HBox id="user_profile_pane" alignment="CENTER" layoutX="477.0" layoutY="7.0" onMouseClicked="#navigateToProfile" prefHeight="42.0" prefWidth="107.0" styleClass="profile_banner" AnchorPane.rightAnchor="22.0">
+                    <ImageView fitHeight="44.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/Ellipse%201.png" />
+                    </ImageView>
+                    <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
+                        <opaqueInsets>
+                            <Insets />
+                        </opaqueInsets>
+                        <padding>
+                            <Insets left="7.0" />
+                        </padding>
+                        <Label text="Gasser" textFill="WHITE" />
+                        <Label text="company" textFill="WHITE" />
+                    </VBox>
+                </HBox>
+                <StackPane layoutX="-75.0" layoutY="-47.0" styleClass="hover-hand" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="50.0" stroke="TRANSPARENT" strokeType="INSIDE" width="50.0" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="&lt;" textAlignment="CENTER" wrappingWidth="19.83837890625">
+                            <font>
+                                <Font name="System Italic" size="34.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </StackPane>
+            </AnchorPane>
+        </HBox>
+        <ScrollPane fx:id="gridScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutY="129.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="129.0">
+            <GridPane fx:id="gridPane" alignment="TOP_CENTER">
+
+            </GridPane>
+         <padding>
+            <Insets left="15.0" />
+         </padding>
+        </ScrollPane>
+        <VBox fx:id="hListContainer" alignment="CENTER" layoutX="251.0" layoutY="24.0" prefHeight="200.0" prefWidth="100.0" translateX="1600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="129.0">
+            <ScrollPane fx:id="horizontalScrollPane" fitToHeight="true" nodeOrientation="LEFT_TO_RIGHT" vbarPolicy="NEVER" VBox.vgrow="NEVER">
+                <HBox fx:id="horizontalItemsView" alignment="CENTER_LEFT" spacing="15.0" />
+            </ScrollPane>
+        </VBox>
+        <Label fx:id="titleLabelView" layoutX="38.0" layoutY="78.0" styleClass="request-view-title-label" text="Recipt 1" textAlignment="CENTER" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="78.0">
+           <font>
+               <Font size="27.0" />
+           </font>
+        </Label>
+        <Label fx:id="dateLabelView" layoutX="646.0" layoutY="89.0" styleClass="request-view-date-label" text="10-10-2024 (12:00PM)" AnchorPane.rightAnchor="28.799999999999955" AnchorPane.topAnchor="89.0" />
+        <StackPane fx:id="sliding_button_right" layoutX="300" layoutY="350" onMouseClicked="#showHList" prefHeight="60" prefWidth="60" styleClass="hover-hand" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="30.0">
+            <Rectangle arcHeight="20" arcWidth="20" fill="lightgray" height="40" width="40" />
+            <Text style="-fx-font-size: 24;" text="&gt;" />
+        </StackPane>
+        <StackPane fx:id="sliding_button_left" layoutX="300" layoutY="350" onMouseClicked="#showGrid" prefHeight="60" prefWidth="60" styleClass="hover-hand" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0">
+            <Rectangle arcHeight="20" arcWidth="20" fill="lightgray" height="40" width="40" />
+            <Text style="-fx-font-size: 24;" text="&lt;" />
+        </StackPane>
+    </AnchorPane>
+</AnchorPane>

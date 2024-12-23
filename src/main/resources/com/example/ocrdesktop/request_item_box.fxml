@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="505.0" prefWidth="313.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.RequestItemBoxController">
+   <ImageView fx:id="image" fitHeight="227.0" fitWidth="301.0" layoutX="6.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="14.0" />
+   <StackPane layoutX="327.0" layoutY="14.0" styleClass="hover-hand" AnchorPane.rightAnchor="26.0" AnchorPane.topAnchor="26.0" onMouseClicked="#deleteItem">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e81123" height="28.0" stroke="TRANSPARENT" strokeType="INSIDE" styleClass="hover-hand" width="28.0" />
+      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="X">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Text>
+   </StackPane>
+   <Label fx:id="confirmButton" layoutX="48.0" layoutY="362.4" onMouseClicked="#confirm" styleClass="button" text="Confirm" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="48.0" />
+   <Label layoutX="176.4" layoutY="361.4" styleClass="button" text="View Details" AnchorPane.bottomAnchor="13.0" AnchorPane.rightAnchor="35.0" />
+   <ScrollPane layoutX="20.0" layoutY="153.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="246.0">
+      <VBox fx:id="customVbox" />
+   </ScrollPane>
+</AnchorPane>
