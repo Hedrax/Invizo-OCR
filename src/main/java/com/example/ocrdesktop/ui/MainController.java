@@ -96,7 +96,8 @@ public class MainController{
     private void ConfirmAll(){}
     //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
     @FXML
-    private void navigateToAllRequests(){}
+    private void navigateToAllRequests(){
+        NavigationManager.getInstance().navigateToRequestsPage();}
     @FXML
     private void navigateToSheets(){
         NavigationManager.getInstance().navigateToSHOWCSVs();}

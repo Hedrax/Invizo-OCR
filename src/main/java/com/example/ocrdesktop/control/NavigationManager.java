@@ -111,11 +111,12 @@ public class NavigationManager {
     public static final String SIGNUP_PAGE = "/com/example/ocrdesktop/SignUpPage.fxml";
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";
-
+    public static final String REQUESTS_PAGE = "/com/example/ocrdesktop/RequestsPage.fxml";
     //NAVIGATION FUNCTIONS
     public void navigateToMainPage(){if (authorized) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
     public void navigateToDetailItems(){if (authorized) navigate(DETAIL_ITEMS); else System.out.println("Not Authorized");}
     public void navigateToSHOWCSVs(){if (authorized) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}
     public void navigateToLogin(){navigate(LOGIN_PAGE);}
+    public void navigateToRequestsPage(){if (authorized) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
 }
