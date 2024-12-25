@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.input.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<AnchorPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="871.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.RequestsController">
+    <AnchorPane fx:id="mainContent" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox id="header" alignment="CENTER" prefHeight="56.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane id="headerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
+                <ImageView fitHeight="66.0" fitWidth="55.0" layoutX="17.0" layoutY="18.0" onMouseClicked="#toggleMenu" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <Image url="@../images/3%20lines%20button.png" />
+                    <viewport>
+                        <Rectangle2D height="1200.0" minX="-345.0" minY="-355.0" width="1200.0" />
+                    </viewport>
+                </ImageView>
+                <ImageView fitHeight="47.0" fitWidth="88.0" layoutX="49.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="55.0">
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                    <Image url="@../images/Logo.png" />
+                </ImageView>
+                <HBox id="user_profile_pane" alignment="CENTER" layoutX="477.0" layoutY="7.0" onMouseClicked="#navigateToProfile" prefHeight="42.0" prefWidth="107.0" styleClass="profile_banner" AnchorPane.rightAnchor="22.0">
+                    <ImageView fitHeight="44.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/Ellipse%201.png" />
+                    </ImageView>
+                    <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
+                        <opaqueInsets>
+                            <Insets />
+                        </opaqueInsets>
+                        <padding>
+                            <Insets left="7.0" />
+                        </padding>
+                        <Label text="Gasser" textFill="WHITE" />
+                        <Label text="company" textFill="WHITE" />
+                    </VBox>
+                </HBox>
+            </AnchorPane>
+        </HBox>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="main_body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0">
+            <!-- Filters Section - Positioned on Top, Left to Right -->
+            <HBox layoutX="20.0" layoutY="20.0" spacing="15.0" alignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                <!-- From Date -->
+                <Label text="From Date:" />
+                <DatePicker fx:id="fromDatePicker" promptText="Select Start Date" />
+
+                <!-- To Date -->
+                <Label text="To Date:" />
+                <DatePicker fx:id="toDatePicker" promptText="Select End Date" />
+
+                <!-- Receipt Type -->
+                <Label text="Receipt Type:" />
+                <ComboBox fx:id="receiptTypeComboBox" promptText="Select Receipt Type">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Receipt Type 1" />
+                            <String fx:value="Receipt Type 2" />
+                            <String fx:value="Receipt Type 3" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+
+                <!-- Filter Button -->
+                <Button text="Apply Filter" onAction="#onFilterClicked" />
+            </HBox>
+
+
+
+
+            <!-- ListView Section - Positioned Below Filters -->
+            <AnchorPane layoutX="20.0" layoutY="80.0" prefHeight="373.0" styleClass="recent-items" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="80.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="0.0">
+                <Label alignment="CENTER" layoutX="42.0" layoutY="23.0" styleClass="sub-title" text="All Items" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="18.0" />
+                <ListView fx:id="customListView" layoutY="174.0" prefHeight="200.0" styleClass="main_listView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="70.0" />
+            </AnchorPane>
+        </AnchorPane>
+
+    </AnchorPane>
+
+
+        <!-- Side Menu -->
+    <AnchorPane fx:id="sideMenu" minWidth="250.0" translateX="-300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fitHeight="99.0" fitWidth="118.0" layoutX="77.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="30.0">
+            <Image url="@../images/Ellipse%201.png" />
+        </ImageView>
+        <!-- Menu Items -->
+        <Label alignment="CENTER" layoutX="107.0" layoutY="136.0" styleClass="sub-title" text="Gasser" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="136.0" />
+        <Label alignment="CENTER" layoutX="103.0" layoutY="174.0" styleClass="item-label-date" text="Super Admin" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="173.0" />
+        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToAllRequests" prefHeight="41.0" styleClass="menu-label" text="Requests" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="252.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding>
+        </Label>
+        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToSheets" prefHeight="41.0" styleClass="menu-label" text="View All Sheets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="211.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding>
+        </Label>
+        <Label layoutY="375.0" onMouseClicked="#navigateToProfile" prefHeight="41.0" styleClass="menu-label" text="Profile" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="333.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding>
+        </Label>
+        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToUsersManger" prefHeight="41.0" styleClass="menu-label" text="Manage Users" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="293.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding>
+        </Label>
+        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToSettings" prefHeight="41.0" styleClass="menu-label" text="Settings" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="374.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding>
+        </Label>
+        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#Logout" prefHeight="41.0" styleClass="menu-label" text="Logout" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="417.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding>
+        </Label>
+    </AnchorPane>
+</AnchorPane>
