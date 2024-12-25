@@ -25,12 +25,16 @@
 
             <!-- Date Range Inputs -->
             <HBox alignment="CENTER" spacing="20">
-                <HBox alignment="CENTER" prefWidth="300" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
-                    <TextField fx:id="startDateField" promptText="Start Date (YYYY-MM-DD)" prefHeight="50" prefWidth="300" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 14;" />
-                </HBox>
-                <HBox alignment="CENTER" prefWidth="300" style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
-                    <TextField fx:id="endDateField" promptText="End Date (YYYY-MM-DD)" prefHeight="50" prefWidth="300" style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 14;" />
-                </HBox>
+                <!-- Start Date -->
+                <VBox alignment="CENTER" spacing="5" prefWidth="300" style="-fx-padding: 10;">
+                    <Label text="Start Date:" style="-fx-font-size: 14; -fx-text-fill: #555;" />
+                    <DatePicker fx:id="startDatePicker" promptText="Select Start Date" prefWidth="300" style="-fx-font-size: 14;" />
+                </VBox>
+                <!-- End Date -->
+                <VBox alignment="CENTER" spacing="5" prefWidth="300" style="-fx-padding: 10;">
+                    <Label text="End Date:" style="-fx-font-size: 14; -fx-text-fill: #555;" />
+                    <DatePicker fx:id="endDatePicker" promptText="Select End Date" prefWidth="300" style="-fx-font-size: 14;" />
+                </VBox>
             </HBox>
 
             <!-- Load CSV Button -->
