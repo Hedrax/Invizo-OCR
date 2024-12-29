@@ -8,6 +8,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.AnchorPane;
@@ -16,9 +18,17 @@ import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.time.LocalDate;
+
 import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class RequestsController {
+    @FXML
+    private ComboBox<String> receiptTypeComboBox;
+    @FXML
+    private DatePicker toDatePicker;
+    @FXML
+    private DatePicker fromDatePicker;
     @FXML
     public Pane sideMenu;
     public AnchorPane mainContent;
@@ -48,13 +58,10 @@ public class RequestsController {
                         setGraphic(cellLayout);
                         controller.getStatus().addListener((obs, oldStatus, newStatus) -> {
                             item.status = newStatus;
-                            //Todo implement the backend logic of confirming an item
                         });
 
                         controller.navigateToDetail().addListener((obs, oldStatus, newStatus) -> {
-                            //Todo implement the backend logic of confirming an item
                             if (newStatus == true) {
-                                //Todo
                                 // navigateToDetail()
                             }
                         });
@@ -93,7 +100,8 @@ public class RequestsController {
         isMenuVisible = !isMenuVisible; // Toggle the menu state
     }
     @FXML
-    private void navigateToAllRequests(){}
+    private void navigateToAllRequests(){
+        NavigationManager.getInstance().navigateToRequestsPage();}
     @FXML
     private void navigateToSheets(){
         NavigationManager.getInstance().navigateToSHOWCSVs();}
@@ -121,8 +129,12 @@ public class RequestsController {
         provideFakeListingData();
         this.initialize();
     }
-
-    public void onFilterClicked(ActionEvent actionEvent) {
+    @FXML
+    private void onFilterClicked() {
+        String receiptType = receiptTypeComboBox.getValue();
+        LocalDate startDate = fromDatePicker.getValue();
+        LocalDate endDate = toDatePicker.getValue();
+        // todo handle update data based on database make a function in repo
 
     }
 }

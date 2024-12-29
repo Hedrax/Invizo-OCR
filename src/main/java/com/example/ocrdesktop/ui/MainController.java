@@ -15,6 +15,9 @@ package com.example.ocrdesktop.ui;
         import javafx.util.Duration;
 
         import java.io.IOException;
+
+        import static com.example.ocrdesktop.data.Repo.getAllReceipts;
+        import static com.example.ocrdesktop.data.Repo.refreshData;
         import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class MainController{
@@ -93,7 +96,10 @@ public class MainController{
     }
 
     @FXML
-    private void ConfirmAll(){}
+    private void Refresh(){
+        refreshData();
+        getAllReceipts();
+    }
     //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
     @FXML
     private void navigateToAllRequests(){

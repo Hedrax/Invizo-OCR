@@ -1,0 +1,80 @@
+package com.example.ocrdesktop.data;
+
+import java.sql.*;
+
+public class DatabaseInitializer {
+
+    private static final String URL = "jdbc:sqlite:receipts.db";
+
+    public static void initializeDatabase() {
+        try (Connection connection = DriverManager.getConnection(URL);
+             Statement statement = connection.createStatement()) {
+
+            // Check if the database needs initialization
+            if (!isDatabaseInitialized(connection)) {
+                createTables(statement);
+                System.out.println("Database initialized successfully!");
+            } else {
+                System.out.println("Database is already initialized.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to initialize database: " + e.getMessage());
+        }
+    }
+
+    private static boolean isDatabaseInitialized(Connection connection) throws SQLException {
+        String checkTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='receipt_type'";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(checkTableExists);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            return resultSet.next(); // Return true if the table exists
+        }
+    }
+
+    private static void createTables(Statement statement) throws SQLException {
+        // Adjusted SQL for SQLite compatibility
+        String createTableReceiptType =
+                "CREATE TABLE IF NOT EXISTS receipt_type (" +
+                        "receipt_type_id TEXT PRIMARY KEY, " +
+                        "name TEXT NOT NULL UNIQUE, " +
+                        "description TEXT NOT NULL)";
+
+        String createTableReceiptTypeFields =
+                "CREATE TABLE IF NOT EXISTS receipt_type_fields (" +
+                        "receipt_type_id TEXT NOT NULL, " +
+                        "field_name TEXT NOT NULL, " +
+                        "field_type TEXT NOT NULL, " +
+                        "PRIMARY KEY (receipt_type_id, field_name), " +
+                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (receipt_type_id) ON DELETE CASCADE)";
+
+        String createTableUploadRequests =
+                "CREATE TABLE IF NOT EXISTS upload_requests (" +
+                        "request_id TEXT PRIMARY KEY, " +
+                        "status TEXT NOT NULL DEFAULT 'PENDING', " +
+                        "uploaded_by_user_id TEXT NOT NULL, " +
+                        "uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                        "FOREIGN KEY (uploaded_by_user_id) REFERENCES users (id) ON DELETE SET NULL)";
+
+        String createTableReceipt =
+                "CREATE TABLE IF NOT EXISTS receipt (" +
+                        "receipt_id TEXT PRIMARY KEY, " +
+                        "request_id TEXT, " +
+                        "receipt_type_id TEXT NOT NULL, " +
+                        "image_url TEXT NOT NULL, " +
+                        "status TEXT NOT NULL DEFAULT 'PENDING', " +
+                        "approved_by_user_id TEXT, " +
+                        "approved_at TIMESTAMP, " +
+                        "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE CASCADE, " +
+                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (receipt_type_id) ON DELETE RESTRICT, " +
+                        "FOREIGN KEY (approved_by_user_id) REFERENCES users (id) ON DELETE SET NULL)";
+
+        // Execute the table creation statements
+        statement.executeUpdate(createTableReceiptType);
+        statement.executeUpdate(createTableReceiptTypeFields);
+        statement.executeUpdate(createTableUploadRequests);
+        statement.executeUpdate(createTableReceipt);
+
+        System.out.println("Tables created successfully.");
+    }
+}
