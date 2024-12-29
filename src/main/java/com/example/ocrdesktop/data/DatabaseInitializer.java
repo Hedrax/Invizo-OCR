@@ -36,17 +36,9 @@ public class DatabaseInitializer {
         // Adjusted SQL for SQLite compatibility
         String createTableReceiptType =
                 "CREATE TABLE IF NOT EXISTS receipt_type (" +
-                        "receipt_type_id TEXT PRIMARY KEY, " +
-                        "name TEXT NOT NULL UNIQUE, " +
-                        "description TEXT NOT NULL)";
+                        "name TEXT PRIMARY KEY, " +
+                        "columnNames TEXT NOT NULL UNIQUE) ";
 
-        String createTableReceiptTypeFields =
-                "CREATE TABLE IF NOT EXISTS receipt_type_fields (" +
-                        "receipt_type_id TEXT NOT NULL, " +
-                        "field_name TEXT NOT NULL, " +
-                        "field_type TEXT NOT NULL, " +
-                        "PRIMARY KEY (receipt_type_id, field_name), " +
-                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (receipt_type_id) ON DELETE CASCADE)";
 
         String createTableUploadRequests =
                 "CREATE TABLE IF NOT EXISTS upload_requests (" +
@@ -59,22 +51,23 @@ public class DatabaseInitializer {
         String createTableReceipt =
                 "CREATE TABLE IF NOT EXISTS receipt (" +
                         "receipt_id TEXT PRIMARY KEY, " +
-                        "request_id TEXT, " +
-                        "receipt_type_id TEXT NOT NULL, " +
+                        "receipt_type_name TEXT NOT NULL, " +
+                        "request_id TEXT NOT NULL, " +
                         "image_url TEXT NOT NULL, " +
                         "status TEXT NOT NULL DEFAULT 'PENDING', " +
+                        "ocr_data TEXT, " +
                         "approved_by_user_id TEXT, " +
-                        "approved_at TIMESTAMP, " +
-                        "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE CASCADE, " +
-                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (receipt_type_id) ON DELETE RESTRICT, " +
-                        "FOREIGN KEY (approved_by_user_id) REFERENCES users (id) ON DELETE SET NULL)";
+                        "approved_at TEXT, " +
+                        "FOREIGN KEY (receipt_type_name) REFERENCES receipt_type (name) ON DELETE CASCADE, " +
+                        "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE SET NULL, " +
+                        "FOREIGN KEY (approved_by_user_id) REFERENCES users (user_id) ON DELETE SET NULL" +
+                        ");";
+
 
         // Execute the table creation statements
         statement.executeUpdate(createTableReceiptType);
-        statement.executeUpdate(createTableReceiptTypeFields);
         statement.executeUpdate(createTableUploadRequests);
         statement.executeUpdate(createTableReceipt);
-
         System.out.println("Tables created successfully.");
     }
 }

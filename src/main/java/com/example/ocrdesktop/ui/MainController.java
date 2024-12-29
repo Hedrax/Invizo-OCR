@@ -1,24 +1,20 @@
 package com.example.ocrdesktop.ui;
 
-        import com.example.ocrdesktop.control.NavigationManager;
-        import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
-        import com.example.ocrdesktop.utils.PackageApprovalItem;
-        import javafx.collections.FXCollections;
-        import javafx.collections.ObservableList;
-        import javafx.fxml.FXML;
-        import javafx.fxml.FXMLLoader;
-        import javafx.scene.control.ListView;
-        import javafx.scene.effect.GaussianBlur;
-        import javafx.scene.layout.AnchorPane;
-        import javafx.scene.layout.Pane;
-        import javafx.animation.TranslateTransition;
-        import javafx.util.Duration;
-
-        import java.io.IOException;
-
-        import static com.example.ocrdesktop.data.Repo.getAllReceipts;
-        import static com.example.ocrdesktop.data.Repo.refreshData;
-        import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
+import com.example.ocrdesktop.control.NavigationManager;
+import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
+import com.example.ocrdesktop.utils.PackageApprovalItem;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ListView;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.animation.TranslateTransition;
+import javafx.util.Duration;
+import java.io.IOException;
+import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class MainController{
     @FXML
@@ -97,8 +93,6 @@ public class MainController{
 
     @FXML
     private void Refresh(){
-        refreshData();
-        getAllReceipts();
     }
     //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
     @FXML

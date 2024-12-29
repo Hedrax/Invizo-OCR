@@ -3,7 +3,6 @@ package com.example.ocrdesktop.data;
 
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.ReceiptTypeFields;
 import com.example.ocrdesktop.utils.Request;
 
 import java.sql.*;
@@ -12,7 +11,7 @@ import java.util.List;
 
 //TODO handle or caching and local storage interactions
 public class Local {
-    private static final String URL = "jdbc:sqlite:receipts.db";
+   /* private static final String URL = "jdbc:sqlite:receipts.db";
     public static void refreshReceiptType(Connection localConnection, List<ReceiptType> receiptTypes) throws SQLException {
         String insertOrUpdateReceiptTypeSQL =
                 "INSERT OR REPLACE INTO receipt_type (receipt_type_id, name, description) VALUES (?, ?, ?)";
@@ -27,24 +26,6 @@ public class Local {
                 preparedStatement.addBatch(); // Add this statement to the batch
             }
             preparedStatement.executeBatch(); // Execute the batch for receipt_type
-        }
-    }
-
-
-    public  static void refreshReceiptTypeFields(Connection localConnection, List<ReceiptTypeFields> receiptTypeFieldsList) throws SQLException {
-        String insertOrUpdateReceiptTypeFieldsSQL =
-                "INSERT OR REPLACE INTO receipt_type_fields (receipt_type_id, field_name, field_type) VALUES (?, ?, ?)";
-
-        try (PreparedStatement preparedStatement = localConnection.prepareStatement(insertOrUpdateReceiptTypeFieldsSQL)) {
-            // Iterate over the list of ReceiptTypeFields objects
-            for (ReceiptTypeFields receiptTypeField : receiptTypeFieldsList) {
-                preparedStatement.setString(1, receiptTypeField.receiptTypeId); // Set receiptTypeId
-                preparedStatement.setString(2, receiptTypeField.fieldName); // Set fieldName
-                preparedStatement.setString(3, receiptTypeField.fieldType); // Set fieldType
-
-                preparedStatement.addBatch(); // Add this statement to the batch
-            }
-            preparedStatement.executeBatch(); // Execute the batch for receipt_type_fields
         }
     }
 
@@ -154,5 +135,5 @@ public class Local {
 
 
 
-
+*/
 }

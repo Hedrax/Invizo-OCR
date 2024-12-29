@@ -10,7 +10,7 @@ import java.util.List;
 import static com.example.ocrdesktop.data.Local.*;
 
 public class Repo {
-    // Database connection helper
+  /*  // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {
         String url = "jdbc:sqlite:receipts.db";
         return DriverManager.getConnection(url);
@@ -58,7 +58,6 @@ public class Repo {
             List<Request> requests = getDummyRequests();
             List<Receipt> receipts = getDummyReceipts();
             refreshReceiptType(localConnection, receiptTypes);
-            refreshReceiptTypeFields(localConnection, receiptTypeFields);
             refreshUploadRequests(localConnection, requests);
             refreshReceipt(localConnection, receipts);
             createTablesForReceiptTypes(localConnection);
@@ -94,6 +93,6 @@ public class Repo {
         }
     }
 
-
+*/
 
 }
