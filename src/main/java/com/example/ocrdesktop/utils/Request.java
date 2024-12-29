@@ -7,11 +7,11 @@ import javafx.collections.ObservableList;
 public class Request {
     public String id;
     public ObservableList<Item> items;
-    public Receipt receipt;
+    public ReceiptType receiptType;
     public String date;
-    public Request(String id, ObservableList<Item> items, Receipt receipt, String date){
+    public Request(String id, ObservableList<Item> items, ReceiptType receiptType, String date){
         this.items = items;
-        this.receipt = receipt;
+        this.receiptType = receiptType;
         this.id = id;
         this.date = date;
     }

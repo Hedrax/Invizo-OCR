@@ -16,8 +16,8 @@ ext {
     junitVersion = '5.9.1'
 }
 
-sourceCompatibility = '9'
-targetCompatibility = '9'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -42,6 +42,8 @@ dependencies {
     implementation('org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0')
     implementation('mysql:mysql-connector-java:8.0.30')
     implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
+    implementation 'org.json:json:20230227'
+    implementation 'commons-io:commons-io:2.18.0'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")

@@ -33,6 +33,7 @@ public class NavigationManager {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
             Scene scene = new Scene(fxmlLoader.load(), currentStage.getWidth(), currentStage.getHeight());
             currentStage.setScene(scene);
+            backStack.push(path);
         }
         catch (IOException e) {e.printStackTrace();}
     }
@@ -43,7 +44,8 @@ public class NavigationManager {
             System.out.println("No previous pages to go back to.");
             return;
         }
-        navigate(backStack.pop());
+        backStack.pop();
+        navigate(backStack.peek());
     }
 
     public void clearBackStack() {
@@ -99,7 +101,7 @@ public class NavigationManager {
             AppContext.getInstance().setHeight((Double) newWidth);
         });
 
-
+        navigateToDetailReceipt();
     }
 
     //Modifiable
@@ -112,10 +114,13 @@ public class NavigationManager {
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";
     public static final String REQUESTS_PAGE = "/com/example/ocrdesktop/RequestsPage.fxml";
+    public static final String DETAIL_RECEIPT = "/com/example/ocrdesktop/detail_receipt.fxml";
+
     //NAVIGATION FUNCTIONS
     public void navigateToMainPage(){if (authorized) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
     public void navigateToDetailItems(){if (authorized) navigate(DETAIL_ITEMS); else System.out.println("Not Authorized");}
     public void navigateToSHOWCSVs(){if (authorized) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
+    public void navigateToDetailReceipt(){if (authorized) navigate(DETAIL_RECEIPT); else System.out.println("Not Authorized");}
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}
     public void navigateToLogin(){navigate(LOGIN_PAGE);}
     public void navigateToRequestsPage(){if (authorized) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}

@@ -156,6 +156,9 @@
     -fx-border-color:#CACACA;
     -fx-border-width: 0.5px;
 
+    -fx-alignment: center;
+    -fx-font-size: 14px;
+
 }
 .list-view .list-cell:focused {
 
@@ -163,7 +166,7 @@
 
 /* Remove selection highlight */
 .list-view .list-cell:selected {
-    -fx-background-color: #CACACA; /* Slightly lighter gray on hover */
+    -fx-background-color: #18A661; /* Slightly lighter gray on hover */
 }
 
 
@@ -233,4 +236,13 @@
 }
 
 
+.annotation-rectangle {
+    -fx-background-color: transparent;
+    -fx-border-color: red;
+     -fx-border-width: 1;
+}
+
+.annotation-rectangle:hover {
+    -fx-background-color: rgba(255, 0, 0, 0.5);
+}
 

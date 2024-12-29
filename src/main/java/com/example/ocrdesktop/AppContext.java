@@ -12,6 +12,9 @@ public class AppContext {
     private static AppContext instance;
     private Stage stage;
 
+    //Saving Directory Property
+    public String JSONsSavingDir = "D:\\curr projects\\Graduation II\\Main CV Module\\";
+
     // Properties to store globally accessible objects
     private final ReadOnlyObjectWrapper<Double> stageWidth = new ReadOnlyObjectWrapper<>(0.0);
     private final ReadOnlyObjectWrapper<Double> stageHeight = new ReadOnlyObjectWrapper<>(0.0);

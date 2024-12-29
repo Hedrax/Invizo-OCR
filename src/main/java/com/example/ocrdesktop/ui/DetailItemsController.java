@@ -4,7 +4,7 @@ import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.RequestItemBoxController;
 import com.example.ocrdesktop.utils.Item;
-import com.example.ocrdesktop.utils.Receipt;
+import com.example.ocrdesktop.utils.ReceiptType;
 import com.example.ocrdesktop.utils.Request;
 import com.example.ocrdesktop.utils.Sheet;
 import javafx.animation.TranslateTransition;
@@ -90,7 +90,7 @@ public class DetailItemsController {
     }
 
     private void initFakeData(){
-        request = new Request("lol", observableArrayList(),new Receipt("ll", "Receipt Example"), "2001-05-22 (11:03PM)");
+        request = new Request("lol", observableArrayList(),new ReceiptType("ll", observableArrayList("Receipt Example")), "2001-05-22 (11:03PM)");
         updateTitles();
         // Example: Add initial cells
         for (int i = 0; i < 30; i++) {
@@ -205,7 +205,7 @@ public class DetailItemsController {
 
     private void updateTitles() {
         dateLabelView.setText(request.date);
-        titleLabelView.setText(request.receipt.name);
+        titleLabelView.setText(request.receiptType.name);
     }
 
     public void initialize() {
