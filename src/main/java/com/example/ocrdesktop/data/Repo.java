@@ -1,15 +1,41 @@
 package com.example.ocrdesktop.data;
-import com.example.ocrdesktop.utils.Receipt;
-import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.ReceiptTypeFields;
-import com.example.ocrdesktop.utils.Request;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.example.ocrdesktop.data.Local.*;
+import com.example.ocrdesktop.utils.ReceiptType;
+import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 
 public class Repo {
+    Remote remote = new Remote();
+    public boolean checkReceiptTypeNameAvailable(String text) {
+        //TODO check all name of ReceiptType in the local database and return boolean True: name Available, False: name is reserved by another object
+        return true;
+    }
+
+    public int createReceiptType(ReceiptTypeJSON receiptTypeJSON) {
+        ReceiptType receiptType = receiptTypeJSON.getReceiptType();
+
+        //TODO make the remote request on non IO-Working-Thread
+        //posting the new object on the production database
+        int response = remote.createNewReceiptType(receiptTypeJSON);
+
+        if (response == 200) {
+            //TODO save receipt Type in the local database on response
+
+        }
+        return response;
+
+    }
+
+    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON, String oldName) {
+        ReceiptType receiptType = receiptTypeJSON.getReceiptType();
+        //TODO the modification process is a bit of a pain in the ass, as if the name of the receipt or one the column name has changed
+        // will require to make modification to all the stored data "Receipts" before deleting the original ReceiptType row
+        // at least that's the naive approach
+        // therefor, postponed the implementation until we finish the base solution including login
+        //posting the new object on the production database
+
+        //remote.modifyReceiptType(receiptTypeJSON);
+        return 200;
+    }
   /*  // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {
         String url = "jdbc:sqlite:receipts.db";
