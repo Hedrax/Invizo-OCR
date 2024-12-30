@@ -1,29 +1,24 @@
 package com.example.ocrdesktop.utils;
 
 import com.example.ocrdesktop.AppContext;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
+import static javafx.collections.FXCollections.observableArrayList;
+
 //NOTE: Not finished
 public class ReceiptTypeJSON {
     String name;
     JSONObject templateJSON = new JSONObject();
-    public ReceiptTypeJSON(String name, List<TextFieldBoundingBox> textFieldBoundingBoxes, String image_path, Integer imageHeight,  Integer imageWidth){
+    public ReceiptTypeJSON(String name, List<TextFieldBoundingBox> textFieldBoundingBoxes, Image image){
         this.name = name;
         templateJSON.put("name", name);
 
@@ -54,14 +49,17 @@ public class ReceiptTypeJSON {
             it.possibilities.forEach(possibilities::put);
             shape.put("possibilities", possibilities);
 
+            System.out.println(shape);
             shapes.put(shape);
         });
+        System.out.println("Entered");
+
         templateJSON.put("shapes", shapes);
 
         //Handling  image
-        templateJSON.put("imageData", ImageEncoderDecoder.encodeImageToBase64(image_path));
-        templateJSON.put("imageHeight", imageHeight);
-        templateJSON.put("imageWidth", imageWidth);
+        templateJSON.put("imageData", ImageEncoderDecoder.encodeImageToBase64(image));
+        templateJSON.put("imageHeight", image.getHeight());
+        templateJSON.put("imageWidth", image.getWidth());
     }
     public ReceiptTypeJSON(String JSONFilePath){
         StringBuilder content = new StringBuilder();
@@ -78,18 +76,21 @@ public class ReceiptTypeJSON {
         }
         // Parse the JSON string into a JSONObject
         templateJSON = new JSONObject(content.toString());
+        name = templateJSON.getString("name");
     }
-    public void saveJSONLocally() throws IOException {
-        // Create a File object using the provided file path
-        File file = new File(AppContext.getInstance().JSONsSavingDir + name + ".json");
+    public void saveJSONLocally() {
+        try {
+            // Create a File object using the provided file path
+            File file = new File(AppContext.getInstance().JSONsSavingDir + name + ".json");
 
-        // Create a FileWriter object to write to the file
-        FileWriter fileWriter = new FileWriter(file,StandardCharsets.UTF_8 );
+            // Create a FileWriter object to write to the file
+            FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
 
-        // Write the JSONObject to the file
-        fileWriter.write(templateJSON.toString(4));  // Pretty-print with indentation of 4 spaces
-        fileWriter.flush();  // Ensure all data is written to the file
-        fileWriter.close();  // Close the writer
+            // Write the JSONObject to the file
+            fileWriter.write(templateJSON.toString(4));  // Pretty-print with indentation of 4 spaces
+            fileWriter.flush();  // Ensure all data is written to the file
+            fileWriter.close();  // Close the writer
+        }catch (Exception e){e.printStackTrace();}
     }
     public ReceiptType getReceiptType(){
         List <String> columnNames = new ArrayList<>();
@@ -106,28 +107,32 @@ public class ReceiptTypeJSON {
     public List<TextFieldBoundingBox> getTextFieldsBBoxes(){
         List <TextFieldBoundingBox> result = new ArrayList<>();
         JSONArray shapes = (JSONArray) templateJSON.get("shapes");
+
         shapes.forEach(object->{
             JSONObject shape = (JSONObject) object;
-            JSONArray points = (JSONArray) shape.get("points");
-
+            JSONArray points = shape.getJSONArray("points");
             List<Double> doublePoints = new ArrayList<>();
-            JSONArray minPoint = (JSONArray) points.get(0);
-            JSONArray maxPoint = (JSONArray) points.get(1);
+            JSONArray minPoint = points.getJSONArray(0);
+            JSONArray maxPoint = points.getJSONArray(1);
 
-            doublePoints.add((Double) minPoint.get(0));
-            doublePoints.add((Double) minPoint.get(1));
-            doublePoints.add((Double) maxPoint.get(0));
-            doublePoints.add((Double) maxPoint.get(1));
+            doublePoints.add(minPoint.getDouble(0));
+            doublePoints.add(minPoint.getDouble(1));
+            doublePoints.add(maxPoint.getDouble(0));
+            doublePoints.add(maxPoint.getDouble(1));
+
+            ObservableList<String> possibilities = observableArrayList();
+            shape.getJSONArray("possibilities").forEach(it->possibilities.add(it.toString()));
 
             result.add(
-                    new TextFieldBoundingBox((String) shape.get("label"),
+                    new TextFieldBoundingBox(shape.getString("label"),
                     doublePoints,
-                    TextFieldBoundingBox.ENTRY_TYPE.valueOf((String) shape.get("type")),
-                    (ObservableList<String>) shape.get("possibilities")
+                    TextFieldBoundingBox.ENTRY_TYPE.valueOf(shape.getString("type")),
+                    possibilities
                     ));
         });
         return result;
     }
     public Image getImage(){return ImageEncoderDecoder.decodeBase64ToImage((String) templateJSON.get("imageData"));}
 
+    public JSONObject getJsonTemplate(){return templateJSON;}
 }

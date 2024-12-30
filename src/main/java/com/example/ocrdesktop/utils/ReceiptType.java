@@ -15,7 +15,7 @@ public class ReceiptType {
         this.name = name;
         this.columnNames= columnNames;
     }
-    public ReceiptTypeJSON getJSON() throws IOException {
+    public ReceiptTypeJSON getJSON() {
         return new ReceiptTypeJSON(AppContext.getInstance().JSONsSavingDir + name+".json");
     }
 }

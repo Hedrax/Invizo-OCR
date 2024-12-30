@@ -2,9 +2,12 @@ package com.example.ocrdesktop.utils;
 
 
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.util.Base64;
+import java.awt.image.BufferedImage;
 
 public class ImageEncoderDecoder {
 
@@ -26,21 +29,42 @@ public class ImageEncoderDecoder {
         }
     }
 
-    public static String encodeImageToBase64(String imagePath) {
+    public static String encodeImageToBase64(Image image) {
         try {
-            // Create a FileInputStream to read the image file
-            FileInputStream fileInputStream = new FileInputStream(new File(imagePath));
+            // Convert JavaFX Image to BufferedImage
+            BufferedImage bufferedImage = javafxImageToBufferedImage(image);
 
-            // Read the image bytes into a byte array
-            byte[] imageBytes = new byte[(int) new File(imagePath).length()];
-            fileInputStream.read(imageBytes);
+            // Write BufferedImage to ByteArrayOutputStream
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", outputStream);
 
             // Encode the byte array to Base64 string
-
+            byte[] imageBytes = outputStream.toByteArray();
             return Base64.getEncoder().encodeToString(imageBytes);
         } catch (IOException e) {
             System.err.println("Error encoding image: " + e.getMessage());
             return null;
         }
+    }
+
+    private static BufferedImage javafxImageToBufferedImage(Image image) {
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+
+        // Create a BufferedImage
+        BufferedImage bufferedImage = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+
+        // Get PixelReader from JavaFX Image
+        PixelReader pixelReader = image.getPixelReader();
+
+        // Write pixel data from JavaFX Image to BufferedImage
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int argb = pixelReader.getArgb(x, y);
+                bufferedImage.setRGB(x, y, argb);
+            }
+        }
+
+        return bufferedImage;
     }
 }

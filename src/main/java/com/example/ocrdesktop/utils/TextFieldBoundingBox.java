@@ -12,6 +12,9 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class TextFieldBoundingBox {
     public StringProperty label = new SimpleStringProperty();
 
@@ -21,7 +24,7 @@ public class TextFieldBoundingBox {
     public ObservableList<String> possibilities;
     public RectangleBox drawnRectangle;
     private void initializeDrawnRectangle(){
-        drawnRectangle = new RectangleBox(points.get(0), points.get(1));
+        drawnRectangle = new RectangleBox(points.get(0), points.get(1), points.get(2), points.get(3));
     }
     private void setPointsListener(){
         drawnRectangle.x_start.addListener((it, old, newVal)->{points.set(0, (Double) newVal);});
@@ -49,12 +52,25 @@ public class TextFieldBoundingBox {
         double initDeltaX, initDeltaY = -1;
         public void bindLabel(StringProperty label){
             this.label.bind(label);}
-        RectangleBox(double x, double y) {
+
+        //init with 2 points
+        RectangleBox(double x1, double y1, double x2, double y2) {
             this.getStyleClass().add("annotation-rectangle");
-            this.setLayoutX(x);
-            this.setLayoutY(y);
-            x_start.set(x);
-            y_start.set(y);
+
+            x_start.set(x1);
+            y_start.set(y1);
+
+            adjustRectangle(x1,y1, x2, y2);
+
+            x_end.set(x2);
+            y_end.set(y2);
+
+            afterLaunch();
+            updateHandles();
+        }
+
+        void afterLaunch(){
+
             addResizeHandles();
             //drawing label
             // Create a Text

@@ -10,6 +10,7 @@ module com.example.ocrdesktop {
     requires java.sql;
     requires org.json;
     requires org.apache.commons.io;
+    requires java.desktop;
 
 
     opens com.example.ocrdesktop to javafx.fxml;

@@ -1,10 +1,12 @@
 package com.example.ocrdesktop.ui;
 
 import com.example.ocrdesktop.control.NavigationManager;
+import com.example.ocrdesktop.data.Repo;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.TextFieldBoundingBox;
 import com.example.ocrdesktop.utils.TextFieldBoundingBox.ENTRY_TYPE;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,15 +23,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-//todo
-// make sure that any defined labels is not set to null possibilities
-// confirm button sends a create/modify request to the server then wait for response of OK/ERROR
-// if OK navigate back and add the json file to json directory and receipt type table
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -48,15 +43,15 @@ public class DetailReceipt {
     private Button selectTemplateButton;
     @FXML
     private Label filePathLabel;
-    private ProcessType processType;
     private String oldName;
     String imageFilePath;
     ObservableList<TextFieldBoundingBox> boundingBoxes = observableArrayList();
-    ObservableList<String> possibilities = observableArrayList();
     private TextFieldBoundingBox currentRectangle;
     private double startX, startY;
     private boolean adjustingPosition = false;
     private boolean resizing = false;
+    private boolean newReceiptType = true;
+    private final Repo repo = new Repo();
     private ChangeListener<TextFieldBoundingBox> selectedItem;
 
     private void setupMouseEvents() {
@@ -82,12 +77,14 @@ public class DetailReceipt {
         // Start drawing a new rectangle
         startX = event.getX();
         startY = event.getY();
-        this.currentRectangle = new TextFieldBoundingBox("", observableArrayList(startX,startY, startX, startY), ENTRY_TYPE.NUMBER, observableArrayList());
+        createNewRectangle(new TextFieldBoundingBox("", observableArrayList(startX,startY, startX, startY), ENTRY_TYPE.NUMBER, observableArrayList()));
+    }
 
+    void createNewRectangle(TextFieldBoundingBox textFieldBoundingBox){
+        this.currentRectangle = textFieldBoundingBox;
         currentRectangle.drawnRectangle.bindLabel(currentRectangle.label);
         overlayPane.getChildren().add(currentRectangle.drawnRectangle);
     }
-
     private void onMouseDragged(MouseEvent event) {
         if (resizing) {
             // Resize the selected rectangle
@@ -231,16 +228,17 @@ public class DetailReceipt {
             imageFilePath = selectedFile.getAbsolutePath();
             filePathLabel.setText(imageFilePath);
             Image image = new Image(imageFilePath);
-            imageView.setFitHeight(image.getHeight());
-            imageView.setFitWidth(image.getWidth());
-            overlayPane.setMaxHeight(image.getHeight());
-            overlayPane.setMaxWidth(image.getWidth());
-            imageView.setImage(image);
+            setImage(image);
         } else {
             filePathLabel.setText("No file selected");
         }
-
-
+    }
+    void setImage(Image image){
+        imageView.setFitHeight(image.getHeight());
+        imageView.setFitWidth(image.getWidth());
+        overlayPane.setMaxHeight(image.getHeight());
+        overlayPane.setMaxWidth(image.getWidth());
+        imageView.setImage(image);
     }
     void setupDict(){
         typeDictStr2Entry.put("Number", ENTRY_TYPE.NUMBER);
@@ -303,6 +301,14 @@ public class DetailReceipt {
             }
             catch (Exception e){showAlert("Select Item from the List first before editing");}
         });
+        possibilitiesListView.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                String selectedItem = possibilitiesListView.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    currentRectangle.possibilities.remove(selectedItem);
+                }
+            }
+        });
     }
 
     void setCheckBox(){
@@ -317,20 +323,61 @@ public class DetailReceipt {
         Platform.runLater(receiptName::requestFocus);
         receiptName.focusedProperty().addListener((it, old, newVal)->{if (!newVal) receiptName.setEditable(false);});
     }
+
     //Todo function to set the data when navigating to the receiptType page
-    void setData(){}
+    public void setData(ReceiptTypeJSON receiptTypeJSON){
+        receiptName.setText(receiptTypeJSON.getName());
+        setImage(receiptTypeJSON.getImage());
+        boundingBoxes.addAll(receiptTypeJSON.getTextFieldsBBoxes());
+        boundingBoxes.forEach(this::createNewRectangle);
+        newReceiptType = false;
+
+        //Testing saving and loading "Done"
+    }
+    boolean validLabel(String label){
+        return label != null && label.length() > 0;
+    }
 
     boolean validation(){
-        //TODO make sure that all elements with defined Label list have a possibility.list>0
-    return true;
+        AtomicBoolean result = new AtomicBoolean(true);
+        Map<String, Integer> map = new HashMap<>(Map.of());
+        try {
+        boundingBoxes.forEach(it ->{
+            //first check all labels
+            if (!validLabel(it.label.getValue())){
+                currentRectangle = it;
+                showAlert("One of the labels is empty..");
+                showCustomInputDialog();
+                result.set(false);
+                return;
+            }
+            if (map.containsKey(it.label.getValue())){
+                currentRectangle = it;
+                showAlert("It seems that multiple labels have the same value of " + it.label.getValue());
+                result.set(false);
+                return;
+            }
+            map.put(it.label.getValue(), 1);
+            if (it.possibilities.size() == 0 && it.type == ENTRY_TYPE.DEFINED_LABEL){
+                showAlert("The labels " +  it.label.getValue() + " with type Defined finite set has no possibilities");
+                result.set(false);
+                return;
+            }
+            });
+
+        }catch (Exception ignore){}
+    return result.getAcquire();
+    }
+    private boolean validateName() {
+        return repo.checkReceiptTypeNameAvailable(receiptName.getText());
     }
     //TODO final function that wrap up elements and send them back
-    void createReceipt(){
+    ReceiptTypeJSON createReceipt(){
         try {
-            ReceiptTypeJSON receiptTypeJSON = new ReceiptTypeJSON(receiptName.getText(), objectsListView.getItems(),imageFilePath, (int) overlayPane.getMaxHeight(), (int) overlayPane.getMaxWidth());
-            receiptTypeJSON.saveJSONLocally();
+            return new ReceiptTypeJSON(receiptName.getText(), objectsListView.getItems(), imageView.getImage());
         }
         catch (Exception e){e.printStackTrace();}
+        return null;
     }
 
     @FXML
@@ -343,13 +390,10 @@ public class DetailReceipt {
         setupTextFields();
         setCheckBox();
 
-        new ReceiptTypeJSON("D:\\curr projects\\Graduation II\\Main CV Module\\template.json");
-        new ReceiptTypeJSON("D:\\curr projects\\Graduation II\\Main CV Module\\Receipt 1.json");
+        //init Fake data from an existing JSON
+//        setData(new ReceiptTypeJSON("D:\\curr projects\\Graduation II\\Main CV Module\\Recipt 1.json"));
 
     }
-
-
-
     //navigation
     @FXML
     private void navigateToProfile(){}
@@ -358,14 +402,24 @@ public class DetailReceipt {
         NavigationManager.getInstance().goBack();
     }
     public void confirmReceipt() {
-        if (validation()){
-            createReceipt();
+        //local validation
+        if (validation() && validateName()){
+            //create and save JSON locally
+            ReceiptTypeJSON receiptTypeJSON = createReceipt();
+            if (receiptTypeJSON == null){
+                System.out.println("Error in the created JSON file");
+            }
+            else{
+                receiptTypeJSON.saveJSONLocally();
+                //send back to the backend agent
+                //if new, just send the new value
+                int response;
+                if (newReceiptType) response = repo.createReceiptType(receiptTypeJSON);
+                //else delete old name id and insert new
+                else response = repo.modifyReceiptType(receiptTypeJSON, oldName);
+                if (response == 200) navigateBack();
+                else showAlert("Error creating the Receipt");
+            }
         }
-    }
-
-
-    enum ProcessType{
-        CREATE,
-        MODIFY
     }
 }
