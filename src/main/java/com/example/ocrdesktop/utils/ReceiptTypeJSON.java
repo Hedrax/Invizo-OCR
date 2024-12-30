@@ -10,9 +10,14 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Stream;
+
 import org.apache.commons.io.IOUtils;
 //NOTE: Not finished
 public class ReceiptTypeJSON {
@@ -60,19 +65,19 @@ public class ReceiptTypeJSON {
     }
     public ReceiptTypeJSON(String JSONFilePath){
         StringBuilder content = new StringBuilder();
+        try (FileReader fr = new FileReader(JSONFilePath, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(fr)) {
 
-        // Using FileReader with BufferedReader for efficient reading
-        try (BufferedReader reader = new BufferedReader(new FileReader(JSONFilePath, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);  // Append each line of the JSON file
-                System.out.println(line);
+            String str;
+            while ((str = reader.readLine()) != null) {
+                content.append(str);
             }
+
         } catch (IOException e) {
-            System.err.println("Error reading JSON file: " + e.getMessage());
-
+            e.printStackTrace();
         }
-
+        // Parse the JSON string into a JSONObject
+        templateJSON = new JSONObject(content.toString());
     }
     public void saveJSONLocally() throws IOException {
         // Create a File object using the provided file path
