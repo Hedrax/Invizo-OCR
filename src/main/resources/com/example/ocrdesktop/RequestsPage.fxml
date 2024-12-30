@@ -55,18 +55,9 @@
 
                 <!-- Receipt Type -->
                 <Label text="Receipt Type:" />
-                <ComboBox fx:id="receiptTypeComboBox" promptText="Select Receipt Type">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Receipt Type 1" />
-                            <String fx:value="Receipt Type 2" />
-                            <String fx:value="Receipt Type 3" />
-                        </FXCollections>
-                    </items>
-                </ComboBox>
-
+                <ComboBox fx:id="receiptTypeComboBox" promptText="Select Receipt Type"/>
                 <!-- Filter Button -->
-                <Button text="Apply Filter" onAction="#onFilterClicked" />
+                <Button text="Apply Filter" onMouseClicked="#onFilterClicked" />
             </HBox>
 
 

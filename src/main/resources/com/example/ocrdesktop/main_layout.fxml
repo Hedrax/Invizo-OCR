@@ -44,7 +44,7 @@
             <Label fx:id="view_items_button" alignment="CENTER" layoutX="623.0" layoutY="42.0" onMouseClicked="#navigateToAllRequests" prefHeight="39.0" prefWidth="206.0" styleClass="view-items-button" text="View Items" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0" />
             <AnchorPane layoutX="40.0" layoutY="106.0" prefHeight="373.0" prefWidth="791.0" styleClass="recent-items" AnchorPane.bottomAnchor="29.799999999999955" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="103.0">
                 <Label alignment="CENTER" layoutX="42.0" layoutY="23.0" styleClass="sub-title" text="Recent Items" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="18.0" />
-                <Label alignment="CENTER" layoutX="588.0" layoutY="23.0" onMouseClicked="#ConfirmAll" prefHeight="38.0" prefWidth="170.0" styleClass="confirm-all" text="Confrim All" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="18.0" />
+                <Label alignment="CENTER" layoutX="588.0" layoutY="23.0" onMouseClicked="#Refresh" prefHeight="38.0" prefWidth="170.0" styleClass="confirm-all" text="Refresh" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="18.0" />
                 <ListView fx:id="customListView" layoutY="174.0" prefHeight="200.0" prefWidth="200.0" styleClass="main_listView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="70.0" />
             </AnchorPane>
         </AnchorPane>

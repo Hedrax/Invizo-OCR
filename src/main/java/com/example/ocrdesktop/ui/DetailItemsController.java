@@ -135,7 +135,7 @@ public class DetailItemsController {
     }
     public void updateHorizontalListView() {
 //        if (currentScreen == 0) return;
-                // Add the custom view to the HBox
+        // Add the custom view to the HBox
         for (int i = 0; i < request.items.size(); i++) {
             addHorizontalItem(i);
         }

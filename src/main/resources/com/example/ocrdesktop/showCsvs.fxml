@@ -5,7 +5,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.ShowCsvsController" prefWidth="1080" prefHeight="720" stylesheets="@../style/style.css" style="-fx-background-color: #69CAA6;">
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.ShowCsvsController" prefWidth="1080" prefHeight="720" stylesheets="@../style/style.css" style="-fx-background-color: #69CAA6;" >
     <children>
         <!-- App Logo -->
         <ImageView fx:id="logo" fitWidth="200" fitHeight="200" pickOnBounds="true" preserveRatio="true" layoutX="440" layoutY="20">
