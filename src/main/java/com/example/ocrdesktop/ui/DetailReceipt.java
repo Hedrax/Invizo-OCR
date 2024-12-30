@@ -6,7 +6,6 @@ import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.TextFieldBoundingBox;
 import com.example.ocrdesktop.utils.TextFieldBoundingBox.ENTRY_TYPE;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
