@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.ocrdesktop.data.Repo.getReceiptTypeNames;
+
 public class ShowCsvsController {
 
     @FXML
@@ -38,7 +40,7 @@ public class ShowCsvsController {
     @FXML
     public void initialize() {
         // Populate the receipt type combo box dynamically
-        ObservableList<String> receiptTables = fetchReceiptTables();
+        ObservableList<String> receiptTables = getReceiptTypeNames();
         if (receiptTables.isEmpty()) {
             showAlert("Error", "No tables containing 'receipt' found in the database.");
         }
@@ -141,27 +143,6 @@ public class ShowCsvsController {
 
         return data;
     }
-
-    private ObservableList<String> fetchReceiptTables() {
-        ObservableList<String> tables = FXCollections.observableArrayList();
-
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             ResultSet resultSet = connection.getMetaData().getTables(null, null, "%", new String[]{"TABLE"})) {
-
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                if (tableName.toLowerCase().contains("receipt")) {
-                    tables.add(tableName);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Error", "Failed to fetch tables from the database.");
-        }
-
-        return tables;
-    }
-
     private void displayCSVData(ObservableList<List<String>> data) {
         csvTable.getColumns().clear();
         if (data.isEmpty()) return;
