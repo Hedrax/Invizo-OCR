@@ -14,6 +14,8 @@ import javafx.scene.layout.Pane;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import java.io.IOException;
+
+import static com.example.ocrdesktop.data.Repo.*;
 import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class MainController{
@@ -93,7 +95,12 @@ public class MainController{
 
     @FXML
     private void Refresh(){
+        refreshData();
+        System.out.printf("Refreshed!\n");
+        System.out.printf(getReceiptTypeNames().toString());
+
     }
+
     //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
     @FXML
     private void navigateToAllRequests(){
