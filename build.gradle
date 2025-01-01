@@ -44,7 +44,9 @@ dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
     implementation 'org.json:json:20230227'
     implementation 'commons-io:commons-io:2.18.0'
-
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.3'  // Updated version
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.3'
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }

@@ -1,5 +1,6 @@
 package com.example.ocrdesktop.ui;
 
+import com.example.ocrdesktop.utils.Receipt;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,10 +11,10 @@ import javafx.stage.FileChooser;
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.example.ocrdesktop.data.Repo.getReceiptTypeNames;
+import static com.example.ocrdesktop.data.Repo.getReceiptsByFilter;
 
 public class ShowCsvsController {
 
@@ -27,7 +28,7 @@ public class ShowCsvsController {
     private DatePicker endDatePicker;
 
     @FXML
-    private TableView<List<String>> csvTable;
+    private TableView<Map<String, String>> csvTable;
 
     @FXML
     private Button loadCsvButton;
@@ -64,103 +65,101 @@ public class ShowCsvsController {
         }
 
         // Load data from the database
-        ObservableList<List<String>> data = loadDataFromDatabase(receiptType, startDate.toString(), endDate.toString());
+        ObservableList<Receipt> data = loadDataFromDatabase(receiptType, startDate.toString(), endDate.toString());
         displayCSVData(data);
     }
 
-    @FXML
-    private void downloadCsv() {
-        String receiptType = receiptTypeCombo.getValue();
-        LocalDate startDate = startDatePicker.getValue();
-        LocalDate endDate = startDatePicker.getValue();
 
-        // Validate input
-        if (receiptType == null || receiptType.isEmpty()) {
-            showAlert("Error", "Please select a receipt type.");
-            return;
-        }
-        if (startDate == null || endDate == null) {
-            showAlert("Error", "Please select valid dates.");
-            return;
-        }
-
-        // Load data from the database
-        ObservableList<List<String>> data = loadDataFromDatabase(receiptType, startDate.toString(), endDate.toString());
-        if (data.isEmpty()) {
-            showAlert("No Data", "No data found for the selected criteria.");
-            return;
-        }
-
-        // Create file chooser to save the CSV
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save CSV File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-        File file = fileChooser.showSaveDialog(downloadCsvButton.getScene().getWindow());
-
-        if (file != null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                // Write CSV header
-                writer.write("Receipt Date,Car Number,Tk3eb,Name,Station\n");
-
-                // Write rows
-                for (List<String> row : data) {
-                    writer.write(String.join(",", row) + "\n");
-                }
-
-                showAlert("Success", "CSV file downloaded successfully.");
-            } catch (IOException e) {
-                e.printStackTrace();
-                showAlert("Error", "Failed to save the CSV file.");
-            }
-        }
-    }
-
-    private ObservableList<List<String>> loadDataFromDatabase(String tableName, String startDate, String endDate) {
-        ObservableList<List<String>> data = FXCollections.observableArrayList();
-        String query = "SELECT receipt_date, car_number, tk3eb, name, station FROM " + tableName + " WHERE receipt_date BETWEEN ? AND ?";
-
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement statement = connection.prepareStatement(query)) {
-
-            statement.setString(1, startDate);
-            statement.setString(2, endDate);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    List<String> row = new ArrayList<>();
-                    row.add(resultSet.getString("receipt_date"));
-                    row.add(resultSet.getString("car_number"));
-                    row.add(resultSet.getString("tk3eb"));
-                    row.add(resultSet.getString("name"));
-                    row.add(resultSet.getString("station"));
-                    data.add(row);
-                }
-            }
+    private ObservableList<Receipt> loadDataFromDatabase(String receiptType, String startDate, String endDate) {
+        ObservableList<Receipt> receipts = FXCollections.observableArrayList();
+        try {
+            receipts = getReceiptsByFilter(receiptType,startDate,endDate);
+            System.out.printf("receipts: %s\n", receipts);
         } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Error", "Failed to load data from the database.");
+            throw new RuntimeException(e);
+        }
+        return receipts;
+    }
+    public void displayCSVData(ObservableList<Receipt> data) {
+        csvTable.getColumns().clear();  // Clear any existing columns
+        if (data.isEmpty()) return;  // Return if the data is empty
+
+        // Create a Set to collect unique keys (column headers) from all OCR data
+        Set<String> allKeys = new HashSet<>();
+        for (Receipt receipt : data) {
+            allKeys.addAll(receipt.ocrData.keySet());  // Add all keys from each Receipt's OCR data
         }
 
-        return data;
-    }
-    private void displayCSVData(ObservableList<List<String>> data) {
-        csvTable.getColumns().clear();
-        if (data.isEmpty()) return;
+        // Convert Set to List for ordered access
+        List<String> headers = new ArrayList<>(allKeys);
 
-        // Create columns based on predefined headers
-        List<String> headers = List.of("Receipt Date", "Car Number", "Tk3eb", "Name", "Station");
-        for (int i = 0; i < headers.size(); i++) {
-            final int colIndex = i;
-            TableColumn<List<String>, String> column = new TableColumn<>(headers.get(i));
+        // Create columns dynamically based on OCR data keys
+        for (String header : headers) {
+            TableColumn<Map<String, String>, String> column = new TableColumn<>(header);
             column.setCellValueFactory(cellData -> {
-                List<String> row = cellData.getValue();
-                return colIndex < row.size() ? new SimpleStringProperty(row.get(colIndex)) : new SimpleStringProperty("");
+                // Access the OCR data Map from the Receipt
+                Map<String, String> ocrData = cellData.getValue();
+                // Return the value for the current header (key) or an empty string if not found
+                return new SimpleStringProperty(ocrData.getOrDefault(header, ""));
             });
             csvTable.getColumns().add(column);
         }
 
-        csvTable.setItems(data);
+        // Transform ObservableList<Receipt> into a List<Map<String, String>> for table display
+        ObservableList<Map<String, String>> tableData = FXCollections.observableArrayList();
+        for (Receipt receipt : data) {
+            tableData.add(receipt.ocrData);  // Add each Receipt's OCR data map to the list
+        }
+
+        // Set the table data
+        csvTable.setItems(tableData);
     }
+    @FXML
+    public void downloadCSVData() {
+        ObservableList<Map<String, String>> tableData = csvTable.getItems();
+        if (tableData.isEmpty()) {
+            showAlert("Error", "No data to export.");
+            return;
+        }
+
+        // Open a file chooser to select a destination
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        File file = fileChooser.showSaveDialog(csvTable.getScene().getWindow());
+
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                // Get headers (columns from table)
+                List<String> headers = new ArrayList<>();
+                for (TableColumn<Map<String, String>, ?> column : csvTable.getColumns()) {
+                    headers.add(column.getText());
+                }
+
+                // Write headers
+                writer.write(String.join(",", headers));
+                writer.newLine();
+
+                // Write data rows
+                for (Map<String, String> row : tableData) {
+                    List<String> rowData = new ArrayList<>();
+                    for (String header : headers) {
+                        rowData.add(row.getOrDefault(header, ""));
+                    }
+                    writer.write(String.join(",", rowData));
+                    writer.newLine();
+                }
+
+                showAlert("Success", "CSV file has been successfully exported.");
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("Error", "Failed to export CSV file.");
+            }
+        }
+    }
+
+
+
+
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

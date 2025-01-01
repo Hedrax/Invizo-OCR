@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
@@ -20,6 +21,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static com.example.ocrdesktop.data.Repo.getReceiptTypeNames;
 import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class RequestsController {
@@ -38,6 +40,13 @@ public class RequestsController {
     private ListView<PackageApprovalItem> customListView = new ListView<>();
 
     public void initialize() {
+        provideFakeListingData();
+        // Populate the receipt type combo box dynamically
+        ObservableList<String> receiptTables = getReceiptTypeNames();
+        if (receiptTables.isEmpty()) {
+            showAlert("Error", "No tables containing 'receipt' found in the database.");
+        }
+        receiptTypeComboBox.setItems(receiptTables);
         // Set data for the custom cell
         customListView.setCellFactory((ListView<PackageApprovalItem> param) -> new ApprovalListCellController() {
             @Override
@@ -78,6 +87,7 @@ public class RequestsController {
         });
         //Main added items section
         customListView.getItems().addAll(lst);
+
     }
     @FXML
     private void toggleMenu() {
@@ -125,10 +135,6 @@ public class RequestsController {
         lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
         lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
     }
-    public RequestsController()  {
-        provideFakeListingData();
-        this.initialize();
-    }
     @FXML
     private void onFilterClicked() {
         String receiptType = receiptTypeComboBox.getValue();
@@ -136,5 +142,12 @@ public class RequestsController {
         LocalDate endDate = toDatePicker.getValue();
         // todo handle update data based on database make a function in repo
 
+    }
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

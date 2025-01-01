@@ -80,12 +80,11 @@ public class Repo {
         ocrData2.put("Field3", "Value3");
         ocrData2.put("Field4", "Value4");
 
-        // Format the current timestamp as a String
-        String currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+
 
         // Adding receipts with dummy data
-        receipts.add(new Receipt("1", "Invoice", "1", "image1.png", "Pending", ocrData1, "user152", currentTimestamp));
-        receipts.add(new Receipt("2", "Payment", "2", "image2.png", "Approved", ocrData2, "user153", currentTimestamp));
+        receipts.add(new Receipt("1", "Invoice", "1", "image1.png", "Pending", ocrData1, "user152", "2024-01-01"));
+        receipts.add(new Receipt("2", "Payment", "2", "image2.png", "Approved", ocrData2, "user153", "2025-01-01"));
 
         return receipts;
     }
@@ -118,5 +117,15 @@ public class Repo {
             e.printStackTrace();
         }
         return receiptTypeNames;
+    }
+    public static ObservableList<Receipt> getReceiptsByFilter(String receiptTypeName, String dateFrom, String dateTo) throws SQLException {
+        ObservableList<Receipt> receipts = FXCollections.observableArrayList();
+        try (Connection localConnection = getDatabaseConnection()) {
+            List<Receipt> Receipts = getReceiptsByDateAndType(localConnection,receiptTypeName,dateFrom,dateTo);
+            receipts.addAll(Receipts);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return receipts;
     }
 }

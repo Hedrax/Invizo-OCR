@@ -48,7 +48,7 @@
             </TableView>
 
             <!-- Download CSV Button -->
-            <Button fx:id="downloadCsvButton" text="DOWNLOAD CSV" prefWidth="700" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" onMouseClicked="#downloadCsv" />
+            <Button fx:id="downloadCsvButton" text="DOWNLOAD CSV" prefWidth="700" prefHeight="60" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-size: 16; -fx-border-radius: 5; -fx-background-radius: 5;" onMouseClicked="#downloadCSVData" />
         </VBox>
     </children>
 </AnchorPane>
