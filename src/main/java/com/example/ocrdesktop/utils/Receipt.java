@@ -10,6 +10,9 @@ public class Receipt {
     public String requestId;
     public String imageUrl;
     public String status; // Can be converted to an Enum if needed
+    //TODO ALI
+    // uncomment the following
+//    public Map<Integer, String> ocrData;
     public Map<String, String> ocrData;
     public String approvedByUserId;
     public String approvedAt; // Use String for simplicity, convert to Date/Timestamp as needed
