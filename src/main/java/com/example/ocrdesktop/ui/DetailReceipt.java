@@ -21,9 +21,11 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import static java.lang.Math.max;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -52,6 +54,8 @@ public class DetailReceipt {
     private boolean newReceiptType = true;
     private final Repo repo = new Repo();
     private ChangeListener<TextFieldBoundingBox> selectedItem;
+    private ReceiptTypeJSON receiptTypeJSON;
+    private String receiptId;
 
     private void setupMouseEvents() {
         overlayPane.setOnMousePressed(this::onMousePressed);
@@ -325,6 +329,9 @@ public class DetailReceipt {
 
     //Todo function to set the data when navigating to the receiptType page
     public void setData(ReceiptTypeJSON receiptTypeJSON){
+        this.receiptTypeJSON = receiptTypeJSON;
+        this.receiptId = receiptTypeJSON.getId();
+
         receiptName.setText(receiptTypeJSON.getName());
         setImage(receiptTypeJSON.getImage());
         boundingBoxes.addAll(receiptTypeJSON.getTextFieldsBBoxes());
@@ -373,10 +380,32 @@ public class DetailReceipt {
     //TODO final function that wrap up elements and send them back
     ReceiptTypeJSON createReceipt(){
         try {
-            return new ReceiptTypeJSON(receiptName.getText(), objectsListView.getItems(), imageView.getImage());
+            HashMap<String,Integer> column2idxMap = getNewMap();
+            return new ReceiptTypeJSON(receiptId, receiptName.getText(), objectsListView.getItems(), imageView.getImage(),column2idxMap);
         }
         catch (Exception e){e.printStackTrace();}
         return null;
+    }
+
+    private HashMap<String, Integer> getNewMap() {
+        HashMap<String, Integer> resultMap = new HashMap<>();
+        AtomicInteger i = new AtomicInteger(0);
+        boolean createNew = true;
+
+        if (receiptTypeJSON != null){
+            HashMap<String, Integer> oldMap = receiptTypeJSON.getMap();
+            for (Map.Entry<String, Integer> entry : oldMap.entrySet()) {
+                i.set(max(i.getAcquire(), entry.getValue()+1));
+            }
+        }
+        boundingBoxes.forEach(it->
+        {
+            if (!resultMap.containsKey(it.label.getValue())){
+                resultMap.put(it.label.getValue(), i.getAcquire());
+                i.set(i.getAcquire() + 1);
+            }
+        });
+        return resultMap;
     }
 
     @FXML
@@ -389,9 +418,12 @@ public class DetailReceipt {
         setupTextFields();
         setCheckBox();
 
-        //init Fake data from an existing JSON
-//        setData(new ReceiptTypeJSON("D:\\curr projects\\Graduation II\\Main CV Module\\Recipt 1.json"));
+        try {
+            //init Fake data from an existing JSON
+            setData(new ReceiptTypeJSON("D:\\Receipt 1.json"));
 
+        }
+        catch (Exception ignore){};
     }
     //navigation
     @FXML
@@ -415,7 +447,7 @@ public class DetailReceipt {
                 int response;
                 if (newReceiptType) response = repo.createReceiptType(receiptTypeJSON);
                 //else delete old name id and insert new
-                else response = repo.modifyReceiptType(receiptTypeJSON, oldName);
+                else response = repo.modifyReceiptType(receiptTypeJSON);
                 if (response == 200) navigateBack();
                 else showAlert("Error creating the Receipt");
             }
