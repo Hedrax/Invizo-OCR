@@ -11,39 +11,44 @@ import java.sql.*;
 import java.util.*;
 
 import static com.example.ocrdesktop.data.Local.*;
-import static com.example.ocrdesktop.data.Remote.*;
 
 public class Repo {
     Remote remote = new Remote();
 
     public boolean checkReceiptTypeNameAvailable(String text) {
-        //TODO check all name of ReceiptType in the local database and return boolean True: name Available, False: name is reserved by another object
+        //TODO ALI
+        // check all name of ReceiptType in the local database and return boolean True: name Available, False: name is reserved by another object
         return true;
     }
 
     public int createReceiptType(ReceiptTypeJSON receiptTypeJSON) {
         ReceiptType receiptType = receiptTypeJSON.getReceiptType();
 
-        //TODO make the remote request on non IO-Working-Thread
+        //TODO ANYONE
+        // make the remote request on non IO-Working-Thread
         //posting the new object on the production database
-        int response = remote.createNewReceiptType(receiptTypeJSON);
+        receiptType.id = remote.createNewReceiptType(receiptTypeJSON);
 
-        if (response == 200) {
-            //TODO save receipt Type in the local database on response
-        }
-        return response;
+        if (receiptType.id == null)
+            return 400;
+
+        //TODO ALI
+        // insert the object receiptType into the local database
+
+
+
+        return 200;
     }
 
-    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON, String oldName) {
-        ReceiptType receiptType = receiptTypeJSON.getReceiptType();
-        //TODO the modification process is a bit of a pain in the ass, as if the name of the receipt or one the column name has changed
-        // will require to make modification to all the stored data "Receipts" before deleting the original ReceiptType row
-        // at least that's the naive approach
-        // therefor, postponed the implementation until we finish the base solution including login
-        //posting the new object on the production database
+    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON) {
+        int response = remote.modifyReceiptType(receiptTypeJSON);
+        if (response == 400) return response;
 
-        //remote.modifyReceiptType(receiptTypeJSON);
-        return 200;
+        ReceiptType receiptType = receiptTypeJSON.getReceiptType();
+        //TODO ALI
+        // Update ReceiptType in the localDatabase with receiptType.id
+
+        return response;
     }
 
     // Database connection helper
