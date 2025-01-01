@@ -1,7 +1,6 @@
 package com.example.ocrdesktop.utils;
 
 import com.example.ocrdesktop.AppContext;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import org.json.JSONArray;
@@ -10,6 +9,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -17,9 +17,13 @@ import static javafx.collections.FXCollections.observableArrayList;
 //NOTE: Not finished
 public class ReceiptTypeJSON {
     String name;
+    //null means a brand-new object
+    String id = null;
+    HashMap<String, Integer> column2idxMap = new HashMap<>();
     JSONObject templateJSON = new JSONObject();
-    public ReceiptTypeJSON(String name, List<TextFieldBoundingBox> textFieldBoundingBoxes, Image image){
+    public ReceiptTypeJSON(String id, String name, List<TextFieldBoundingBox> textFieldBoundingBoxes, Image image, HashMap<String, Integer> column2idxMap){
         this.name = name;
+        this.column2idxMap = column2idxMap;
         templateJSON.put("name", name);
 
         //Handling Shapes
@@ -49,10 +53,11 @@ public class ReceiptTypeJSON {
             it.possibilities.forEach(possibilities::put);
             shape.put("possibilities", possibilities);
 
-            System.out.println(shape);
+            //putting id of the label
+            shape.put("id", column2idxMap.get(it.label.getValue()));
+
             shapes.put(shape);
         });
-        System.out.println("Entered");
 
         templateJSON.put("shapes", shapes);
 
@@ -77,6 +82,18 @@ public class ReceiptTypeJSON {
         // Parse the JSON string into a JSONObject
         templateJSON = new JSONObject(content.toString());
         name = templateJSON.getString("name");
+        //Getting hashMap
+        JSONArray shapes = templateJSON.getJSONArray("shapes");
+        shapes.forEach(it->{
+            JSONObject item = (JSONObject) it;
+            column2idxMap.put(item.getString("label"),item.getInt("id"));
+        });
+    }
+    public ReceiptTypeJSON(String id, JSONObject templateJSON, HashMap<String, Integer> column2idxMap){
+        this.id = id;
+        this.templateJSON = templateJSON;
+        this.name = templateJSON.getString("name");
+        this.column2idxMap = column2idxMap;
     }
     public void saveJSONLocally() {
         try {
@@ -93,13 +110,8 @@ public class ReceiptTypeJSON {
         }catch (Exception e){e.printStackTrace();}
     }
     public ReceiptType getReceiptType(){
-        List <String> columnNames = new ArrayList<>();
-
-        templateJSON.getJSONArray("shapes").forEach(object->{
-            JSONObject item = (JSONObject) object;
-            columnNames.add((String) item.get("label"));
-        });
-        return new ReceiptType(name, columnNames);
+        //No id is given to
+        return new ReceiptType(id ,name, column2idxMap);
     }
 
     //Extracting Information from JSON
@@ -133,6 +145,8 @@ public class ReceiptTypeJSON {
         return result;
     }
     public Image getImage(){return ImageEncoderDecoder.decodeBase64ToImage((String) templateJSON.get("imageData"));}
-
     public JSONObject getJsonTemplate(){return templateJSON;}
+    public HashMap<String, Integer> getMap(){return column2idxMap;}
+
+    public String getId() { return id;}
 }
