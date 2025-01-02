@@ -79,6 +79,12 @@ public class Repo {
 
         remote.addUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
     }
+    public List<User> getUsers() {
+        //TODO ALI
+        // Get all users from the local database
+        List <User> users = new ArrayList<>();
+        return users;
+    }
 
     // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {
