@@ -13,7 +13,7 @@ public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
     private final Stack<String> backStack; // Stack for back navigation
     //Todo Change the default status to true when finished login mechanism
-    private boolean authorized = true;
+    private boolean authorized = false;
 
     private Stage currentStage;
     private NavigationManager() {
@@ -26,7 +26,6 @@ public class NavigationManager {
         }
         return instance;
     }
-
     //First base functions
     private void navigate(String path){
         try {
@@ -63,6 +62,7 @@ public class NavigationManager {
     }
 
     private void startLogin() throws IOException {
+        if (this.currentStage != null) this.currentStage.close();
         this.currentStage = new Stage();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_PAGE));
@@ -76,6 +76,7 @@ public class NavigationManager {
     }
 
     private void startMain() throws IOException {
+        if (this.currentStage != null) this.currentStage.close();
         this.currentStage = new Stage();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MAIN_PAGE));
@@ -101,7 +102,7 @@ public class NavigationManager {
             AppContext.getInstance().setHeight((Double) newWidth);
         });
 
-        navigateToDetailReceipt();
+//        navigateToDetailReceipt();
     }
 
     //Modifiable
