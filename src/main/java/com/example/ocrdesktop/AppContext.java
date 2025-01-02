@@ -1,5 +1,6 @@
 package com.example.ocrdesktop;
 
+import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.stage.Stage;
 
@@ -11,6 +12,7 @@ public class AppContext {
     // Private static instance of the class
     private static AppContext instance;
     private Stage stage;
+    private AuthorizationInfo authorizationInfo;
 
     //Saving Directory Property
     public String JSONsSavingDir = "D:\\";
@@ -24,6 +26,13 @@ public class AppContext {
             instance = new AppContext();
         }
         return instance;
+    }
+
+    public void setAuthorizationInfo(AuthorizationInfo authorizationInfo) {
+        this.authorizationInfo = authorizationInfo;
+    }
+    public AuthorizationInfo getAuthorizationInfo(){
+        return authorizationInfo;
     }
 
     public void setStageWidth(Double value){
