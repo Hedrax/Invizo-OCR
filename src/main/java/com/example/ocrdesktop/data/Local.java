@@ -1,13 +1,12 @@
 package com.example.ocrdesktop.data;
 
-import com.example.ocrdesktop.utils.Receipt;
-import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.Request;
+import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -188,6 +187,166 @@ public class Local {
 
         return columnNamesMap;
     }
+    public static ObservableList<PackageApprovalItem> getPackageApprovalItemList(Connection localConnection, String status) throws SQLException {
+        // Adjusting the SQL query to select the headImagePath from the receipt table
+        String queryRequestsSQL = "SELECT u.request_id, r.name, u.uploaded_at, COUNT(receipt.receipt_id) AS count, u.status, receipt.headImagePath " +
+                "FROM upload_requests u " +
+                "LEFT JOIN receipt receipt ON u.request_id = receipt.request_id " +
+                "LEFT JOIN receipt_type r ON receipt.receipt_type_name = r.name " +
+                "WHERE u.status LIKE ? " +
+                "GROUP BY u.request_id, r.title, r.date, u.status, receipt.headImagePath";
+
+        ObservableList<PackageApprovalItem> packageApprovalItems = FXCollections.observableArrayList();
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryRequestsSQL)) {
+            // Use wildcard for partial matching on the status column (e.g., 'PENDING', 'APPROVED')
+            preparedStatement.setString(1, "%" + status + "%");
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String title = resultSet.getString("title");
+                    String date = resultSet.getString("date");
+                    Integer count = resultSet.getInt("count");  // Dynamically counted receipts
+                    String statusValue = resultSet.getString("status");
+                    String headImagePath = resultSet.getString("headImagePath");  // Now retrieving from receipt table
+
+                    // Create PackageApprovalItem and add to the list
+                    PackageApprovalItem item = new PackageApprovalItem(
+                            title,
+                            date,
+                            count,
+                            PackageApprovalItem.STATUS.valueOf(statusValue), // Assuming STATUS is an enum
+                            headImagePath
+                    );
+                    packageApprovalItems.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQL exception (optional)
+            e.printStackTrace();
+            throw new SQLException("Error retrieving package approval items", e);
+        }
+        return packageApprovalItems;
+    }
+    public static boolean isReceiptTypeNameAvailable(Connection localConnection, String name) throws SQLException {
+        // SQL query to check if a receipt type name already exists in the database
+        String querySQL = "SELECT 1 FROM receipt_type WHERE name = ?";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(querySQL)) {
+            // Set the parameter to the provided name
+            preparedStatement.setString(1, name);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // If resultSet has any row, it means the name is already reserved (exists in the table)
+                return !resultSet.next();  // If no row is found, name is available (return true)
+            }
+        }
+    }
+    public static void updateReceiptType(Connection localConnection, ReceiptType receiptType) throws SQLException {
+        // SQL query to update a receipt type based on its id
+        String updateSQL = "UPDATE receipt_type SET name = ?, columnNames = ? WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(updateSQL)) {
+            // Set the parameters for the update
+            preparedStatement.setString(1, receiptType.name);  // Set the new name
+            preparedStatement.setString(2, mapToJsonString(receiptType.columnIdx2NamesMap));  // Set the new columnNames (converted to JSON)
+            preparedStatement.setString(3, receiptType.id);  // Set the id for identifying the receipt type to update
+
+            // Execute the update statement
+            preparedStatement.executeUpdate();
+        }
+    }
+    public static void clearAndInsertCompanyUsers(Connection connection, List<User> companyUsers) throws SQLException {
+        String clearUsersTableSQL = "DELETE FROM users";
+        String insertCompanyUsersSQL = "INSERT INTO users (id, userName, email, role) VALUES (?, ?, ?, ?)";
+
+        try (Statement statement = connection.createStatement();
+             PreparedStatement preparedStatement = connection.prepareStatement(insertCompanyUsersSQL)) {
+
+            statement.executeUpdate(clearUsersTableSQL);
+            System.out.println("Users table cleared successfully.");
+
+            for (User user : companyUsers) {
+                preparedStatement.setString(1, user.id);
+                preparedStatement.setString(2, user.userName);
+                preparedStatement.setString(3, user.email);
+                preparedStatement.setString(4, user.role.name());
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+            System.out.println("Company users inserted successfully.");
+        }
+    }
+    public static void updateUserLocal(Connection connection, User user) throws SQLException {
+        // SQL statement for updating a user
+        String updateUserSQL = "UPDATE users SET userName = ?, email = ?, role = ? WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateUserSQL)) {
+            // Set the parameters for the update query
+            preparedStatement.setString(1, user.userName);
+            preparedStatement.setString(2, user.email);
+            preparedStatement.setString(3, user.role.name());
+            preparedStatement.setString(4, user.id);
+
+            // Execute the update query
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("User with ID " + user.id + " updated successfully.");
+            } else {
+                System.out.println("No user found with ID " + user.id + ". Update failed.");
+            }
+        }
+    }
+    public static void addUserLocal(Connection connection, User user) throws SQLException {
+        // SQL statement for inserting a new user
+        String insertUserSQL = "INSERT INTO users (id, userName, email, role) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertUserSQL)) {
+            // Set the parameters for the insert query
+            preparedStatement.setString(1, user.id);
+            preparedStatement.setString(2, user.userName);
+            preparedStatement.setString(3, user.email);
+            preparedStatement.setString(4, user.role.name());
+
+            // Execute the insert query
+            int rowsInserted = preparedStatement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("User with ID " + user.id + " added successfully.");
+            }
+        }
+    }
+    public static List<User> getUsersLocal(Connection connection) throws SQLException {
+        // List to store the retrieved users
+        List<User> users = new ArrayList<>();
+
+        // SQL query to fetch all users
+        String getAllUsersSQL = "SELECT id, userName, email, role FROM users";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getAllUsersSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            // Iterate through the result set and create User objects
+            while (resultSet.next()) {
+                String id = resultSet.getString("id");
+                String userName = resultSet.getString("userName");
+                String email = resultSet.getString("email");
+                String roleString = resultSet.getString("role");
+                User.Role role = User.Role.valueOf(roleString); // Convert string to enum
+
+                // Add the User to the list
+                users.add(new User(id, userName, email, role));
+            }
+        }
+
+        // Return the list of users
+        return users;
+    }
+
+
+
+
+
+
 
 
 

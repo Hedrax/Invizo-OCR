@@ -9,14 +9,19 @@ import java.sql.*;
 import java.util.*;
 
 import static com.example.ocrdesktop.data.Local.*;
+import static com.example.ocrdesktop.data.Local.refreshReceiptType;
 
 public class Repo {
-    Remote remote = new Remote();
+    static Remote remote = new Remote();
 
     public boolean checkReceiptTypeNameAvailable(String text) {
-        //TODO ALI
-        // check all name of ReceiptType in the local database and return boolean True: name Available, False: name is reserved by another object
-        return true;
+        Boolean Available = false;
+        try (Connection localConnection = getDatabaseConnection()) {
+            Available = isReceiptTypeNameAvailable(localConnection, text);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Available;
     }
 
     public int createReceiptType(ReceiptTypeJSON receiptTypeJSON) {
@@ -29,12 +34,13 @@ public class Repo {
 
         if (receiptType.id == null)
             return 400;
-
-        //TODO ALI
-        // insert the object receiptType into the local database
-
-
-
+        ObservableList<ReceiptType> receiptTypes = FXCollections.observableArrayList();
+        receiptTypes.add(receiptType);
+        try (Connection localConnection = getDatabaseConnection()) {
+            refreshReceiptType(localConnection,receiptTypes);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 200;
     }
 
@@ -43,9 +49,11 @@ public class Repo {
         if (response == 400) return response;
 
         ReceiptType receiptType = receiptTypeJSON.getReceiptType();
-        //TODO ALI
-        // Update ReceiptType in the localDatabase with receiptType.id
-
+        try (Connection localConnection = getDatabaseConnection()) {
+            updateReceiptType(localConnection, receiptType);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return response;
     }
     public boolean authenticate(String email, String password) {
@@ -60,29 +68,40 @@ public class Repo {
     public int registerNewSuperAdmin(String username, String organization, String email, String password) {
         return remote.registerNewSuperAdmin(username, organization, email, password);
     }
-    public void getAllUsers(){
+    public static void getAllUsers(){
         Organization organization = AppContext.getInstance().getAuthorizationInfo().organization;
         List<User> companyUsers = remote.getAllUsers(organization);
-
-        //TODO ALI
-        // clear the local database table and insert the companyUsers
+        try (Connection localConnection = getDatabaseConnection()) {
+            clearAndInsertCompanyUsers(localConnection, companyUsers);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     public void updateUser(User user){
-        //TODO ALI
-        // update the user in the local database
+        try (Connection localConnection = getDatabaseConnection()) {
+            updateUserLocal(localConnection, user);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         remote.updateUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
     }
     public void addUser(User user) {
-        //TODO ALI
-        // add the user in the local database
-
+        try (Connection localConnection = getDatabaseConnection()) {
+            addUserLocal(localConnection, user);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         remote.addUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
     }
     public List<User> getUsers() {
-        //TODO ALI
-        // Get all users from the local database
         List <User> users = new ArrayList<>();
+        try (Connection localConnection = getDatabaseConnection()) {
+            users = getUsersLocal(localConnection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return users;
     }
 
@@ -144,9 +163,11 @@ public class Repo {
             ObservableList<ReceiptType> receiptTypes = getDummyReceiptTypes();
             ObservableList<Request> requests = getDummyRequests();
             ObservableList<Receipt> receipts = getDummyReceipts();
+            getAllUsers();
            /* ObservableList<ReceiptType> receiptTypes = getReceiptTypes();
             ObservableList<Request> requests = getRequests();
-            ObservableList<Receipt> receipts = getReceipts();*/
+            ObservableList<Receipt> receipts = getReceipts();
+            */
             refreshReceiptType(localConnection, receiptTypes);
             refreshUploadRequests(localConnection, requests);
             refreshReceipt(localConnection, receipts);

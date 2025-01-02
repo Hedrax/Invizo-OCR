@@ -34,6 +34,12 @@ public class DatabaseInitializer {
 
     private static void createTables(Statement statement) throws SQLException {
         // Adjusted SQL for SQLite compatibility
+        String createTableUsers =
+                "CREATE TABLE IF NOT EXISTS users (" +
+                        "id TEXT PRIMARY KEY, " +
+                        "userName TEXT NOT NULL, " +
+                        "email TEXT NOT NULL, " +
+                        "role TEXT NOT NULL);";
         String createTableReceiptType =
                 "CREATE TABLE IF NOT EXISTS receipt_type (" +
                         "id TEXT, " +
@@ -46,8 +52,7 @@ public class DatabaseInitializer {
                         "request_id TEXT PRIMARY KEY, " +
                         "status TEXT NOT NULL DEFAULT 'PENDING', " +
                         "uploaded_by_user_id TEXT NOT NULL, " +
-                        "uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                        "FOREIGN KEY (uploaded_by_user_id) REFERENCES users (id) ON DELETE SET NULL)";
+                        "uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
 
         String createTableReceipt =
                 "CREATE TABLE IF NOT EXISTS receipt (" +
@@ -60,8 +65,7 @@ public class DatabaseInitializer {
                         "approved_by_user_id TEXT, " +
                         "approved_at TEXT, " +
                         "FOREIGN KEY (receipt_type_name) REFERENCES receipt_type (name) ON DELETE CASCADE, " +
-                        "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE SET NULL, " +
-                        "FOREIGN KEY (approved_by_user_id) REFERENCES users (user_id) ON DELETE SET NULL" +
+                        "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE SET NULL " +
                         ");";
 
 
@@ -69,6 +73,7 @@ public class DatabaseInitializer {
         statement.executeUpdate(createTableReceiptType);
         statement.executeUpdate(createTableUploadRequests);
         statement.executeUpdate(createTableReceipt);
+        statement.executeUpdate(createTableUsers);
         System.out.println("Tables created successfully.");
     }
 }
