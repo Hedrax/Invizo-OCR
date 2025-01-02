@@ -48,7 +48,6 @@ public class Repo {
 
         return response;
     }
-
     public boolean authenticate(String email, String password) {
         String userId = remote.authenticate(email, password);
         if (userId != null) {
@@ -90,8 +89,16 @@ public class Repo {
     // Dummy data for ReceiptType
     private static ObservableList<ReceiptType> getDummyReceiptTypes() {
         ObservableList<ReceiptType> receiptTypes = FXCollections.observableArrayList();
-        receiptTypes.add(new ReceiptType("Invoice", Arrays.asList("field1", "field2")));
-        receiptTypes.add(new ReceiptType("Payment", Arrays.asList("field3", "field4")));
+        HashMap<String, Integer> ocrData1 = new HashMap<>();
+        ocrData1.put("name", 1);
+        ocrData1.put("date", 2);
+
+        HashMap<String, Integer> ocrData2 = new HashMap<>();
+        ocrData2.put("tk3eb", 1);
+        ocrData2.put("name2", 2);
+
+        receiptTypes.add(new ReceiptType("1","Invoice", ocrData1));
+        receiptTypes.add(new ReceiptType("2","Payment", ocrData2));
         return receiptTypes;
     }
 
@@ -107,13 +114,13 @@ public class Repo {
         ObservableList<Receipt> receipts = FXCollections.observableArrayList();
 
         // Creating dummy OCR data
-        Map<String, String> ocrData1 = new HashMap<>();
-        ocrData1.put("Field1", "Value1");
-        ocrData1.put("Field2", "Value2");
+        HashMap<Integer, String> ocrData1 = new HashMap<>();
+        ocrData1.put(1, "Value1");
+        ocrData1.put(2, "Value2");
 
-        Map<String, String> ocrData2 = new HashMap<>();
-        ocrData2.put("Field3", "Value3");
-        ocrData2.put("Field4", "Value4");
+        HashMap<Integer, String> ocrData2 = new HashMap<>();
+        ocrData2.put(1, "Value3");
+        ocrData2.put(2, "Value4");
 
 
 
@@ -163,6 +170,13 @@ public class Repo {
         }
         return receipts;
     }
-
-
+    public static HashMap<Integer, String> getColumnNames(String name) throws SQLException {
+        HashMap<Integer, String> columnNames = new HashMap<>();
+        try (Connection localConnection = getDatabaseConnection()) {
+            columnNames = getColumnNamesByName(localConnection,name);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return columnNames;
+    }
 }

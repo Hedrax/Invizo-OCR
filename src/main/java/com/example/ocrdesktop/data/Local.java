@@ -17,12 +17,13 @@ public class Local {
 
     public static void refreshReceiptType(Connection localConnection, ObservableList<ReceiptType> receiptTypes) throws SQLException {
         String insertOrUpdateReceiptTypeSQL =
-                "INSERT OR REPLACE INTO receipt_type (name, columnNames) VALUES (?, ?)";
+                "INSERT OR REPLACE INTO receipt_type (id,name, columnNames) VALUES (?, ?,?)";
 
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(insertOrUpdateReceiptTypeSQL)) {
             for (ReceiptType receiptType : receiptTypes) {
-                preparedStatement.setString(1, receiptType.name);
-                preparedStatement.setString(2, receiptType.columnNames.toString());
+                preparedStatement.setString(1, receiptType.id);
+                preparedStatement.setString(2, receiptType.name);
+                preparedStatement.setString(3, mapToJsonString(receiptType.columnIdx2NamesMap));
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
@@ -75,11 +76,12 @@ public class Local {
     }
 
     // Manually convert Map to a JSON-like string
-    private static String mapToJsonString(Map<String, String> map) {
+    private static String mapToJsonString(HashMap<Integer, String> map) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            sb.append("\"").append(entry.getKey()).append("\": \"").append(entry.getValue()).append("\", ");
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            sb.append("\"").append(entry.getKey().toString()).append("\": \"")
+                    .append(entry.getValue()).append("\", ");
         }
         if (!map.isEmpty()) {
             sb.setLength(sb.length() - 2); // Remove the last comma and space
@@ -87,7 +89,6 @@ public class Local {
         sb.append("}");
         return sb.toString();
     }
-
 
     public static ObservableList<String> getAllReceiptTypeNames(Connection localConnection) throws SQLException {
         String getReceiptTypeNamesSQL = "SELECT name FROM receipt_type";
@@ -125,7 +126,7 @@ public class Local {
                     String approvedAt = resultSet.getString("approved_at");
 
                     // Parse OCR data
-                    Map<String, String> parsedOcrData = parseOcrData(ocrData);
+                    HashMap<Integer, String> parsedOcrData = parseOcrDataToIntegerKey(ocrData);
 
                     // Create Receipt object
                     Receipt receipt = new Receipt(receiptId, typeName, requestId, imageUrl, status, parsedOcrData, approvedByUserId, approvedAt);
@@ -137,9 +138,13 @@ public class Local {
         return receipts;
     }
 
-    // Manually parse OCR data JSON-like string into a Map
-    private static Map<String, String> parseOcrData(String ocrData) {
-        Map<String, String> map = new HashMap<>();
+    // Manually parse OCR data JSON-like string into a Map<Integer, String>
+    private static HashMap<Integer, String> parseOcrDataToIntegerKey(String ocrData) {
+        HashMap<Integer, String> map = new HashMap<>();
+
+        if (ocrData == null || ocrData.trim().isEmpty()) {
+            return map; // Return an empty map for null or empty input
+        }
 
         // Remove the curly braces
         ocrData = ocrData.replaceAll("[{}]", "").trim();
@@ -149,18 +154,42 @@ public class Local {
 
         for (String entry : entries) {
             // Split by colon to get key and value
-            String[] keyValue = entry.split(":\\s*");
+            String[] keyValue = entry.split(":\\s*", 2); // Limit to 2 to avoid issues with values containing colons
 
-            // Remove quotes around the key and value
+            // Remove quotes around the key and value and convert the key to an integer
             if (keyValue.length == 2) {
-                String key = keyValue[0].replaceAll("\"", "").trim();
-                String value = keyValue[1].replaceAll("\"", "").trim();
-                map.put(key, value);
+                try {
+                    Integer key = Integer.valueOf(keyValue[0].replaceAll("\"", "").trim()); // Parse the key as an integer
+                    String value = keyValue[1].replaceAll("\"", "").trim(); // Parse the value as a string
+                    map.put(key, value);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid key (not an integer): " + keyValue[0]);
+                }
+            } else {
+                System.err.println("Malformed entry: " + entry);
             }
         }
 
         return map;
     }
+    public static HashMap<Integer, String> getColumnNamesByName(Connection localConnection, String name) throws SQLException {
+        String queryReceiptTypeSQL = "SELECT columnNames FROM receipt_type WHERE name = ?";
+        HashMap<Integer, String> columnNamesMap = new HashMap<>();
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryReceiptTypeSQL)) {
+            preparedStatement.setString(1, name);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String columnNamesJson = resultSet.getString("columnNames");
+                    columnNamesMap = parseOcrDataToIntegerKey(columnNamesJson); // Helper function to parse JSON to HashMap
+                }
+            }
+        }
+
+        return columnNamesMap;
+    }
+
+
 
 
 

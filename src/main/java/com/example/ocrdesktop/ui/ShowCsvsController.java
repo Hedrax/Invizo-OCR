@@ -13,8 +13,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 
-import static com.example.ocrdesktop.data.Repo.getReceiptTypeNames;
-import static com.example.ocrdesktop.data.Repo.getReceiptsByFilter;
+import static com.example.ocrdesktop.data.Repo.*;
 
 public class ShowCsvsController {
 
@@ -81,17 +80,27 @@ public class ShowCsvsController {
         return receipts;
     }
     public void displayCSVData(ObservableList<Receipt> data) {
-        csvTable.getColumns().clear();  // Clear any existing columns
-        if (data.isEmpty()) return;  // Return if the data is empty
+        csvTable.getColumns().clear(); // Clear any existing columns
+        if (data.isEmpty()) return; // Return if the data is empty
 
         // Create a Set to collect unique keys (column headers) from all OCR data
-        Set<String> allKeys = new HashSet<>();
+        Set<Integer> allKeys = new HashSet<>();
         for (Receipt receipt : data) {
-            allKeys.addAll(receipt.ocrData.keySet());  // Add all keys from each Receipt's OCR data
+            allKeys.addAll(receipt.ocrData.keySet()); // Add all keys from each Receipt's OCR data
         }
-
+        System.out.printf("receipts: %s\n", allKeys.toString());
+        Set<String> allKeysString = new HashSet<>();
+        HashMap<Integer, String> ColumnNames = new HashMap<>();
         // Convert Set to List for ordered access
-        List<String> headers = new ArrayList<>(allKeys);
+        try {
+            ColumnNames = getColumnNames(data.get(0).receiptTypeName);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        for (Integer key : allKeys) {
+            allKeysString.add(ColumnNames.get(key));
+        }
+        List<String> headers = new ArrayList<>(allKeysString);
 
         // Create columns dynamically based on OCR data keys
         for (String header : headers) {
@@ -108,12 +117,20 @@ public class ShowCsvsController {
         // Transform ObservableList<Receipt> into a List<Map<String, String>> for table display
         ObservableList<Map<String, String>> tableData = FXCollections.observableArrayList();
         for (Receipt receipt : data) {
-            tableData.add(receipt.ocrData);  // Add each Receipt's OCR data map to the list
+            Map<String, String> stringOcrData = new HashMap<>();
+            for (Map.Entry<Integer, String> entry : receipt.ocrData.entrySet()) {
+                String columnName = ColumnNames.get(entry.getKey());
+                if (columnName != null) {
+                    stringOcrData.put(columnName, entry.getValue());
+                }
+            }
+            tableData.add(stringOcrData); // Add each transformed OCR data map to the list
         }
 
         // Set the table data
         csvTable.setItems(tableData);
     }
+
     @FXML
     public void downloadCSVData() {
         ObservableList<Map<String, String>> tableData = csvTable.getItems();

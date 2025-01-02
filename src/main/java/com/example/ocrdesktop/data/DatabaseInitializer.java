@@ -36,6 +36,7 @@ public class DatabaseInitializer {
         // Adjusted SQL for SQLite compatibility
         String createTableReceiptType =
                 "CREATE TABLE IF NOT EXISTS receipt_type (" +
+                        "id TEXT, " +
                         "name TEXT PRIMARY KEY, " +
                         "columnNames TEXT NOT NULL UNIQUE) ";
 

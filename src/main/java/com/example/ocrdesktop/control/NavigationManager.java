@@ -13,7 +13,7 @@ public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
     private final Stack<String> backStack; // Stack for back navigation
     //Todo Change the default status to true when finished login mechanism
-    private boolean authorized = false;
+    private boolean authorized = true;
 
     private Stage currentStage;
     private NavigationManager() {
