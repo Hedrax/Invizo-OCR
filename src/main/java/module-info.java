@@ -19,4 +19,5 @@ module com.example.ocrdesktop {
     exports com.example.ocrdesktop;
     exports com.example.ocrdesktop.ui;
     exports com.example.ocrdesktop.utils;
+    opens com.example.ocrdesktop.utils to javafx.fxml;
 }
