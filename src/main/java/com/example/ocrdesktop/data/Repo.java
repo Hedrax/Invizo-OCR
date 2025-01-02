@@ -1,9 +1,7 @@
 package com.example.ocrdesktop.data;
 
-import com.example.ocrdesktop.utils.Receipt;
-import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.ReceiptTypeJSON;
-import com.example.ocrdesktop.utils.Request;
+import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -49,6 +47,38 @@ public class Repo {
         // Update ReceiptType in the localDatabase with receiptType.id
 
         return response;
+    }
+
+    public boolean authenticate(String email, String password) {
+        String userId = remote.authenticate(email, password);
+        if (userId != null) {
+            AppContext.getInstance().setAuthorizationInfo(remote.getAuthorizationInfo(userId));
+            return true;
+        }
+        return false;
+    }
+
+    public int registerNewSuperAdmin(String username, String organization, String email, String password) {
+        return remote.registerNewSuperAdmin(username, organization, email, password);
+    }
+    public void getAllUsers(){
+        Organization organization = AppContext.getInstance().getAuthorizationInfo().organization;
+        List<User> companyUsers = remote.getAllUsers(organization);
+
+        //TODO ALI
+        // clear the local database table and insert the companyUsers
+    }
+    public void updateUser(User user){
+        //TODO ALI
+        // update the user in the local database
+
+        remote.updateUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
+    }
+    public void addUser(User user) {
+        //TODO ALI
+        // add the user in the local database
+
+        remote.addUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
     }
 
     // Database connection helper
@@ -133,4 +163,6 @@ public class Repo {
         }
         return receipts;
     }
+
+
 }

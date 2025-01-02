@@ -1,10 +1,7 @@
 package com.example.ocrdesktop.data;
 
 
-import com.example.ocrdesktop.utils.Receipt;
-import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.ReceiptTypeJSON;
-import com.example.ocrdesktop.utils.Request;
+import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.json.JSONObject;
@@ -72,4 +69,48 @@ public class Remote {
         return Receipts;
     }
 
+    public int registerNewSuperAdmin(String username, String organization, String email, String password) {
+        //TODO Rewan
+        // if the email already exists return 409
+        // if the registration is successful return 200
+        // if there is any other error return 400
+        return 200;
+    }
+
+    public String authenticate(String email, String password) {
+        //TODO Rewan
+        // if the email and password are correct return the user id
+        // if the email and password are incorrect return null
+        return "Dummy_ID";
+    }
+
+    public AuthorizationInfo getAuthorizationInfo(String userId) {
+        //TODO Rewan
+        // get the user and organization info from the database
+        // and return it in the AuthorizationInfo format
+        // if error try again or handle error in the calling function
+        return new AuthorizationInfo(new User("Dummy_ID", "Dummy_Name", "Dummy_Email", User.Role.DESKTOP_USER), new Organization("Dummy_ID", "Dummy_Name"));
+    }
+
+    public List<User> getAllUsers(Organization organization) {
+        //TODO Rewan
+        // get all users in the organization and return them
+        // Organization contains name and id
+        // can be modified to meet the backend logic
+
+        return List.of(new User("Dummy_ID", "Dummy_Name", "Dummy_Email", User.Role.DESKTOP_USER));
+    }
+
+    public void updateUser(User user, Organization organization) {
+        //TODO Rewan
+        // update the user in the database
+        // if the user is in the database update it
+        // if error try again or handle error in the calling function
+    }
+    public void addUser(User user, Organization organization) {
+        //TODO Rewan
+        // update the user in the database
+        // if the user is in the database update it
+        // if error try again or handle error in the calling function
+    }
 }
