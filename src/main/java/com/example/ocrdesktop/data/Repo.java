@@ -85,7 +85,13 @@ public class Repo {
         List <User> users = new ArrayList<>();
         return users;
     }
+    public void deleteUsers(List<User> deletedUsers) {
+        //TODO ALI
+        // delete the users in the local database
 
+
+        remote.deleteUsers(deletedUsers);
+    }
     // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {
         String url = "jdbc:sqlite:receipts.db";
@@ -185,4 +191,6 @@ public class Repo {
         }
         return columnNames;
     }
+
+
 }

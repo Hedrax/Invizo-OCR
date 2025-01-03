@@ -113,4 +113,10 @@ public class Remote {
         // if the user is in the database update it
         // if error try again or handle error in the calling function
     }
+
+    public void deleteUsers(List<User> deletedUsers) {
+        //TODO Rewan
+        // delete the users from the production database
+        // if error try again or handle error in the calling function
+    }
 }
