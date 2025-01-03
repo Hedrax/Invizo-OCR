@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.UsersController">
     <AnchorPane fx:id="mainContent" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -51,6 +52,18 @@
                 <Label fx:id="confirmUpdatesButton" alignment="CENTER" disable="true" layoutX="588.0" layoutY="23.0" onMouseClicked="#confirmUpdates" prefHeight="38.0" prefWidth="170.0" style="-fx-background-radius: 1px;" styleClass="button" text="Confirm Changes" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="18.0" />
             </AnchorPane>
         </AnchorPane>
+      <StackPane onMouseClicked="#addNewUser" prefHeight="50.0" prefWidth="53.0" style="-fx-background-color: #18A661; -fx-background-radius: 10px;" styleClass="hover-hand" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="50.0">
+         <children>
+            <Text boundsType="VISUAL" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="+" textOrigin="CENTER" wrappingWidth="16.41796875" StackPane.alignment="CENTER">
+               <font>
+                  <Font size="37.0" />
+               </font>
+               <StackPane.margin>
+                  <Insets />
+               </StackPane.margin>
+            </Text>
+         </children>
+      </StackPane>
     </AnchorPane>
     <AnchorPane fx:id="sideMenu" minWidth="250.0" translateX="-300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
         <ImageView fx:id="profilePictureSideMenuLabel" fitHeight="99.0" fitWidth="118.0" layoutX="77.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="30.0">
