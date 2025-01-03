@@ -11,12 +11,7 @@ import java.util.List;
 public class ReceiptType {
     public String id;
     public String name;
-    public List<String> columnNames;
-    public ReceiptType(String name, List<String> columnNames){
-        this.name = name;
-        this.columnNames= columnNames;
-    }
-    public HashMap<Integer, String> columnIdx2NamesMap = new HashMap<>();;
+    public HashMap<Integer, String> columnIdx2NamesMap = new HashMap<>();
     public ReceiptType(String id, String name, HashMap<String, Integer> columnNames2IdxMap){
         this.id = id;
         this.name = name;
