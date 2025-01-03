@@ -16,6 +16,9 @@ public class AppContext {
 
     //Saving Directory Property
     public String JSONsSavingDir = "D:\\";
+    public String PhotoSavingDir = "D:\\";
+    public String SheetsSavingDir = "D:\\";
+
 
     // Properties to store globally accessible objects
     private final ReadOnlyObjectWrapper<Double> stageWidth = new ReadOnlyObjectWrapper<>(0.0);
