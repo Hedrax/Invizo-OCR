@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox alignment="CENTER_LEFT" snapToPixel="false" spacing="19.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.UserControlEntryController">
+   <children>
+      <Label fx:id="userLabel" focusTraversable="false" prefWidth="150.0" snapToPixel="false" text="Username" HBox.hgrow="SOMETIMES">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <TextField fx:id="emailTextField" focusTraversable="false" pickOnBounds="false" snapToPixel="false" text="Email" HBox.hgrow="ALWAYS">
+         <font>
+            <Font size="18.0" />
+         </font></TextField>
+      <PasswordField fx:id="passwordTextField" focusTraversable="false" layoutX="44.0" layoutY="10.0" snapToPixel="false" text="Password" HBox.hgrow="ALWAYS">
+         <font>
+            <Font size="18.0" />
+         </font></PasswordField>
+      <ChoiceBox fx:id="choiceBox" focusTraversable="false" prefHeight="45.0" prefWidth="203.0" snapToPixel="false" style="-fx-font-size: 18px;" value="Super Admin" HBox.hgrow="ALWAYS">
+       <items>
+           <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Super Admin" />
+               <String fx:value="Desktop User" />
+               <String fx:value="Mobile User" />
+           </FXCollections>
+       </items>
+     </ChoiceBox>
+      <StackPane fx:id="deleteButton" maxHeight="40.0" onMouseClicked="#deleteUser" prefWidth="37.0" snapToPixel="false" style="-fx-background-color: red; -fx-background-radius: 3px;">
+         <children>
+            <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="X" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="21.0" />
+               </font></Text>
+         </children>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </StackPane>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="20.0" right="13.0" top="5.0" />
+   </padding>
+</HBox>
