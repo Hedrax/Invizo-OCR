@@ -3,7 +3,10 @@ package com.example.ocrdesktop.ui;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
-import com.example.ocrdesktop.utils.PackageApprovalItem;
+
+import com.example.ocrdesktop.utils.Receipt;
+import com.example.ocrdesktop.utils.ReceiptType;
+import com.example.ocrdesktop.utils.Request;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,9 +21,10 @@ import javafx.scene.layout.Pane;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.HashMap;
 
 import static com.example.ocrdesktop.data.Repo.*;
-import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class MainController{
     @FXML
@@ -31,18 +35,19 @@ public class MainController{
     public ImageView profilePictureSideMenuLabel;
     public Label profileNameSideMenuLabel;
     public Label profileRoleSideMenuLabel;
-    ObservableList<PackageApprovalItem> lst = FXCollections.observableArrayList();
+    ObservableList<Request> lst = FXCollections.observableArrayList();
     private boolean isMenuVisible = false; // Tracks menu state
     @FXML
-    private ListView<PackageApprovalItem> customListView = new ListView<>();
+    private ListView<Request> customListView = new ListView<>();
+
 
     public void initialize() {
         // Set data for the custom cell
-        customListView.setCellFactory((ListView<PackageApprovalItem> param) -> new ApprovalListCellController() {
+        customListView.setCellFactory((ListView<Request> param) -> new ApprovalListCellController() {
             @Override
-            protected void updateItem(PackageApprovalItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
+            protected void updateItem(Request request, boolean empty) {
+                super.updateItem(request, empty);
+                if (empty || request == null) {
                     setGraphic(null);
                     setText(null);
                 } else {
@@ -53,18 +58,17 @@ public class MainController{
 
                         // Set data for the custom cell
                         ApprovalListCellController controller = loader.getController();
-                        controller.setData(item);
+                        controller.setData(request);
                         setGraphic(cellLayout);
                         controller.getStatus().addListener((obs, oldStatus, newStatus) -> {
-                            item.status = newStatus;
-                            //Todo implement the backend logic of confirming an item
+                            request.status = newStatus;
+                            //Todo implement the backend logic of confirming an request
                         });
 
                         controller.navigateToDetail().addListener((obs, oldStatus, newStatus) -> {
-                            //Todo implement the backend logic of confirming an item
+                            //Todo implement the backend logic of confirming an request
                             if (newStatus == true) {
-                                //Todo
-                                // navigateToDetail()
+                                NavigationManager.getInstance().navigateToDetailRequest(request);
                             }
                         });
 
@@ -78,8 +82,41 @@ public class MainController{
 
 
         });
-        //Main added items section
+        initFakeData();
         customListView.getItems().addAll(lst);
+    }
+    void initFakeData(){
+        //The following only for testing
+        for (int i = 0; i < 10; i++) {
+            Request request = initFakeRequest();
+            lst.add(request);
+        }
+        //Main added items section
+    }
+
+    private Request initFakeRequest(){
+        Request request = new Request("lol", Request.RequestStatus.PENDING.toString() ,"admin", Timestamp.valueOf("2001-01-01 12:00:00"));
+        HashMap<String, Integer> column2IdxMap = new HashMap<>();
+        column2IdxMap.put("Item", 0);
+        column2IdxMap.put("Price", 1);
+        column2IdxMap.put("Quantity", 2);
+        column2IdxMap.put("Total", 3);
+        ReceiptType receiptType = new ReceiptType("Dummy_id", "Receipt 1", column2IdxMap);
+        request.setData(FXCollections.observableArrayList(), receiptType);
+
+        //Warning the following url will be expired in 4th of january 2025 9 PM
+        String sampleImageURL = "https://i.postimg.cc/J05t1LkG/sample-6.jpg";
+        HashMap<Integer, String> idx2Value = new HashMap<>();
+        idx2Value.put(0, "Item 1");
+        idx2Value.put(1, "Item 2");
+        idx2Value.put(2, "Item 3");
+        idx2Value.put(3, "Item 4");
+        idx2Value.put(4, "Testing null");
+        // Example: Add initial cells
+        for (int i = 0; i < 30; i++) {
+            request.receipts.add(new Receipt("1", "Invoice", "1", sampleImageURL, Receipt.ReceiptStatus.PENDING.toString(), idx2Value, "user152", "2024-01-01"));
+        }
+        return request;
     }
     @FXML
     private void toggleMenu() {
@@ -134,21 +171,11 @@ public class MainController{
         }
     }
 
-    private void provideFakeListingData(){
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-    }
     public MainController()  {
 //        provideFakeListingData();
         this.initialize();
         setUpProfileInfo();
+
     }
     @FXML
     private void setUpProfileInfo(){
