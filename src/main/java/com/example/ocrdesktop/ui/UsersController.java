@@ -18,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -25,6 +26,8 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class UsersController {
 
@@ -116,21 +119,24 @@ public class UsersController {
         });
 
         // Add a listener to synchronize changes from the ObservableList to the VBox
-        lst.addListener((ListChangeListener<User>) change -> {
+//        ListChangeListener.Change<? extends User> previousChange = null;
+
+        ListChangeListener<User> listChangeListener = change -> {
             while (change.next()) {
-                if (change.wasAdded()) {
+                if (change.wasAdded() && !change.wasPermutated() && !change.wasUpdated()) {
                     for (User addedItem : change.getAddedSubList()) {
-                        HBox pane = loadEntry(addedItem); // Create a new label for each added item
-                        userListVbox.getChildren().add(pane);      // Add the label to the VBox
+                        HBox pane = loadEntry(addedItem);
+                        userListVbox.getChildren().add(pane);
                     }
                 }
             }
-        });
+        };
+        lst.addListener(listChangeListener);
+
         getDataFromRepo();
     }
 
     public UsersController() {
-        initialize();
         setUpProfileInfo();
     }
 
@@ -176,6 +182,11 @@ public class UsersController {
             }
         }
         repo.deleteUsers(deletedUsers);
+    }
+
+    public void addNewUser() {
+        User user = new User(UUID.randomUUID().toString(), "New user", "", User.Role.DESKTOP_USER);
+        lst.add(user);
     }
 }
 

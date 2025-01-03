@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.UsersController">
     <AnchorPane fx:id="mainContent" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -91,5 +92,17 @@
             <Image url="@../images/close-button.png" />
         </ImageView>
     </AnchorPane>
+   <StackPane onMouseClicked="#addNewUser" prefHeight="50.0" prefWidth="53.0" style="-fx-background-color: #18A661; -fx-background-radius: 10px;" styleClass="hover-hand" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="50.0">
+      <children>
+         <Text boundsType="VISUAL" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="+" textOrigin="CENTER" wrappingWidth="16.41796875" StackPane.alignment="CENTER">
+            <font>
+               <Font size="37.0" />
+            </font>
+            <StackPane.margin>
+               <Insets />
+            </StackPane.margin>
+         </Text>
+      </children>
+   </StackPane>
 
 </AnchorPane>
