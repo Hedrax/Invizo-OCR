@@ -12,7 +12,7 @@ import java.util.Stack;
 public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
     private final Stack<String> backStack; // Stack for back navigation
-    //Todo Change the default status to true when finished login mechanism
+    //Todo Change the default status to false when finished login mechanism
     private boolean authorized = true;
 
     private Stage currentStage;
@@ -102,7 +102,7 @@ public class NavigationManager {
             AppContext.getInstance().setHeight((Double) newWidth);
         });
 
-//        navigateToDetailReceipt();
+     navigateToUsersControllerPage();
     }
 
     //Modifiable
@@ -116,6 +116,8 @@ public class NavigationManager {
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";
     public static final String REQUESTS_PAGE = "/com/example/ocrdesktop/RequestsPage.fxml";
     public static final String DETAIL_RECEIPT = "/com/example/ocrdesktop/detail_receipt.fxml";
+    public static final String USERS_CONTROLLER = "/com/example/ocrdesktop/users_controller.fxml";
+
 
     //NAVIGATION FUNCTIONS
     public void navigateToMainPage(){if (authorized) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
@@ -125,4 +127,5 @@ public class NavigationManager {
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}
     public void navigateToLogin(){navigate(LOGIN_PAGE);}
     public void navigateToRequestsPage(){if (authorized) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
+    public void navigateToUsersControllerPage(){if (authorized) navigate(USERS_CONTROLLER); else System.out.println("Not Authorized");}
 }
