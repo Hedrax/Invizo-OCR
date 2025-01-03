@@ -36,7 +36,7 @@ public class Local {
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(insertOrUpdateUploadRequestsSQL)) {
             for (Request request : requests) {
                 preparedStatement.setString(1, request.id);
-                preparedStatement.setString(2, request.status);
+                preparedStatement.setString(2, request.status.toString());
                 preparedStatement.setString(3, request.uploaded_by_user_id);
                 preparedStatement.setTimestamp(4, new Timestamp(request.uploaded_at.getTime()));
                 preparedStatement.addBatch();
@@ -56,7 +56,7 @@ public class Local {
                 preparedStatement.setString(2, receipt.receiptTypeName);
                 preparedStatement.setString(3, receipt.requestId);
                 preparedStatement.setString(4, receipt.imageUrl);
-                preparedStatement.setString(5, receipt.status);
+                preparedStatement.setString(5, receipt.status.toString());
 
                 // Manually serialize the Map<String, String> ocrData to a simple JSON-like string
                 String ocrDataJson = mapToJsonString(receipt.ocrData);
@@ -187,47 +187,7 @@ public class Local {
 
         return columnNamesMap;
     }
-    public static ObservableList<PackageApprovalItem> getPackageApprovalItemList(Connection localConnection, String status) throws SQLException {
-        // Adjusting the SQL query to select the headImagePath from the receipt table
-        String queryRequestsSQL = "SELECT u.request_id, r.name, u.uploaded_at, COUNT(receipt.receipt_id) AS count, u.status, receipt.headImagePath " +
-                "FROM upload_requests u " +
-                "LEFT JOIN receipt receipt ON u.request_id = receipt.request_id " +
-                "LEFT JOIN receipt_type r ON receipt.receipt_type_name = r.name " +
-                "WHERE u.status LIKE ? " +
-                "GROUP BY u.request_id, r.title, r.date, u.status, receipt.headImagePath";
 
-        ObservableList<PackageApprovalItem> packageApprovalItems = FXCollections.observableArrayList();
-
-        try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryRequestsSQL)) {
-            // Use wildcard for partial matching on the status column (e.g., 'PENDING', 'APPROVED')
-            preparedStatement.setString(1, "%" + status + "%");
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String title = resultSet.getString("title");
-                    String date = resultSet.getString("date");
-                    Integer count = resultSet.getInt("count");  // Dynamically counted receipts
-                    String statusValue = resultSet.getString("status");
-                    String headImagePath = resultSet.getString("headImagePath");  // Now retrieving from receipt table
-
-                    // Create PackageApprovalItem and add to the list
-                    PackageApprovalItem item = new PackageApprovalItem(
-                            title,
-                            date,
-                            count,
-                            PackageApprovalItem.STATUS.valueOf(statusValue), // Assuming STATUS is an enum
-                            headImagePath
-                    );
-                    packageApprovalItems.add(item);
-                }
-            }
-        } catch (SQLException e) {
-            // Handle SQL exception (optional)
-            e.printStackTrace();
-            throw new SQLException("Error retrieving package approval items", e);
-        }
-        return packageApprovalItems;
-    }
     public static boolean isReceiptTypeNameAvailable(Connection localConnection, String name) throws SQLException {
         // SQL query to check if a receipt type name already exists in the database
         String querySQL = "SELECT 1 FROM receipt_type WHERE name = ?";

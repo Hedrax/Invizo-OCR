@@ -136,8 +136,8 @@ public class Repo {
     // Dummy data for Request
     private static ObservableList<Request> getDummyRequests() {
         ObservableList<Request> requests = FXCollections.observableArrayList();
-        requests.add(new Request("1", "Pending", "user1", new Time(System.currentTimeMillis())));
-        requests.add(new Request("2", "Completed", "user2", new Time(System.currentTimeMillis())));
+        requests.add(new Request("1",Request.RequestStatus.PENDING.toString(), "user1", new Timestamp(System.currentTimeMillis())));
+        requests.add(new Request("2", Request.RequestStatus.COMPLETED.toString(), "user2", new Timestamp(System.currentTimeMillis())));
         return requests;
     }
 
@@ -156,8 +156,8 @@ public class Repo {
 
 
         // Adding receipts with dummy data
-        receipts.add(new Receipt("1", "Invoice", "1", "image1.png", "Pending", ocrData1, "user152", "2024-01-01"));
-        receipts.add(new Receipt("2", "Payment", "2", "image2.png", "Approved", ocrData2, "user153", "2025-01-01"));
+        receipts.add(new Receipt("1", "Invoice", "1", "image1.png", Request.RequestStatus.PENDING.toString(), ocrData1, "user152", "2024-01-01"));
+        receipts.add(new Receipt("2", "Payment", "2", "image2.png", Request.RequestStatus.COMPLETED.toString(), ocrData2, "user153", "2025-01-01"));
 
         return receipts;
     }

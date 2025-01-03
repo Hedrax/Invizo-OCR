@@ -3,11 +3,10 @@ package com.example.ocrdesktop.ui;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
-import com.example.ocrdesktop.utils.PackageApprovalItem;
+import com.example.ocrdesktop.utils.Request;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import static com.example.ocrdesktop.data.Repo.getReceiptTypeNames;
-import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
 
 public class RequestsController {
     @FXML
@@ -41,13 +39,12 @@ public class RequestsController {
     public Label profileNameSideMenuLabel;
     public Label profileRoleSideMenuLabel;
 
-    ObservableList<PackageApprovalItem> lst = FXCollections.observableArrayList();
+    ObservableList<Request> lst = FXCollections.observableArrayList();
     private boolean isMenuVisible = false; // Tracks menu state
     @FXML
-    private ListView<PackageApprovalItem> customListView = new ListView<>();
+    private ListView<Request> customListView = new ListView<>();
 
     public void initialize() {
-        provideFakeListingData();
         // Populate the receipt type combo box dynamically
         ObservableList<String> receiptTables = getReceiptTypeNames();
         if (receiptTables.isEmpty()) {
@@ -55,9 +52,9 @@ public class RequestsController {
         }
         receiptTypeComboBox.setItems(receiptTables);
         // Set data for the custom cell
-        customListView.setCellFactory((ListView<PackageApprovalItem> param) -> new ApprovalListCellController() {
+        customListView.setCellFactory((ListView<Request> param) -> new ApprovalListCellController() {
             @Override
-            protected void updateItem(PackageApprovalItem item, boolean empty) {
+            protected void updateItem(Request item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);
@@ -143,17 +140,6 @@ public class RequestsController {
     @FXML
     private void Logout(){}
 
-    private void provideFakeListingData(){
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-        lst.add(new PackageApprovalItem("Recipt 1","10-10-2020",5, PENDING,"D:\\Wallpapers\\302904686_1173763046536496_1128782722775130828_n.jpg"));
-    }
     @FXML
     private void onFilterClicked() {
         String receiptType = receiptTypeComboBox.getValue();
