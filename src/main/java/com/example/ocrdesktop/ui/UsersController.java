@@ -187,6 +187,7 @@ public class UsersController {
     public void addNewUser() {
         User user = new User(UUID.randomUUID().toString(), "New user", "", User.Role.DESKTOP_USER);
         lst.add(user);
+        edited.set(true);
     }
 }
 
