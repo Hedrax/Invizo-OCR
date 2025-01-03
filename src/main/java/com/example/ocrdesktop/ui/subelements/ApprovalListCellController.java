@@ -1,25 +1,20 @@
 package com.example.ocrdesktop.ui.subelements;
 
-import com.example.ocrdesktop.utils.PackageApprovalItem;
+import com.example.ocrdesktop.utils.CachingManager;
+import com.example.ocrdesktop.utils.Request;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 
-import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ResourceBundle;
 
-import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.APPROVED;
-import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS.PENDING;
-import static com.example.ocrdesktop.utils.PackageApprovalItem.STATUS;
+import com.example.ocrdesktop.utils.Request.RequestStatus;
 
-public class ApprovalListCellController extends ListCell<PackageApprovalItem>{
+public class ApprovalListCellController extends ListCell<Request>{
 
     @FXML
     public ImageView item_image;
@@ -36,11 +31,11 @@ public class ApprovalListCellController extends ListCell<PackageApprovalItem>{
 
     @FXML
     private Label confirm;
-    private STATUS status = PENDING;
-    private final ReadOnlyObjectWrapper<STATUS> statusReader = new ReadOnlyObjectWrapper<>();
+    private RequestStatus status = RequestStatus.PENDING;
+    private final ReadOnlyObjectWrapper<RequestStatus> statusReader = new ReadOnlyObjectWrapper<>();
 
     //Observable flags functions
-    public final ReadOnlyObjectProperty<STATUS> getStatus() {
+    public final ReadOnlyObjectProperty<RequestStatus> getStatus() {
         return statusReader.getReadOnlyProperty();
     }
 
@@ -48,19 +43,21 @@ public class ApprovalListCellController extends ListCell<PackageApprovalItem>{
         return navigateToDetailFlag.getReadOnlyProperty();
     }
     @FXML
-    private void check(){
-        if (status == APPROVED) {
-            this.confirm.setDisable(true);
-            this.confirm.setText("Confirmed");
+    private void check() {
+        if (status == RequestStatus.COMPLETED) {
+            {
+                this.confirm.setDisable(true);
+                this.confirm.setText("Confirmed");
+            }
         }
     }
     @FXML
     private void Confirm(){
 
-        this.statusReader.set(APPROVED);
-        this.status = APPROVED;
+        this.statusReader.set(RequestStatus.COMPLETED);
+        this.status = RequestStatus.COMPLETED;
         check();
-        //Todo call the backend process corresponds to confirming an item
+        //Todo call the backend process corresponds to confirming an request
     }
     @FXML
     private void ViewItem(){
@@ -69,17 +66,17 @@ public class ApprovalListCellController extends ListCell<PackageApprovalItem>{
     }
 
     @FXML
-    public void setData(PackageApprovalItem item){
+    public void setData(Request request){
 
-        this.title.setText(item.title);
-        this.count.setText(item.count + " images");
-        this.date.setText(item.date);
-        this.status = item.status;
+        this.title.setText(request.receiptType.name);
+        this.count.setText(request.receipts.size() + " images");
+        this.date.setText(request.uploaded_at.toString());
+        this.status = request.status;
 //        It only works with the absolute path
         try {
             this.item_image.setImage(new Image(
                     Files.newInputStream(
-                            Paths.get(item.headImagePath)
+                            CachingManager.getInstance().CheckOrCacheImage(request, request.receipts.get(0).imageUrl)
                     )
             ));
         }catch (Exception e){
