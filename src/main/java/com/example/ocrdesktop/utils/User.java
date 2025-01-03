@@ -1,8 +1,6 @@
 package com.example.ocrdesktop.utils;
 
 public class User {
-    //TODO ALI
-    // 1. store the following properties in a local database table
     // 2. add a refresh by repo.getAllUsers()
 
     public String id;
