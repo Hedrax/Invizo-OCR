@@ -1,19 +1,13 @@
 package com.example.ocrdesktop.control;
 
 import com.example.ocrdesktop.AppContext;
-import com.example.ocrdesktop.ui.DetailItemsController;
-import com.example.ocrdesktop.utils.Receipt;
-import com.example.ocrdesktop.utils.ReceiptType;
+import com.example.ocrdesktop.ui.DetailRequestController;
 import com.example.ocrdesktop.utils.Request;
-import com.example.ocrdesktop.utils.User;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Stack;
 
 //Append the navigation modification to the end of the class
@@ -130,9 +124,9 @@ public class NavigationManager {
 
     //NAVIGATION FUNCTIONS
     public void navigateToMainPage(){if (authorized) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
-    public void navigateToDetailItems(Request request){
+    public void navigateToDetailRequest(Request request){
         if (authorized){
-            DetailItemsController controller = (DetailItemsController) navigate(DETAIL_ITEMS);
+            DetailRequestController controller = (DetailRequestController) navigate(DETAIL_ITEMS);
             if  (controller == null) System.out.println("Controller is null");
             else controller.setData(request);
         }
