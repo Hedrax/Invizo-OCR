@@ -1,12 +1,21 @@
 package com.example.ocrdesktop.ui;
 
+import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.utils.Receipt;
+import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.*;
 import java.sql.*;
@@ -35,16 +44,29 @@ public class ShowCsvsController {
     @FXML
     private Button downloadCsvButton;
 
+    @FXML
+    public Pane sideMenu;
+    public AnchorPane mainContent;
+    public Label profileNameTopBanner;
+    public Label profileCompanyTopBanner;
+    public ImageView profilePictureSideMenuLabel;
+    public Label profileNameSideMenuLabel;
+    public Label profileRoleSideMenuLabel;
+    private boolean isMenuVisible = false; // Tracks menu state
+
     private static final String DB_URL = "jdbc:sqlite:receipts.db"; // SQLite database file
 
     @FXML
     public void initialize() {
+
         // Populate the receipt type combo box dynamically
         ObservableList<String> receiptTables = getReceiptTypeNames();
         if (receiptTables.isEmpty()) {
             showAlert("Error", "No tables containing 'receipt' found in the database.");
         }
         receiptTypeCombo.setItems(receiptTables);
+        setUpProfileInfo();
+
     }
 
     @FXML
@@ -173,11 +195,6 @@ public class ShowCsvsController {
             }
         }
     }
-
-
-
-
-
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -185,4 +202,61 @@ public class ShowCsvsController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    @FXML
+    private void toggleMenu() {
+
+        TranslateTransition transition = new TranslateTransition(Duration.millis(300), sideMenu);
+
+        if (isMenuVisible) {
+            // Slide out (hide)
+            this.mainContent.setDisable(false);
+            transition.setToX(-300); // Hide the menu
+            mainContent.setEffect(null); // Apply blur
+        } else {
+            // Slide in (show)
+            this.mainContent.setDisable(true);
+            transition.setToX(0); // Show the menu
+            mainContent.setEffect(new GaussianBlur(10)); // Apply blur
+        }
+
+        transition.play();
+        isMenuVisible = !isMenuVisible; // Toggle the menu state
+    }
+
+    @FXML
+    private void setUpProfileInfo(){
+        String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().organization.name;
+        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("_", " ");
+        Platform.runLater(() -> {
+            profileNameTopBanner.setText(userName);
+            profileCompanyTopBanner.setText(organizationName);
+            profileNameSideMenuLabel.setText(userName);
+            profileRoleSideMenuLabel.setText(role);
+        });
+    }
+
+    @FXML
+    private void navigateToAllRequests(){
+        NavigationManager.getInstance().navigateToRequestsPage();}
+    @FXML
+    private void navigateToMainPage(){
+        NavigationManager.getInstance().navigateToMainPage();}
+    @FXML
+    private void navigateToUsersManger(){
+        NavigationManager.getInstance().navigateToUsersControllerPage();
+    }
+    @FXML
+    private void navigateToProfile(){}
+    @FXML
+    private void navigateToSettings(){}
+    @FXML
+    private void Logout(){
+        try {
+            NavigationManager.getInstance().logout();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
