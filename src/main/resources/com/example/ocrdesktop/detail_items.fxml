@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.DetailItemsController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.DetailRequestController">
     <AnchorPane fx:id="mainContent" styleClass="detail_request-main_body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <HBox id="header" alignment="CENTER" prefHeight="56.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <AnchorPane id="header" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
@@ -33,7 +33,7 @@
                         <Label text="company" textFill="WHITE" />
                     </VBox>
                 </HBox>
-                <StackPane layoutX="-75.0" layoutY="-47.0" styleClass="hover-hand" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <StackPane layoutX="-75.0" layoutY="-47.0" onMouseClicked="#navigateBack" styleClass="hover-hand" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="50.0" stroke="TRANSPARENT" strokeType="INSIDE" width="50.0" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="&lt;" textAlignment="CENTER" wrappingWidth="19.83837890625">
