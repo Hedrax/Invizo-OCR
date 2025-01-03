@@ -188,6 +188,11 @@
     -fx-cursor: hand;/* Slightly lighter gray on hover */
 }
 
+.menu-label:disabled {
+    -fx-background-color: #EFEFEF;
+    -fx-cursor: hand;/* Slightly lighter gray on hover */
+}
+
 .request-view-title-label{
 -fx-font-family: Zen Kaku Gothic Antique;
 -fx-font-size: 30px;
