@@ -1,11 +1,19 @@
 package com.example.ocrdesktop.control;
 
 import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.ui.DetailItemsController;
+import com.example.ocrdesktop.utils.Receipt;
+import com.example.ocrdesktop.utils.ReceiptType;
+import com.example.ocrdesktop.utils.Request;
+import com.example.ocrdesktop.utils.User;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Stack;
 
 //Append the navigation modification to the end of the class
@@ -27,14 +35,16 @@ public class NavigationManager {
         return instance;
     }
     //First base functions
-    private void navigate(String path){
+    private Object navigate(String path){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
             Scene scene = new Scene(fxmlLoader.load(), currentStage.getWidth(), currentStage.getHeight());
             currentStage.setScene(scene);
             backStack.push(path);
+            return fxmlLoader.getController();
         }
         catch (IOException e) {e.printStackTrace();}
+        return null;
     }
 
 
@@ -101,9 +111,8 @@ public class NavigationManager {
             //callBack Context
             AppContext.getInstance().setHeight((Double) newWidth);
         });
-
-     navigateToUsersControllerPage();
     }
+
 
     //Modifiable
     //Pages paths
@@ -121,7 +130,13 @@ public class NavigationManager {
 
     //NAVIGATION FUNCTIONS
     public void navigateToMainPage(){if (authorized) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
-    public void navigateToDetailItems(){if (authorized) navigate(DETAIL_ITEMS); else System.out.println("Not Authorized");}
+    public void navigateToDetailItems(Request request){
+        if (authorized){
+            DetailItemsController controller = (DetailItemsController) navigate(DETAIL_ITEMS);
+            if  (controller == null) System.out.println("Controller is null");
+            else controller.setData(request);
+        }
+        else System.out.println("Not Authorized");}
     public void navigateToSHOWCSVs(){if (authorized) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
     public void navigateToDetailReceipt(){if (authorized) navigate(DETAIL_RECEIPT); else System.out.println("Not Authorized");}
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}
