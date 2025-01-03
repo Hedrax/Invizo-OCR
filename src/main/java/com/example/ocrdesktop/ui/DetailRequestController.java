@@ -3,10 +3,7 @@ package com.example.ocrdesktop.ui;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.RequestItemBoxController;
-import com.example.ocrdesktop.utils.Item;
-import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.Request;
-import com.example.ocrdesktop.utils.Sheet;
+import com.example.ocrdesktop.utils.*;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,12 +17,13 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
 //CALL the controller class then call setData()
-public class DetailItemsController {
+public class DetailRequestController {
     //inputData
     public Request request;
     //Others
@@ -42,7 +40,7 @@ public class DetailItemsController {
     //1 -> right
     //0 -> left
     private int currentScreen = 0;
-    private ObservableList<Item> itemsToDelete = observableArrayList();
+    private ObservableList<Receipt> itemsToDelete = observableArrayList();
     private final AppContext appContext = AppContext.getInstance();
     @FXML
     private GridPane gridPane;
@@ -54,9 +52,16 @@ public class DetailItemsController {
     HashMap<String, Integer> idToIdx = new HashMap<>();
 
 
-    public void addNewCell(Item item) {
-        // Create an ImageView for the cell
-        ImageView imageView = new ImageView(new Image(item.image_path));
+    public void addNewCell(Receipt receipt) {
+        receipt.imagePath = CachingManager.getInstance().CheckOrCacheImage(request, receipt.imageUrl);
+
+        Image image;
+        try {
+            image = new Image(Files.newInputStream(receipt.imagePath));
+        }catch (Exception e) {
+            image = new Image("/com/example/images/approval_request_default.png");
+        }
+        ImageView imageView = new ImageView(image);
         imageView.setFitWidth(CELL_WIDTH);
         imageView.setFitHeight(CELL_HEIGHT);
         imageView.setPreserveRatio(true);
@@ -86,17 +91,10 @@ public class DetailItemsController {
         if (currentScreen == 1) return;
         // clear
         gridPane.getChildren().clear();
-        request.items.forEach(this::addNewCell);
+        if (request == null) return;
+        request.receipts.forEach(this::addNewCell);
     }
 
-    private void initFakeData(){
-        request = new Request("lol", observableArrayList(),new ReceiptType("ll", observableArrayList("Receipt Example")), "2001-05-22 (11:03PM)");
-        updateTitles();
-        // Example: Add initial cells
-        for (int i = 0; i < 30; i++) {
-            request.items.add(new Item(new Sheet("Recipt 1", observableArrayList("Name", "Age", "Company", "Date")), observableArrayList("Gasser", "18", "Microsoft", "1-1-2001"), "D:\\curr projects\\Graduation Project\\dbNet-project\\Keras implementation\\DifferentiableBinarization-master\\input\\4.png","20-10-2024"));
-        }
-    }
     private void addDragScrolling(ScrollPane scrollPane) {
         final double[] mousePressX = {0}; // Store the initial mouse press position
 
@@ -119,13 +117,13 @@ public class DetailItemsController {
             AnchorPane pane = loader.load();
 
             RequestItemBoxController controller = loader.getController();
-            controller.setData(request.items.get(idx));
+            controller.setData(request.receipts.get(idx), request.receiptType);
 
 
-            controller.confirmed.addListener((obs,old, val)->{request.items.set(idx, controller.getData());});
+            controller.confirmed.addListener((obs,old, val)->{request.receipts.set(idx, controller.getData());});
             controller.deleted.addListener((obs,old, val)->{
                 if (val) {
-                    itemsToDelete.add(request.items.get(idx));
+                    itemsToDelete.add(request.receipts.get(idx));
                     horizontalItemsView.getChildren().remove(pane);
                 }
             });
@@ -136,7 +134,8 @@ public class DetailItemsController {
     public void updateHorizontalListView() {
 //        if (currentScreen == 0) return;
         // Add the custom view to the HBox
-        for (int i = 0; i < request.items.size(); i++) {
+        if (request == null) return;
+        for (int i = 0; i < request.receipts.size(); i++) {
             addHorizontalItem(i);
         }
     }
@@ -186,7 +185,6 @@ public class DetailItemsController {
         hideButton(sliding_button_left);
         showButton(sliding_button_right);
         dragScreenRight();
-        System.out.println("trying showGrid");
     }
     @FXML
     private void showHList(){
@@ -195,22 +193,25 @@ public class DetailItemsController {
         hideButton(sliding_button_right);
         showButton(sliding_button_left);
         dragScreenLeft();
-        System.out.println("trying show HList");
 
     }
 
     private void initDisableButton(){if(currentScreen == 0){hideButton(sliding_button_left);}else{hideButton(sliding_button_right);}}
 
-    public void setData(Request request){this.request = request; updateTitles();}
+    public void setData(Request request){
+        this.request = request; updateTitles();
+        updateGridLayout();
+        updateHorizontalListView();
+    }
 
     private void updateTitles() {
-        dateLabelView.setText(request.date);
+        dateLabelView.setText(request.uploaded_at.toString());
         titleLabelView.setText(request.receiptType.name);
     }
 
     public void initialize() {
 //        addDragScrolling(horizontalScrollPane);
-        initFakeData();
+//        initFakeData();
 
         initDisableButton();
         appContext.getWidthReadProperty().addListener((obs, oldStatus, newStatus) -> {
@@ -236,15 +237,9 @@ public class DetailItemsController {
 
     //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
     @FXML
-    private void rollback(){}
+    private void confirmChanges(){}
     @FXML
-    private void confirmChanges(){
-        //todo should apply changes before returning items to the backend agent
-    }
-    @FXML
-    private void navigateBack(){}
+    private void navigateBack(){NavigationManager.getInstance().goBack();}
     @FXML
     private void navigateToProfile(){}
-    @FXML
-    private void Logout(){}
 }
