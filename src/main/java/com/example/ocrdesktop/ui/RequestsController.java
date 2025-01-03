@@ -1,18 +1,18 @@
 package com.example.ocrdesktop.ui;
 
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
 import com.example.ocrdesktop.utils.PackageApprovalItem;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.animation.TranslateTransition;
@@ -34,6 +34,13 @@ public class RequestsController {
     @FXML
     public Pane sideMenu;
     public AnchorPane mainContent;
+
+    public Label profileNameTopBanner;
+    public Label profileCompanyTopBanner;
+    public ImageView profilePictureSideMenuLabel;
+    public Label profileNameSideMenuLabel;
+    public Label profileRoleSideMenuLabel;
+
     ObservableList<PackageApprovalItem> lst = FXCollections.observableArrayList();
     private boolean isMenuVisible = false; // Tracks menu state
     @FXML
@@ -87,7 +94,19 @@ public class RequestsController {
         });
         //Main added items section
         customListView.getItems().addAll(lst);
-
+        setUpProfileInfo();
+    }
+    @FXML
+    private void setUpProfileInfo(){
+        String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().organization.name;
+        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("_", " ");
+        Platform.runLater(() -> {
+            profileNameTopBanner.setText(userName);
+            profileCompanyTopBanner.setText(organizationName);
+            profileNameSideMenuLabel.setText(userName);
+            profileRoleSideMenuLabel.setText(role);
+        });
     }
     @FXML
     private void toggleMenu() {

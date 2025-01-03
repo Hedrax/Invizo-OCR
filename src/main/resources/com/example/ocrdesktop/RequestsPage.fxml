@@ -12,7 +12,7 @@
 <AnchorPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="871.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.RequestsController">
     <AnchorPane fx:id="mainContent" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <HBox id="header" alignment="CENTER" prefHeight="56.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <AnchorPane id="headerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
+            <AnchorPane id="header" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
                 <ImageView fitHeight="66.0" fitWidth="55.0" layoutX="17.0" layoutY="18.0" onMouseClicked="#toggleMenu" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <Image url="@../images/3%20lines%20button.png" />
                     <viewport>
@@ -36,8 +36,8 @@
                         <padding>
                             <Insets left="7.0" />
                         </padding>
-                        <Label text="Gasser" textFill="WHITE" />
-                        <Label text="company" textFill="WHITE" />
+                        <Label fx:id="profileNameTopBanner" text="Gasser" textFill="WHITE" />
+                        <Label fx:id="profileCompanyTopBanner" text="company" textFill="WHITE" />
                     </VBox>
                 </HBox>
             </AnchorPane>
@@ -73,43 +73,45 @@
     </AnchorPane>
 
 
-        <!-- Side Menu -->
+
     <AnchorPane fx:id="sideMenu" minWidth="250.0" translateX="-300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <ImageView fitHeight="99.0" fitWidth="118.0" layoutX="77.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="30.0">
+        <ImageView fx:id="profilePictureSideMenuLabel" fitHeight="99.0" fitWidth="118.0" layoutX="77.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="30.0">
             <Image url="@../images/Ellipse%201.png" />
         </ImageView>
         <!-- Menu Items -->
-        <Label alignment="CENTER" layoutX="107.0" layoutY="136.0" styleClass="sub-title" text="Gasser" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="136.0" />
-        <Label alignment="CENTER" layoutX="103.0" layoutY="174.0" styleClass="item-label-date" text="Super Admin" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="173.0" />
-        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToAllRequests" prefHeight="41.0" styleClass="menu-label" text="Requests" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="252.0">
+        <Label fx:id="profileNameSideMenuLabel" alignment="CENTER" layoutX="107.0" layoutY="136.0" styleClass="sub-title" text="Gasser" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="136.0" />
+        <Label fx:id="profileRoleSideMenuLabel" alignment="CENTER" layoutX="103.0" layoutY="174.0" styleClass="item-label-date" text="Super Admin" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="173.0" />
+        <Label layoutY="209.0" prefHeight="41.0" styleClass="menu-label" text="Main Page" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="211.0">
             <padding>
                 <Insets left="20.0" />
-            </padding>
-        </Label>
-        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToSheets" prefHeight="41.0" styleClass="menu-label" text="View All Sheets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="211.0">
+            </padding></Label>
+        <Label disable="true" layoutY="293.0" onMouseClicked="#navigateToAllRequests" prefHeight="41.0" styleClass="menu-label" text="Requests" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="293.0">
             <padding>
                 <Insets left="20.0" />
-            </padding>
-        </Label>
-        <Label layoutY="375.0" onMouseClicked="#navigateToProfile" prefHeight="41.0" styleClass="menu-label" text="Profile" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="333.0">
+            </padding></Label>
+        <Label layoutY="251.0" onMouseClicked="#navigateToSheets" prefHeight="41.0" styleClass="menu-label" text="View All Sheets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="252.0">
             <padding>
                 <Insets left="20.0" />
-            </padding>
-        </Label>
-        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToUsersManger" prefHeight="41.0" styleClass="menu-label" text="Manage Users" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="293.0">
+            </padding></Label>
+        <Label layoutY="376.0" onMouseClicked="#navigateToProfile" prefHeight="41.0" styleClass="menu-label" text="Profile" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="375.0">
             <padding>
                 <Insets left="20.0" />
-            </padding>
-        </Label>
-        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#navigateToSettings" prefHeight="41.0" styleClass="menu-label" text="Settings" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="374.0">
+            </padding></Label>
+        <Label layoutY="334.0" onMouseClicked="#navigateToUsersManger" prefHeight="41.0" styleClass="menu-label" text="Manage Users" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="334.0">
             <padding>
                 <Insets left="20.0" />
-            </padding>
-        </Label>
-        <Label layoutX="26.0" layoutY="279.0" onMouseClicked="#Logout" prefHeight="41.0" styleClass="menu-label" text="Logout" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="417.0">
+            </padding></Label>
+        <Label layoutY="417.0" onMouseClicked="#navigateToSettings" prefHeight="41.0" styleClass="menu-label" text="Settings" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="416.0">
             <padding>
                 <Insets left="20.0" />
-            </padding>
-        </Label>
+            </padding></Label>
+        <Label layoutY="458.0" onMouseClicked="#Logout" prefHeight="41.0" styleClass="menu-label" text="Logout" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="457.0">
+            <padding>
+                <Insets left="20.0" />
+            </padding></Label>
+        <ImageView fitHeight="21.0" fitWidth="21.0" layoutX="254.0" layoutY="20.0" onMouseClicked="#toggleMenu" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="20.0">
+            <Image url="@../images/close-button.png" />
+        </ImageView>
     </AnchorPane>
+
 </AnchorPane>
