@@ -45,6 +45,28 @@
                 </StackPane>
             </AnchorPane>
         </HBox>
+        <VBox fx:id="hListContainer" alignment="CENTER" layoutX="251.0" layoutY="24.0" prefHeight="200.0" prefWidth="100.0" translateX="1600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="129.0">
+            <ScrollPane fx:id="horizontalScrollPane" fitToHeight="true" nodeOrientation="LEFT_TO_RIGHT" vbarPolicy="NEVER" VBox.vgrow="NEVER">
+                <HBox fx:id="horizontalItemsView" alignment="CENTER_LEFT" spacing="15.0" />
+            </ScrollPane>
+        </VBox>
+      <HBox fx:id="controlButtonsPanel" alignment="CENTER" spacing="22.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Button mnemonicParsing="false" snapToPixel="false" style="-fx-font-size: 20px; -fx-background-color: #B41C1C;" text="Cancel" textAlignment="CENTER" onMouseClicked="#navigateBack">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <Button alignment="CENTER" layoutX="378.0" layoutY="10.0" mnemonicParsing="false" snapToPixel="false" style="-fx-font-size: 20px;" text="Confirm Request" textAlignment="CENTER" onMouseClicked="#confirmChanges">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+         </children>
+         <padding>
+            <Insets left="30.0" />
+         </padding>
+      </HBox>
         <ScrollPane fx:id="gridScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutY="129.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="129.0">
             <GridPane fx:id="gridPane" alignment="TOP_CENTER">
 
@@ -53,24 +75,19 @@
             <Insets left="15.0" />
          </padding>
         </ScrollPane>
-        <VBox fx:id="hListContainer" alignment="CENTER" layoutX="251.0" layoutY="24.0" prefHeight="200.0" prefWidth="100.0" translateX="1600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="129.0">
-            <ScrollPane fx:id="horizontalScrollPane" fitToHeight="true" nodeOrientation="LEFT_TO_RIGHT" vbarPolicy="NEVER" VBox.vgrow="NEVER">
-                <HBox fx:id="horizontalItemsView" alignment="CENTER_LEFT" spacing="15.0" />
-            </ScrollPane>
-        </VBox>
         <Label fx:id="titleLabelView" layoutX="38.0" layoutY="78.0" styleClass="request-view-title-label" text="Recipt 1" textAlignment="CENTER" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="78.0">
            <font>
                <Font size="27.0" />
            </font>
         </Label>
         <Label fx:id="dateLabelView" layoutX="646.0" layoutY="89.0" styleClass="request-view-date-label" text="10-10-2024 (12:00PM)" AnchorPane.rightAnchor="28.799999999999955" AnchorPane.topAnchor="89.0" />
-        <StackPane fx:id="sliding_button_right" layoutX="300" layoutY="350" onMouseClicked="#showHList" prefHeight="60" prefWidth="60" styleClass="hover-hand" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="30.0">
-            <Rectangle arcHeight="20" arcWidth="20" fill="lightgray" height="40" width="40" />
-            <Text style="-fx-font-size: 24;" text="&gt;" />
-        </StackPane>
-        <StackPane fx:id="sliding_button_left" layoutX="300" layoutY="350" onMouseClicked="#showGrid" prefHeight="60" prefWidth="60" styleClass="hover-hand" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0">
-            <Rectangle arcHeight="20" arcWidth="20" fill="lightgray" height="40" width="40" />
-            <Text style="-fx-font-size: 24;" text="&lt;" />
-        </StackPane>
     </AnchorPane>
+     <StackPane fx:id="sliding_button_right" onMouseClicked="#showHList" prefHeight="60" prefWidth="60" styleClass="hover-hand" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="30.0">
+         <Rectangle arcHeight="20" arcWidth="20" fill="lightgray" height="40" width="40" />
+         <Text style="-fx-font-size: 24;" text="&gt;" />
+     </StackPane>
+     <StackPane fx:id="sliding_button_left" onMouseClicked="#showGrid" prefHeight="60" prefWidth="60" styleClass="hover-hand" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0">
+         <Rectangle arcHeight="20" arcWidth="20" fill="lightgray" height="40" width="40" />
+         <Text style="-fx-font-size: 24;" text="&lt;" />
+     </StackPane>
 </AnchorPane>

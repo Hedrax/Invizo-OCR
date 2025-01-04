@@ -113,7 +113,7 @@ public class NavigationManager {
     //TODO to add a page
     // Simply add the path in static final string and a function like the below
     public static final String MAIN_PAGE = "/com/example/ocrdesktop/main_layout.fxml";
-    public static final String DETAIL_ITEMS = "/com/example/ocrdesktop/detail_items.fxml";
+    public static final String DETAIL_ITEMS = "/com/example/ocrdesktop/detail_request.fxml";
     public static final String SIGNUP_PAGE = "/com/example/ocrdesktop/SignUpPage.fxml";
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";

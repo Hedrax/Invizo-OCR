@@ -119,4 +119,24 @@ public class Remote {
         // delete the users from the production database
         // if error try again or handle error in the calling function
     }
+
+    public void updateReceipts(ObservableList<Receipt> receipts) {
+        //TODO Rewan
+        // update the receipts in the production database
+        // "Note the incoming receipts are the approved ones and the status is already set to approved"
+        // if error try again or handle error in the calling function
+    }
+
+    public void deleteReceipts(List<Receipt> receiptsToDelete) {
+        //TODO Rewan
+        // delete the receipts from the production database
+        // if error try again or handle error in the calling function
+    }
+
+    public void updateRequest(Request request) {
+        //TODO Rewan
+        // update the request in the production database
+        // "Note the incoming request are the processed ones and the status is already set to processed"
+        // if error try again or handle error in the calling function
+    }
 }

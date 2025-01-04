@@ -63,11 +63,8 @@ public class RequestItemBoxController {
     }
 
 
-
-    //TODO
     void callBackChanges(){
         confirmed.set(true);
-
     }
     void disableButton(){
         this.confirmButton.setDisable(true);

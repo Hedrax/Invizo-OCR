@@ -2,6 +2,7 @@ package com.example.ocrdesktop.ui;
 
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
+import com.example.ocrdesktop.data.Repo;
 import com.example.ocrdesktop.ui.subelements.RequestItemBoxController;
 import com.example.ocrdesktop.utils.*;
 import javafx.animation.TranslateTransition;
@@ -9,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -28,7 +30,6 @@ public class DetailRequestController {
     public Request request;
     //Others
     public AnchorPane mainContent;
-    private final NavigationManager navigationController = NavigationManager.getInstance();
     public HBox horizontalItemsView;
     public ScrollPane horizontalScrollPane;
     public StackPane sliding_button_right;
@@ -37,10 +38,12 @@ public class DetailRequestController {
     public VBox hListContainer;
     public Label titleLabelView;
     public Label dateLabelView;
+    public HBox controlButtonsPanel;
+    private final Repo repo = new Repo();
     //1 -> right
     //0 -> left
     private int currentScreen = 0;
-    private ObservableList<Receipt> itemsToDelete = observableArrayList();
+    private ObservableList<Receipt> receiptsToDelete = observableArrayList();
     private final AppContext appContext = AppContext.getInstance();
     @FXML
     private GridPane gridPane;
@@ -48,9 +51,6 @@ public class DetailRequestController {
     private final int CELL_WIDTH = 190;  // Fixed cell width
     private final int CELL_HEIGHT = 190; // Fixed cell height
     private int nextWidth = 0;
-
-    HashMap<String, Integer> idToIdx = new HashMap<>();
-
 
     public void addNewCell(Receipt receipt) {
         receipt.imagePath = CachingManager.getInstance().CheckOrCacheImage(request, receipt.imageUrl);
@@ -123,7 +123,7 @@ public class DetailRequestController {
             controller.confirmed.addListener((obs,old, val)->{request.receipts.set(idx, controller.getData());});
             controller.deleted.addListener((obs,old, val)->{
                 if (val) {
-                    itemsToDelete.add(request.receipts.get(idx));
+                    receiptsToDelete.add(request.receipts.get(idx));
                     horizontalItemsView.getChildren().remove(pane);
                 }
             });
@@ -181,7 +181,10 @@ public class DetailRequestController {
     @FXML
     private void showGrid(){
         currentScreen = 0;
+
 //        updateGridLayout();
+        controlButtonsPanel.setVisible(true);
+        controlButtonsPanel.setDisable(false);
         hideButton(sliding_button_left);
         showButton(sliding_button_right);
         dragScreenRight();
@@ -189,10 +192,14 @@ public class DetailRequestController {
     @FXML
     private void showHList(){
         currentScreen = 1;
+
 //        updateHorizontalListView();
         hideButton(sliding_button_right);
         showButton(sliding_button_left);
         dragScreenLeft();
+
+        controlButtonsPanel.setVisible(true);
+        controlButtonsPanel.setDisable(false);
 
     }
 
@@ -228,16 +235,33 @@ public class DetailRequestController {
         updateHorizontalListView();
 
         addDragScrolling(horizontalScrollPane);
-
-
-
-
-
     }
-
-    //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    boolean checkAllConfirmed(){
+        for (Receipt receipt : request.receipts) {
+            if (receipt.status != Receipt.ReceiptStatus.APPROVED) {
+                showAlert("All Receipts must be confirmed.");
+                return false;
+            }
+        }
+        return true;
+    }
     @FXML
-    private void confirmChanges(){}
+    private void confirmChanges(){
+        //Check that every Receipt has a confirmed Status
+        if (!checkAllConfirmed()) return;
+        request.receipts.removeAll(receiptsToDelete);
+        request.status = Request.RequestStatus.COMPLETED;
+        repo.confirmRequest(request, receiptsToDelete);
+
+        navigateBack();
+    }
     @FXML
     private void navigateBack(){NavigationManager.getInstance().goBack();}
     @FXML

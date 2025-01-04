@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.ocrdesktop.data.Local.*;
 import static com.example.ocrdesktop.data.Local.refreshReceiptType;
@@ -214,4 +215,16 @@ public class Repo {
     }
 
 
+    public void confirmRequest(Request request, List<Receipt> receiptsToDelete) {
+        AtomicInteger response = new AtomicInteger(400);
+
+        remote.updateReceipts(request.receipts);
+        remote.deleteReceipts(receiptsToDelete);
+        remote.updateRequest(request);
+
+        //TODO ALI
+        // update the receipts in the local database
+        // delete the receipts in the local database
+        // update the request in the local database
+    }
 }
