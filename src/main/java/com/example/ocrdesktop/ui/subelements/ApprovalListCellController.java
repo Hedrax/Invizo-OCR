@@ -1,5 +1,6 @@
 package com.example.ocrdesktop.ui.subelements;
 
+import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.utils.CachingManager;
 import com.example.ocrdesktop.utils.Request;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -13,65 +14,42 @@ import javafx.scene.image.Image;
 import java.nio.file.Files;
 
 import com.example.ocrdesktop.utils.Request.RequestStatus;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 
 public class ApprovalListCellController extends ListCell<Request>{
 
+    Request request;
     @FXML
     public ImageView item_image;
     @FXML
     private final ReadOnlyObjectWrapper<Boolean> navigateToDetailFlag = new ReadOnlyObjectWrapper<>();
-
+    public StackPane statusStackPane;
+    public Text statusText;
     @FXML
     private Label title;
-
     @FXML
     private Label count;
     @FXML
     private Label date;
 
-    @FXML
-    private Label confirm;
     private RequestStatus status = RequestStatus.PENDING;
-    private final ReadOnlyObjectWrapper<RequestStatus> statusReader = new ReadOnlyObjectWrapper<>();
 
-    //Observable flags functions
-    public final ReadOnlyObjectProperty<RequestStatus> getStatus() {
-        return statusReader.getReadOnlyProperty();
-    }
-
-    public final ReadOnlyObjectProperty<Boolean> navigateToDetail() {
-        return navigateToDetailFlag.getReadOnlyProperty();
-    }
-    @FXML
-    private void check() {
-        if (status == RequestStatus.COMPLETED) {
-            {
-                this.confirm.setDisable(true);
-                this.confirm.setText("Confirmed");
-            }
-        }
-    }
-    @FXML
-    private void Confirm(){
-
-        this.statusReader.set(RequestStatus.COMPLETED);
-        this.status = RequestStatus.COMPLETED;
-        check();
-        //Todo call the backend process corresponds to confirming an request
-    }
     @FXML
     private void ViewItem(){
-        //TODO navigate to the items details
-        navigateToDetailFlag.setValue(true);
+        NavigationManager.getInstance().navigateToDetailRequest(request);
     }
 
     @FXML
     public void setData(Request request){
+        this.request = request;
 
         this.title.setText(request.receiptType.name);
         this.count.setText(request.receipts.size() + " images");
         this.date.setText(request.uploaded_at.toString());
         this.status = request.status;
+        setStatusVisual(status);
+
 //        It only works with the absolute path
         try {
             this.item_image.setImage(new Image(
@@ -82,7 +60,16 @@ public class ApprovalListCellController extends ListCell<Request>{
         }catch (Exception e){
             e.printStackTrace();
         }
-        check();
+    }
+
+    private void setStatusVisual(RequestStatus status) {
+        if (status == RequestStatus.PENDING) {
+            this.statusText.setText("!");
+            this.statusStackPane.setStyle("-fx-background-color: #ffcc00; -fx-background-radius: 30px;");
+        } else{
+            this.statusText.setText("✔");
+            this.statusStackPane.setStyle("-fx-background-color: #18A661;; -fx-background-radius: 30px;");
+        }
     }
 
 }

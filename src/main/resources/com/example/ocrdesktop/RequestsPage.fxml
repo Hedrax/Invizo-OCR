@@ -5,11 +5,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.input.*?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
-<AnchorPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="871.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.RequestsController">
+<AnchorPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="871.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.RequestsController">
     <AnchorPane fx:id="mainContent" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <HBox id="header" alignment="CENTER" prefHeight="56.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <AnchorPane id="header" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
@@ -44,7 +41,7 @@
         </HBox>
         <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="main_body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0">
             <!-- Filters Section - Positioned on Top, Left to Right -->
-            <HBox layoutX="20.0" layoutY="20.0" spacing="15.0" alignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0">
+            <HBox alignment="CENTER" layoutX="20.0" layoutY="20.0" spacing="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                 <!-- From Date -->
                 <Label text="From Date:" />
                 <DatePicker fx:id="fromDatePicker" promptText="Select Start Date" />
@@ -55,18 +52,22 @@
 
                 <!-- Receipt Type -->
                 <Label text="Receipt Type:" />
-                <ComboBox fx:id="receiptTypeComboBox" promptText="Select Receipt Type"/>
+                <ComboBox fx:id="receiptTypeComboBox" promptText="Select Receipt Type" />
                 <!-- Filter Button -->
-                <Button text="Apply Filter" onMouseClicked="#onFilterClicked" />
+                <Button onMouseClicked="#onFilterClicked" text="Apply Filter" />
             </HBox>
 
 
 
 
             <!-- ListView Section - Positioned Below Filters -->
-            <AnchorPane layoutX="20.0" layoutY="80.0" prefHeight="373.0" styleClass="recent-items" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="80.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="0.0">
+            <AnchorPane layoutX="20.0" layoutY="80.0" prefHeight="373.0" styleClass="recent-items" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="80.0">
                 <Label alignment="CENTER" layoutX="42.0" layoutY="23.0" styleClass="sub-title" text="All Items" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="18.0" />
-                <ListView fx:id="customListView" layoutY="174.0" prefHeight="200.0" styleClass="main_listView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="70.0" />
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="86.0" layoutY="-43.0" pickOnBounds="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="63.0">
+               <content>
+                      <VBox fx:id="requestsListVBox" prefHeight="200.0" prefWidth="200.0" styleClass="main_listView" />
+               </content>
+            </ScrollPane>
             </AnchorPane>
         </AnchorPane>
 
@@ -81,7 +82,7 @@
         <!-- Menu Items -->
         <Label fx:id="profileNameSideMenuLabel" alignment="CENTER" layoutX="107.0" layoutY="136.0" styleClass="sub-title" text="Gasser" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="136.0" />
         <Label fx:id="profileRoleSideMenuLabel" alignment="CENTER" layoutX="103.0" layoutY="174.0" styleClass="item-label-date" text="Super Admin" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="173.0" />
-        <Label layoutY="209.0" prefHeight="41.0" styleClass="menu-label" text="Main Page" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="211.0">
+        <Label layoutY="209.0" prefHeight="41.0" styleClass="menu-label" text="Main Page" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="211.0" onMouseClicked="#navigateToMainPage">
             <padding>
                 <Insets left="20.0" />
             </padding></Label>

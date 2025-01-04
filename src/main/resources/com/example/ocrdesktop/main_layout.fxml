@@ -45,7 +45,12 @@
             <AnchorPane layoutX="40.0" layoutY="106.0" prefHeight="373.0" prefWidth="791.0" styleClass="recent-items" AnchorPane.bottomAnchor="29.799999999999955" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="103.0">
                 <Label alignment="CENTER" layoutX="42.0" layoutY="23.0" styleClass="sub-title" text="Recent Items" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="18.0" />
                 <Label alignment="CENTER" layoutX="588.0" layoutY="23.0" onMouseClicked="#Refresh" prefHeight="38.0" prefWidth="170.0" styleClass="confirm-all" text="Refresh" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="18.0" />
-                <ListView fx:id="customListView" layoutY="174.0" prefHeight="200.0" prefWidth="200.0" styleClass="main_listView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="70.0" />
+            <ScrollPane fx:id="scrollPane" cacheHint="QUALITY" cacheShape="false" fitToHeight="true" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" layoutX="264.0" layoutY="115.0" snapToPixel="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="61.0">
+               <content>
+
+                      <VBox fx:id="requestsListVBox" cacheHint="QUALITY" cacheShape="false" pickOnBounds="false" prefHeight="200.0" prefWidth="200.0" styleClass="main_listView" />
+               </content>
+            </ScrollPane>
             </AnchorPane>
         </AnchorPane>
     </AnchorPane>

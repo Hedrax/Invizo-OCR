@@ -4,27 +4,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#ViewItem" prefHeight="100.0" prefWidth="634.0" styleClass="list-cell" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.ApprovalListCellController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#ViewItem" prefHeight="128.0" prefWidth="634.0" styleClass="list-cell" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.ApprovalListCellController">
    <children>
-      <Pane layoutX="441.0" layoutY="6.0" onMouseClicked="#ViewItem" prefHeight="94.0" prefWidth="52.0" styleClass="list_cell_view_item_button" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="16.0">
+      <StackPane fx:id="statusStackPane" layoutX="441.0" layoutY="6.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: #18A661;; -fx-background-radius: 30px;" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="48.0">
          <children>
-            <ImageView fitHeight="19.0" fitWidth="22.0" layoutX="17.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
-               <Image url="@../images/chevron-right.png" />
-            </ImageView>
+            <Text fx:id="statusText" boundsType="VISUAL" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="✔" />
          </children>
-      </Pane>
-      <Label fx:id="confirm" layoutX="466.0" layoutY="32.0" onMouseClicked="#Confirm" prefHeight="35.0" prefWidth="126.0" styleClass="button" text="Confirm" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="31.0" />
-      <HBox alignment="CENTER" layoutX="40.0" layoutY="17.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="33.0" AnchorPane.topAnchor="14.0">
-         <ImageView fx:id="item_image" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+      </StackPane>
+      <Label alignment="CENTER" layoutX="466.0" layoutY="32.0" onMouseClicked="#ViewItem" prefHeight="45.0" prefWidth="140.0" styleClass="view-items-button" text="View Detail" AnchorPane.rightAnchor="55.0" AnchorPane.topAnchor="40.0" />
+      <HBox alignment="CENTER" layoutX="40.0" layoutY="17.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <ImageView fx:id="item_image" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" smooth="false" HBox.hgrow="ALWAYS">
             <Image url="@../images/approval_request_default.png" />
+            <HBox.margin>
+               <Insets right="8.0" />
+            </HBox.margin>
          </ImageView>
-         <VBox prefHeight="75.0" prefWidth="162.0" spacing="1.0" HBox.hgrow="ALWAYS">
+         <VBox alignment="CENTER_LEFT" spacing="1.0" HBox.hgrow="ALWAYS">
             <HBox.margin>
                <Insets />
             </HBox.margin>
             <padding>
-               <Insets left="7.0" />
+               <Insets left="6.0" />
             </padding>
             <Label fx:id="title" styleClass="item-label" text="Items 1" VBox.vgrow="SOMETIMES">
                <VBox.margin>

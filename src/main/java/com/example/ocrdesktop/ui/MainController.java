@@ -9,16 +9,20 @@ import com.example.ocrdesktop.utils.ReceiptType;
 import com.example.ocrdesktop.utils.Request;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.animation.TranslateTransition;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -35,55 +39,45 @@ public class MainController{
     public ImageView profilePictureSideMenuLabel;
     public Label profileNameSideMenuLabel;
     public Label profileRoleSideMenuLabel;
+    public ScrollPane scrollPane;
     ObservableList<Request> lst = FXCollections.observableArrayList();
     private boolean isMenuVisible = false; // Tracks menu state
     @FXML
-    private ListView<Request> customListView = new ListView<>();
+    private VBox requestsListVBox;
 
 
+    @FXML
+    void addRequestCell(Request request) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/ApprovalListCell.fxml"));
+        AnchorPane pane = loader.load();
+
+        ApprovalListCellController controller = loader.getController();
+        controller.setData(request);
+
+        requestsListVBox.getChildren().add(pane);
+    }
+
+
+    @FXML
     public void initialize() {
         // Set data for the custom cell
-        customListView.setCellFactory((ListView<Request> param) -> new ApprovalListCellController() {
-            @Override
-            protected void updateItem(Request request, boolean empty) {
-                super.updateItem(request, empty);
-                if (empty || request == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    try {
-                        // Load the custom cell layout
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/ApprovalListCell.fxml"));
-                        AnchorPane cellLayout = loader.load();
-
-                        // Set data for the custom cell
-                        ApprovalListCellController controller = loader.getController();
-                        controller.setData(request);
-                        setGraphic(cellLayout);
-                        controller.getStatus().addListener((obs, oldStatus, newStatus) -> {
-                            request.status = newStatus;
-                            //Todo implement the backend logic of confirming an request
-                        });
-
-                        controller.navigateToDetail().addListener((obs, oldStatus, newStatus) -> {
-                            //Todo implement the backend logic of confirming an request
-                            if (newStatus == true) {
-                                NavigationManager.getInstance().navigateToDetailRequest(request);
+        lst.addListener((ListChangeListener<? super Request>) (change) -> {
+                    while (change.next()) {
+                        if (change.wasAdded()) {
+                            for (Request request : change.getAddedSubList()) {
+                                try {
+                                    addRequestCell(request);
+                                }catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        });
-
-                        controller.setFocusTraversable(true);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        }
                     }
-                }
-            }
 
-
-        });
+                });
         initFakeData();
-        customListView.getItems().addAll(lst);
+
+        setUpProfileInfo();
     }
     void initFakeData(){
         //The following only for testing
@@ -95,7 +89,7 @@ public class MainController{
     }
 
     private Request initFakeRequest(){
-        Request request = new Request("lol", Request.RequestStatus.PENDING.toString() ,"admin", Timestamp.valueOf("2001-01-01 12:00:00"));
+        Request request = new Request("lol", Request.RequestStatus.PENDING.name() ,"admin", Timestamp.valueOf("2001-01-01 12:00:00"));
         HashMap<String, Integer> column2IdxMap = new HashMap<>();
         column2IdxMap.put("Item", 0);
         column2IdxMap.put("Price", 1);
@@ -171,12 +165,6 @@ public class MainController{
         }
     }
 
-    public MainController()  {
-//        provideFakeListingData();
-        this.initialize();
-        setUpProfileInfo();
-
-    }
     @FXML
     private void setUpProfileInfo(){
         String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;

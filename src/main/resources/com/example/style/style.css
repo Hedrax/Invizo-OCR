@@ -53,14 +53,14 @@
 
 .item-label {
     -fx-font-family: Zen Kaku Gothic Antique;
-    -fx-font-size: 24px;
+    -fx-font-size: 26px;
     -fx-text-align: left;
     -fx-text-underline-position: from-font;
     -fx-text-decoration-skip-ink: none;
 }
 .item-label-count{
     -fx-font-family: Zen Kaku Gothic Antique;
-    -fx-font-size: 13px;
+    -fx-font-size: 16px;
     -fx-font-weight: 400;
     -fx-text-align: left;
     -fx-text-underline-position: from-font;
@@ -68,7 +68,7 @@
 }
 .item-label-date{
     -fx-font-family: Zen Kaku Gothic Antique;
-    -fx-font-size: 13px;
+    -fx-font-size: 16px;
     -fx-font-weight: 400;
     -fx-text-align: left;
     -fx-text-underline-position: from-font;
