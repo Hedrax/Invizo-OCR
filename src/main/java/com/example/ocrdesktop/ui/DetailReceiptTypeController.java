@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
-public class DetailReceipt {
+public class DetailReceiptTypeController {
     public Dictionary <String, ENTRY_TYPE> typeDictStr2Entry = new Hashtable<>();
     public Dictionary <ENTRY_TYPE, String> typeDictEntry2Str = new Hashtable<>();
     public ImageView imageView;

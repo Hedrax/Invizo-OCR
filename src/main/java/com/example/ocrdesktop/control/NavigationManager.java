@@ -118,7 +118,7 @@ public class NavigationManager {
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";
     public static final String REQUESTS_PAGE = "/com/example/ocrdesktop/RequestsPage.fxml";
-    public static final String DETAIL_RECEIPT = "/com/example/ocrdesktop/detail_receipt.fxml";
+    public static final String DETAIL_RECEIPT = "/com/example/ocrdesktop/detail_receipt_type.fxml";
     public static final String USERS_CONTROLLER = "/com/example/ocrdesktop/users_controller.fxml";
 
 
