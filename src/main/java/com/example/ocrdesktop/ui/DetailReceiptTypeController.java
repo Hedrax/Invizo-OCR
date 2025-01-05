@@ -230,9 +230,12 @@ public class DetailReceiptTypeController {
 
         // Update the label with the file path or show "No file selected" if canceled
         if (selectedFile != null) {
+            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
             imageFilePath = selectedFile.getAbsolutePath();
             filePathLabel.setText(imageFilePath);
-            Image image = new Image(imageFilePath);
+            Image image = new Image(
+                    selectedFile.toURI().toString(),812, 614, true, true);
+
             setImage(image);
         } else {
             filePathLabel.setText("No file selected");
@@ -419,13 +422,6 @@ public class DetailReceiptTypeController {
         setupListView();
         setupTextFields();
         setCheckBox();
-
-        try {
-            //init Fake data from an existing JSON
-            setData(new ReceiptTypeJSON("D:\\Receipt 1.json"));
-
-        }
-        catch (Exception ignore){};
     }
     //navigation
     @FXML

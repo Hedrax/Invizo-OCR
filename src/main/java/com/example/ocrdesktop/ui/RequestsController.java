@@ -170,6 +170,10 @@ public class RequestsController {
     @FXML
     private void navigateToProfile(){}
     @FXML
+    private void navigateToReceiptsTemplates() {
+        NavigationManager.getInstance().navigateToIntroReceiptTypePage();
+    }
+    @FXML
     private void navigateToSettings(){}
     @FXML
     private void Logout(){}

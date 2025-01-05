@@ -84,7 +84,7 @@
             <padding>
                 <Insets left="20.0" />
             </padding></Label>
-        <Label layoutY="376.0" onMouseClicked="#navigateToProfile" prefHeight="41.0" styleClass="menu-label" text="Profile" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="375.0">
+        <Label layoutY="376.0" onMouseClicked="#navigateToReceiptsTemplates" prefHeight="41.0" styleClass="menu-label" text="Receipt Templates" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="375.0">
             <padding>
                 <Insets left="20.0" />
             </padding></Label>

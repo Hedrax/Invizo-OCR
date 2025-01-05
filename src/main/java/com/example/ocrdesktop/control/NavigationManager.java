@@ -1,7 +1,9 @@
 package com.example.ocrdesktop.control;
 
 import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.ui.DetailReceiptTypeController;
 import com.example.ocrdesktop.ui.DetailRequestController;
+import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -138,8 +140,9 @@ public class NavigationManager {
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";
     public static final String REQUESTS_PAGE = "/com/example/ocrdesktop/RequestsPage.fxml";
-    public static final String DETAIL_RECEIPT = "/com/example/ocrdesktop/detail_receipt_type.fxml";
+    public static final String DETAIL_RECEIPT_TYPE = "/com/example/ocrdesktop/detail_receipt_type.fxml";
     public static final String USERS_CONTROLLER = "/com/example/ocrdesktop/users_controller.fxml";
+    public static final String INTRO_TO_RECEIPT_TYPE = "/com/example/ocrdesktop/receipt_types_layout.fxml";
 
 
     //NAVIGATION FUNCTIONS
@@ -151,10 +154,18 @@ public class NavigationManager {
             else controller.setData(request);
         }
         else System.out.println("Not Authorized");}
+    public void navigateToDetailReceiptType(ReceiptTypeJSON receiptTypeJSON){
+        if (authorized){
+            DetailReceiptTypeController controller = (DetailReceiptTypeController) navigate(DETAIL_RECEIPT_TYPE);
+            if  (controller == null) System.out.println("Controller is null");
+            else controller.setData(receiptTypeJSON);
+        }
+        else System.out.println("Not Authorized");}
+
     public void navigateToSHOWCSVs(){if (authorized) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
-    public void navigateToDetailReceipt(){if (authorized) navigate(DETAIL_RECEIPT); else System.out.println("Not Authorized");}
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}
     public void navigateToLogin(){navigate(LOGIN_PAGE);}
     public void navigateToRequestsPage(){if (authorized) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
+    public void navigateToIntroReceiptTypePage(){if (authorized) navigate(INTRO_TO_RECEIPT_TYPE); else System.out.println("Not Authorized");}
     public void navigateToUsersControllerPage(){if (authorized) navigate(USERS_CONTROLLER); else System.out.println("Not Authorized");}
 }

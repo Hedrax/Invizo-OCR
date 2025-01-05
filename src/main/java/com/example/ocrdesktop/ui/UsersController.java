@@ -167,9 +167,12 @@ public class UsersController {
     private void navigateToSettings(){}
     @FXML
     private void Logout(){try{NavigationManager.getInstance().logout();}catch (Exception e){e.printStackTrace();}}
-
+    @FXML
     public void navigateToMain() { NavigationManager.getInstance().navigateToMainPage(); }
-
+    @FXML
+    private void navigateToReceiptsTemplates() {
+        NavigationManager.getInstance().navigateToIntroReceiptTypePage();
+    }
     @FXML
     private void confirmUpdates(){
         //make a callback to the repo with the updates

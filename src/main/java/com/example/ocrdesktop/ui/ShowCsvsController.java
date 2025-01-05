@@ -248,6 +248,10 @@ public class ShowCsvsController {
         NavigationManager.getInstance().navigateToUsersControllerPage();
     }
     @FXML
+    private void navigateToReceiptsTemplates() {
+        NavigationManager.getInstance().navigateToIntroReceiptTypePage();
+    }
+    @FXML
     private void navigateToProfile(){}
     @FXML
     private void navigateToSettings(){}
