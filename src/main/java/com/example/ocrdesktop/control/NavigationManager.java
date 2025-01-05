@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
 
@@ -50,6 +51,24 @@ public class NavigationManager {
         backStack.pop();
         navigate(backStack.peek());
     }
+    private void makeSavingDirs(){
+        checkDir(AppContext.getInstance().JSONsSavingDir);
+        checkDir(AppContext.getInstance().PhotoSavingDir);
+        checkDir(AppContext.getInstance().SheetsSavingDir);
+    }
+
+    private void checkDir(String directoryPath) {
+        // Create a File object for the directory
+        File directory = new File(directoryPath);
+
+        // Check if the directory exists
+        if (!directory.exists()) {
+            // Create the directory if it doesn't exist
+            if (!directory.mkdirs()) {
+                System.out.println("Failed to create directory: " + directoryPath);
+            }
+        }
+    }
 
     public void clearBackStack() {
         backStack.clear();
@@ -60,6 +79,7 @@ public class NavigationManager {
     public void logout() throws IOException {authorized = false; start(currentStage);}
 
     public void start(Stage stage) throws IOException {
+        makeSavingDirs();
         currentStage = stage;
         if (authorized) startMain();
         else startLogin();

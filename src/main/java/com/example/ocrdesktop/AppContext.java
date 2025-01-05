@@ -4,6 +4,8 @@ import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.stage.Stage;
 
+import java.io.File;
+
 
 //Note: that you can append variables to the class based on the required,
 // but never modify without notifying the rest of the team
@@ -15,9 +17,11 @@ public class AppContext {
     private AuthorizationInfo authorizationInfo;
 
     //Saving Directory Property
-    public String JSONsSavingDir = "D:\\";
-    public String PhotoSavingDir = "D:\\";
-    public String SheetsSavingDir = "D:\\";
+
+    String WorkingDir = System.getProperty("user.dir");
+    public String JSONsSavingDir = WorkingDir+ "/JSONS/";
+    public String PhotoSavingDir = WorkingDir+ "/Receipts/";
+    public String SheetsSavingDir = WorkingDir+ "/CSVs/";
 
 
     // Properties to store globally accessible objects

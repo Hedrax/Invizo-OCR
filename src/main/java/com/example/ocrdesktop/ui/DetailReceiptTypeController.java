@@ -1,5 +1,6 @@
 package com.example.ocrdesktop.ui;
 
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.data.Repo;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
@@ -221,6 +222,7 @@ public class DetailReceiptTypeController {
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
+        fileChooser.setInitialDirectory(new File(AppContext.getInstance().JSONsSavingDir));
 
         // Show the file chooser dialog
         Stage stage = (Stage) selectTemplateButton.getScene().getWindow();

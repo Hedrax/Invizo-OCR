@@ -98,8 +98,8 @@ public class MainController{
         ReceiptType receiptType = new ReceiptType("Dummy_id", "Receipt 1", column2IdxMap);
         request.setData(FXCollections.observableArrayList(), receiptType);
 
-        //Warning the following url will be expired in 4th of january 2025 9 PM
-        String sampleImageURL = "https://i.postimg.cc/J05t1LkG/sample-6.jpg";
+        //Warning the following url will be expired in 12th of january 2025 5 PM
+        String sampleImageURL = "https://i.postimg.cc/3xwK13f8/9.jpg";
         HashMap<Integer, String> idx2Value = new HashMap<>();
         idx2Value.put(0, "Item 1");
         idx2Value.put(1, "Item 2");

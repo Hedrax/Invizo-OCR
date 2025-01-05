@@ -163,6 +163,7 @@ public class ShowCsvsController {
 
         // Open a file chooser to select a destination
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(AppContext.getInstance().SheetsSavingDir));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         File file = fileChooser.showSaveDialog(csvTable.getScene().getWindow());
 
