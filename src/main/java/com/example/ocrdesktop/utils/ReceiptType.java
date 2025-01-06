@@ -22,4 +22,7 @@ public class ReceiptType {
     public ReceiptTypeJSON getJSON() {
         return new ReceiptTypeJSON(AppContext.getInstance().JSONsSavingDir + name+".json");
     }
+    public String toString() {
+        return name;
+    }
 }

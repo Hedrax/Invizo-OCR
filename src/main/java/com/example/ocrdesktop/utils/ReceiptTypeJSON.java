@@ -68,8 +68,14 @@ public class ReceiptTypeJSON {
     }
     public ReceiptTypeJSON(String JSONFilePath){
         StringBuilder content = new StringBuilder();
-        try (FileReader fr = new FileReader(JSONFilePath, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(fr)) {
+        if (!new File(JSONFilePath).exists()) {
+            System.out.println("JSON File does not exist");
+            this.templateJSON = null;
+            return;
+        }
+        try {
+            FileReader fr = new FileReader(JSONFilePath, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(fr);
 
             String str;
             while ((str = reader.readLine()) != null) {
@@ -77,7 +83,8 @@ public class ReceiptTypeJSON {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            templateJSON = null;
+            return;
         }
         // Parse the JSON string into a JSONObject
         templateJSON = new JSONObject(content.toString());

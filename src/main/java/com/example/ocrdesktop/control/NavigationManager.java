@@ -158,7 +158,13 @@ public class NavigationManager {
         if (authorized){
             DetailReceiptTypeController controller = (DetailReceiptTypeController) navigate(DETAIL_RECEIPT_TYPE);
             if  (controller == null) System.out.println("Controller is null");
-            else controller.setData(receiptTypeJSON);
+            else {
+                if (receiptTypeJSON != null){
+                    if (receiptTypeJSON.getJsonTemplate() == null)
+                        controller.retrievalError();
+                    else controller.setData(receiptTypeJSON);
+                }
+            }
         }
         else System.out.println("Not Authorized");}
 

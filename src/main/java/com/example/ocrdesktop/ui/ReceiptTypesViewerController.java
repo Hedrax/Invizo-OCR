@@ -2,6 +2,9 @@ package com.example.ocrdesktop.ui;
 
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
+import com.example.ocrdesktop.data.Repo;
+import com.example.ocrdesktop.utils.ReceiptType;
+import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -9,13 +12,15 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ReceiptTypesViewerController {
     @FXML
@@ -29,14 +34,46 @@ public class ReceiptTypesViewerController {
     public ChoiceBox typeCheckBox;
     public ImageView gifImage;
     private boolean isMenuVisible = false; // Tracks menu state
+    private static Repo repo = new Repo();
+    private List<ReceiptType> receiptTypes = new ArrayList<>();
 
     //TODO Callbacks
 @FXML
     void initialize() {
-    gifImage.setFitHeight(AppContext.getInstance().getStageHeight() - 150);
+    initOperation();
+    setupPhoto();
     setUpProfileInfo();
+//    initFakeData();
+    refreshCheckBox();
+
+
     }
 
+    private void initOperation() {
+        receiptTypes.addAll(repo.getReceiptTypes());
+    }
+    private void refreshCheckBox() {
+        typeCheckBox.getItems().clear();
+        try {
+            typeCheckBox.getItems().add("Create New Receipt Type");
+            typeCheckBox.setValue("Create New Receipt Type");
+            typeCheckBox.getItems().addAll(receiptTypes.toArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void initFakeData(){
+
+        receiptTypes.add(new ReceiptType("1", "Receipt Type 1", new HashMap<>()));
+        receiptTypes.add(new ReceiptType("2", "Receipt Type 2", new HashMap<>()));
+        receiptTypes.add(new ReceiptType("3", "Receipt Type 3", new HashMap<>()));
+        receiptTypes.add(new ReceiptType("4", "Receipt Type 4", new HashMap<>()));
+    }
+
+
+    private void setupPhoto() {
+        gifImage.setFitHeight(AppContext.getInstance().getStageHeight() - 150);
+    }
     @FXML
     private void toggleMenu() {
 
@@ -57,8 +94,6 @@ public class ReceiptTypesViewerController {
         transition.play();
         isMenuVisible = !isMenuVisible; // Toggle the menu state
     }
-
-
     @FXML
     private void navigateToAllRequests(){
         NavigationManager.getInstance().navigateToRequestsPage();}
@@ -100,5 +135,19 @@ public class ReceiptTypesViewerController {
 
     public void navigateToMain() {
         NavigationManager.getInstance().navigateToMainPage();
+    }
+    @FXML
+    private void proceed(){
+        if (typeCheckBox.getValue().equals("Create New Receipt Type")) {
+            NavigationManager.getInstance().navigateToDetailReceiptType(null);
+        } else {
+            AtomicReference<ReceiptTypeJSON> receiptTypeJSON = new AtomicReference<>();
+            receiptTypes.forEach(it->{
+                if (it.name.equals(typeCheckBox.getValue().toString())) {
+                    receiptTypeJSON.set(it.getJSON());
+                    NavigationManager.getInstance().navigateToDetailReceiptType(receiptTypeJSON.get());
+                }
+            });
+        }
     }
 }
