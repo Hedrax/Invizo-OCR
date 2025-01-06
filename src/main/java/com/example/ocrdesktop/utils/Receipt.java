@@ -7,6 +7,7 @@ import java.util.HashMap;
 public class Receipt {
     public String receiptId;
     public String receiptTypeName;
+    public String receiptTypeId;
     public String requestId;
     public String imageUrl;
     public ReceiptStatus status; // Can be converted to an Enum if needed
@@ -14,10 +15,22 @@ public class Receipt {
     public String approvedByUserId;
     public String approvedAt; // Use String for simplicity, convert to Date/Timestamp as needed
     public Path imagePath;
-
+// note that there are two Receipt constructor
+    // these constructor for ui
     public Receipt(String receiptId, String receiptTypeName, String requestId, String imageUrl, String status, HashMap<Integer, String> ocrData, String approvedByUserId, String approvedAt) {
         this.receiptId = receiptId;
         this.receiptTypeName = receiptTypeName;
+        this.requestId = requestId;
+        this.imageUrl = imageUrl;
+        this.status = ReceiptStatus.valueOf(status);
+        this.ocrData = ocrData;
+        this.approvedByUserId = approvedByUserId;
+        this.approvedAt = approvedAt;
+    }
+    // these constructor for remote class
+    public Receipt(String receiptId, HashMap<Integer, String> ocrData,String receiptTypeId, String requestId, String imageUrl, String status,  String approvedByUserId, String approvedAt) {
+        this.receiptId = receiptId;
+        this.receiptTypeId = receiptTypeId;
         this.requestId = requestId;
         this.imageUrl = imageUrl;
         this.status = ReceiptStatus.valueOf(status);

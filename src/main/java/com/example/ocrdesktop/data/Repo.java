@@ -157,8 +157,8 @@ public class Repo {
 
 
         // Adding receipts with dummy data
-        receipts.add(new Receipt("1", "Invoice", "1", "image1.png", Request.RequestStatus.PENDING.toString(), ocrData1, "user152", "2024-01-01"));
-        receipts.add(new Receipt("2", "Payment", "2", "image2.png", Request.RequestStatus.COMPLETED.toString(), ocrData2, "user153", "2025-01-01"));
+        receipts.add(new Receipt("1", ocrData1,"Invoice", "1", "image1.png", Request.RequestStatus.PENDING.toString(),  "user152", "2024-01-01"));
+        receipts.add(new Receipt("2",  ocrData2,"Payment", "2", "image2.png", Request.RequestStatus.PENDING.toString(), "user153", "2025-01-01"));
 
         return receipts;
     }

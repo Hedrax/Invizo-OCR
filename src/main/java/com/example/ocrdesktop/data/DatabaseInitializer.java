@@ -57,14 +57,14 @@ public class DatabaseInitializer {
         String createTableReceipt =
                 "CREATE TABLE IF NOT EXISTS receipt (" +
                         "receipt_id TEXT PRIMARY KEY, " +
-                        "receipt_type_name TEXT NOT NULL, " +
+                        "receipt_type_id TEXT NOT NULL, " +
                         "request_id TEXT NOT NULL, " +
                         "image_url TEXT NOT NULL, " +
                         "status TEXT NOT NULL DEFAULT 'PENDING', " +
                         "ocr_data TEXT, " +
                         "approved_by_user_id TEXT, " +
                         "approved_at TEXT, " +
-                        "FOREIGN KEY (receipt_type_name) REFERENCES receipt_type (name) ON DELETE CASCADE, " +
+                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (id) ON DELETE CASCADE, " +
                         "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE SET NULL " +
                         ");";
 

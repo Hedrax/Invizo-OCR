@@ -47,13 +47,13 @@ public class Local {
 
     public static void refreshReceipt(Connection localConnection, ObservableList<Receipt> receipts) throws SQLException {
         String insertOrUpdateReceiptSQL =
-                "INSERT OR REPLACE INTO receipt (receipt_id, receipt_type_name, request_id, image_url, status, ocr_data, approved_by_user_id, approved_at) " +
+                "INSERT OR REPLACE INTO receipt (receipt_id, receipt_type_id, request_id, image_url, status, ocr_data, approved_by_user_id, approved_at) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(insertOrUpdateReceiptSQL)) {
             for (Receipt receipt : receipts) {
                 preparedStatement.setString(1, receipt.receiptId);
-                preparedStatement.setString(2, receipt.receiptTypeName);
+                preparedStatement.setString(2, receipt.receiptTypeId);
                 preparedStatement.setString(3, receipt.requestId);
                 preparedStatement.setString(4, receipt.imageUrl);
                 preparedStatement.setString(5, receipt.status.toString());
