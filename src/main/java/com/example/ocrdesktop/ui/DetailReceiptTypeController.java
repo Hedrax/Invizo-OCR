@@ -331,7 +331,9 @@ public class DetailReceiptTypeController {
         Platform.runLater(receiptName::requestFocus);
         receiptName.focusedProperty().addListener((it, old, newVal)->{if (!newVal) receiptName.setEditable(false);});
     }
-
+    public void retrievalError(){
+        showAlert("Error in retrieving the receipt type");
+    }
     //Todo function to set the data when navigating to the receiptType page
     public void setData(ReceiptTypeJSON receiptTypeJSON){
         this.receiptTypeJSON = receiptTypeJSON;

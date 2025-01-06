@@ -227,4 +227,11 @@ public class Repo {
         // delete the receipts in the local database
         // update the request in the local database
     }
+
+    public List<ReceiptType> getReceiptTypes() {
+        List<ReceiptType> receiptTypes = new ArrayList<>();
+        //TODO ALI
+        // get all receiptTypes from the local database
+        return receiptTypes;
+    }
 }

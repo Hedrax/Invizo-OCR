@@ -42,52 +42,46 @@
                 </HBox>
             </AnchorPane>
         </HBox>
-      <AnchorPane layoutX="336.0" layoutY="182.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="80.0">
-         <children>
+        <AnchorPane layoutX="336.0" layoutY="182.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="80.0">
             <HBox alignment="CENTER" pickOnBounds="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="34.0">
-               <children>
-                  <ImageView fx:id="gifImage" fitHeight="400.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
-                     <image>
-                        <Image url="@../gifs/receipt_creation_demo.gif" />
-                     </image>
-                  </ImageView>
-               </children>
+                <ImageView fx:id="gifImage" fitHeight="400.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                    <Image url="@../gifs/receipt_creation_demo.gif" />
+                </ImageView>
             </HBox>
             <HBox alignment="CENTER_RIGHT" layoutX="92.0" layoutY="-36.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Choose Document Type:">
-                     <HBox.margin>
+                <padding>
+                    <Insets right="15.0" />
+                </padding>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Choose Document Type:">
+                    <HBox.margin>
                         <Insets right="-5.0" />
-                     </HBox.margin>
-                     <font>
+                    </HBox.margin>
+                    <font>
                         <Font size="14.0" />
-                     </font></Text>
-                   <ChoiceBox fx:id="typeCheckBox" prefHeight="30.0" prefWidth="201.0" snapToPixel="false" value="Create New Type..">
-                       <items>
-                           <FXCollections fx:factory="observableArrayList">
-                               <String fx:value="Create New Type.." />
-                           </FXCollections>
-                       </items>
-                   </ChoiceBox>
-                  <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="33.0" prefWidth="163.0" text="Proceed">
-                     <font>
+                    </font>
+                </Text>
+                <ChoiceBox fx:id="typeCheckBox" prefHeight="30.0" prefWidth="201.0" snapToPixel="false" value="Create New Type..">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Create New Type.." />
+                        </FXCollections>
+                    </items>
+                </ChoiceBox>
+                <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#proceed" prefHeight="33.0" prefWidth="163.0" text="Proceed">
+                    <font>
                         <Font size="14.0" />
-                     </font>
-                     <HBox.margin>
+                    </font>
+                    <HBox.margin>
                         <Insets left="10.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-               <padding>
-                  <Insets right="25.0" />
-               </padding>
+                    </HBox.margin>
+                </Button>
             </HBox>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Document Templates" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <font>
-                  <Font size="26.0" />
-               </font>
+                <font>
+                    <Font size="26.0" />
+                </font>
             </Text>
-         </children></AnchorPane>
+        </AnchorPane>
 
 
     </AnchorPane>
