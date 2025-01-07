@@ -17,18 +17,7 @@ public class Receipt {
     public Path imagePath;
 // note that there are two Receipt constructor
     // these constructor for ui
-    public Receipt(String receiptId, String receiptTypeName, String requestId, String imageUrl, String status, HashMap<Integer, String> ocrData, String approvedByUserId, String approvedAt) {
-        this.receiptId = receiptId;
-        this.receiptTypeName = receiptTypeName;
-        this.requestId = requestId;
-        this.imageUrl = imageUrl;
-        this.status = ReceiptStatus.valueOf(status);
-        this.ocrData = ocrData;
-        this.approvedByUserId = approvedByUserId;
-        this.approvedAt = approvedAt;
-    }
-    // these constructor for remote class
-    public Receipt(String receiptId, HashMap<Integer, String> ocrData,String receiptTypeId, String requestId, String imageUrl, String status,  String approvedByUserId, String approvedAt) {
+    public Receipt(String receiptId, String receiptTypeId, String requestId, String imageUrl, String status, HashMap<Integer, String> ocrData, String approvedByUserId, String approvedAt) {
         this.receiptId = receiptId;
         this.receiptTypeId = receiptTypeId;
         this.requestId = requestId;
@@ -38,6 +27,7 @@ public class Receipt {
         this.approvedByUserId = approvedByUserId;
         this.approvedAt = approvedAt;
     }
+
     public enum ReceiptStatus {
         PENDING, // not processed by the OCR module
         PROCESSED, // Processed by the ocr module
