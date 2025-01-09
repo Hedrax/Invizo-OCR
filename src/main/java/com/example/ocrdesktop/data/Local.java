@@ -103,20 +103,23 @@ public class Local {
         return receiptTypeNames;
     }
     public static ObservableList<Receipt> getReceiptsByDateAndType(Connection connection, String receiptTypeName, String dateFrom, String dateTo) throws SQLException {
-       // String query = "SELECT * FROM receipt WHERE receipt_type_name = ?";
-        String query = "SELECT * FROM receipt WHERE receipt_type_name = ? AND approved_at BETWEEN ? AND ?";
+        String query = "SELECT receipt.*" +
+                "FROM receipt " +
+                "JOIN receipt_type ON receipt.receipt_type_id = receipt_type.id " +
+                "WHERE receipt_type.name = ? AND receipt.approved_at BETWEEN ? AND ?";
+
         ObservableList<Receipt> receipts = FXCollections.observableArrayList();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            // Set query parameters
             preparedStatement.setString(1, receiptTypeName);
             preparedStatement.setString(2, dateFrom);
             preparedStatement.setString(3, dateTo);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
                 while (resultSet.next()) {
                     String receiptId = resultSet.getString("receipt_id");
-                    String typeName = resultSet.getString("receipt_type_name");
+                    String typeName = resultSet.getString("receipt_type_id");
                     String requestId = resultSet.getString("request_id");
                     String imageUrl = resultSet.getString("image_url");
                     String status = resultSet.getString("status");
@@ -126,14 +129,21 @@ public class Local {
 
                     // Parse OCR data
                     HashMap<Integer, String> parsedOcrData = parseOcrDataToIntegerKey(ocrData);
-
+                    System.out.printf("receiptId: %s\n", receiptId);
+                    System.out.printf("typeName: %s\n", typeName);
+                    System.out.printf("requestId: %s\n", requestId);
+                    System.out.printf("imageUrl: %s\n", imageUrl);
+                    System.out.printf("status: %s\n", status);
+                    System.out.printf("ocrData: %s\n", ocrData);
+                    System.out.printf("approvedByUserId: %s\n", approvedByUserId);
+                    System.out.printf("approvedAt: %s\n", approvedAt);
                     // Create Receipt object
                     Receipt receipt = new Receipt(receiptId, typeName, requestId, imageUrl, status, parsedOcrData, approvedByUserId, approvedAt);
                     receipts.add(receipt);
                 }
             }
         }
-
+        System.out.println(receipts);
         return receipts;
     }
 
@@ -171,12 +181,12 @@ public class Local {
 
         return map;
     }
-    public static HashMap<Integer, String> getColumnNamesByName(Connection localConnection, String name) throws SQLException {
-        String queryReceiptTypeSQL = "SELECT columnNames FROM receipt_type WHERE name = ?";
+    public static HashMap<Integer, String> getColumnNamesByName(Connection localConnection, String id) throws SQLException {
+        String queryReceiptTypeSQL = "SELECT columnNames FROM receipt_type WHERE id = ?";
         HashMap<Integer, String> columnNamesMap = new HashMap<>();
 
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryReceiptTypeSQL)) {
-            preparedStatement.setString(1, name);
+            preparedStatement.setString(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     String columnNamesJson = resultSet.getString("columnNames");
