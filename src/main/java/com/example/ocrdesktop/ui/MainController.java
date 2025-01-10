@@ -25,8 +25,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.example.ocrdesktop.data.Repo.*;
 
@@ -60,58 +63,70 @@ public class MainController{
 
     @FXML
     public void initialize() {
-        // Set data for the custom cell
+        // Add listener for dynamic updates to the list
         lst.addListener((ListChangeListener<? super Request>) (change) -> {
-                    while (change.next()) {
-                        if (change.wasAdded()) {
-                            for (Request request : change.getAddedSubList()) {
-                                try {
-                                    addRequestCell(request);
-                                }catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (Request request : change.getAddedSubList()) {
+                        try {
+                            addRequestCell(request);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
+                }
+            }
+        });
 
-                });
-        initFakeData();
+        // Load data from the database and populate the list
+        Platform.runLater(() -> {
+            lst.clear(); // Clear any existing items to avoid duplication
+            loadDataFromDatabase();
+        });
 
         setUpProfileInfo();
     }
-    void initFakeData(){
-        //The following only for testing
-        for (int i = 0; i < 10; i++) {
-            Request request = initFakeRequest();
-            lst.add(request);
+    private void loadDataFromDatabase() {
+        lst.clear();
+        // Initialize the ObservableList for Requests
+        ObservableList<Request> requests = FXCollections.observableArrayList();
+        try {
+            // Fetch requests with the specified status
+            requests = getRequestByStatus(String.valueOf(Receipt.ReceiptStatus.PENDING));
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching requests by status", e);
         }
-        //Main added items section
+
+        for (Request request : requests) {
+            try {
+                // Fetch receipts for the current request
+                ObservableList<Receipt> receipts = getReceiptsByRequestId(request.id);
+
+                // Initialize the request's receipts list if not already initialized
+                if (request.receipts == null) {
+                    request.receipts = FXCollections.observableArrayList();
+                }
+
+                // Add fetched receipts to the request's receipts list
+                request.receipts.addAll(receipts);
+
+                if (!receipts.isEmpty()) {
+                    // Fetch ReceiptType for the first receipt (assuming consistent type for all receipts)
+                    ReceiptType receiptType = getReceiptTypeById(receipts.get(0).receiptTypeId);
+
+                    // Set additional data in the request object
+                    request.setData(receipts, receiptType);
+                }
+
+                // Add the request to the final list
+                lst.add(request);
+            } catch (SQLException e) {
+                throw new RuntimeException("Error loading data for request ID: " + request.id, e);
+            }
+        }
     }
 
-    private Request initFakeRequest(){
-        Request request = new Request("lol", Request.RequestStatus.PENDING.name() ,"admin", Timestamp.valueOf("2001-01-01 12:00:00"));
-        HashMap<String, Integer> column2IdxMap = new HashMap<>();
-        column2IdxMap.put("Item", 0);
-        column2IdxMap.put("Price", 1);
-        column2IdxMap.put("Quantity", 2);
-        column2IdxMap.put("Total", 3);
-        ReceiptType receiptType = new ReceiptType("Dummy_id", "Receipt 1", column2IdxMap);
-        request.setData(FXCollections.observableArrayList(), receiptType);
 
-        //Warning the following url will be expired in 12th of january 2025 5 PM
-        String sampleImageURL = "https://i.postimg.cc/3xwK13f8/9.jpg";
-        HashMap<Integer, String> idx2Value = new HashMap<>();
-        idx2Value.put(0, "Item 1");
-        idx2Value.put(1, "Item 2");
-        idx2Value.put(2, "Item 3");
-        idx2Value.put(3, "Item 4");
-        idx2Value.put(4, "Testing null");
-        // Example: Add initial cells
-        for (int i = 0; i < 30; i++) {
-            request.receipts.add(new Receipt("1", "Invoice", "1", sampleImageURL, Receipt.ReceiptStatus.PENDING.toString(), idx2Value, "user152", "2024-01-01"));
-        }
-        return request;
-    }
     @FXML
     private void toggleMenu() {
 
@@ -136,6 +151,7 @@ public class MainController{
     @FXML
     private void Refresh(){
         refreshData();
+        loadDataFromDatabase();
         System.out.printf("Refreshed!\n");
         System.out.printf(getReceiptTypeNames().toString());
 

@@ -137,8 +137,16 @@ public class Repo {
     // Dummy data for Request
     private static ObservableList<Request> getDummyRequests() {
         ObservableList<Request> requests = FXCollections.observableArrayList();
-        requests.add(new Request("1",Request.RequestStatus.PENDING.toString(), "user1", new Timestamp(System.currentTimeMillis())));
-        requests.add(new Request("2", Request.RequestStatus.COMPLETED.toString(), "user2", new Timestamp(System.currentTimeMillis())));
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2024);
+        Timestamp timestampFor2024 = new Timestamp(calendar.getTimeInMillis());
+        System.out.println(timestampFor2024);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.YEAR, 2025);
+
+        Timestamp timestampFor2025 = new Timestamp(calendar.getTimeInMillis());
+        requests.add(new Request("1",Request.RequestStatus.PENDING.toString(), "user1", timestampFor2024));
+        requests.add(new Request("2", Request.RequestStatus.PENDING.toString(), "user2", timestampFor2025));
         return requests;
     }
 
@@ -157,8 +165,8 @@ public class Repo {
 
 
         // Adding receipts with dummy data
-        receipts.add(new Receipt("1", "1", "1", "image1.png", Request.RequestStatus.PENDING.toString(),  ocrData1,"user152", "2024-01-01"));
-        receipts.add(new Receipt("2", "2", "2", "image2.png", Request.RequestStatus.PENDING.toString(),  ocrData2,"user153", "2025-01-01"));
+        receipts.add(new Receipt("1", "1", "1", "https://i.postimg.cc/cL7K7nk2/Whats-App-Image-2025-01-10-at-11-24-07-PM.jpg", Request.RequestStatus.PENDING.toString(),  ocrData1,"user152",new Timestamp(System.currentTimeMillis()) ));
+        receipts.add(new Receipt("2", "2", "2", "https://i.postimg.cc/cL7K7nk2/Whats-App-Image-2025-01-10-at-11-24-07-PM.jpg", Request.RequestStatus.PENDING.toString(),  ocrData2,"user153", new Timestamp(System.currentTimeMillis())));
 
         return receipts;
     }
@@ -207,12 +215,63 @@ public class Repo {
     public static HashMap<Integer, String> getColumnNames(String id) throws SQLException {
         HashMap<Integer, String> columnNames = new HashMap<>();
         try (Connection localConnection = getDatabaseConnection()) {
-            columnNames = getColumnNamesByName(localConnection,id);
+            columnNames = getColumnNamesById(localConnection,id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return columnNames;
     }
+    public static ReceiptType getReceiptTypeById(String id) throws SQLException {
+        ReceiptType receiptType = null;
+        try (Connection localConnection = getDatabaseConnection()) {
+            receiptType = getReceiptTypeByIdLocal(localConnection,id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return receiptType;
+    }
+    public static ObservableList<Request> getRequestByStatus(String status) throws SQLException {
+        ObservableList<Request> requests = FXCollections.observableArrayList();
+        try (Connection localConnection = getDatabaseConnection()) {
+            List<Request> requests_local = getRequestByStatusLocal(localConnection,status);
+            requests.addAll(requests_local);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requests;
+    }
+    public static ObservableList<Request> getRequestsByDateAndType(String receiptTypeName, String dateFrom, String dateTo) throws SQLException {
+        ObservableList<Request> requests = FXCollections.observableArrayList();
+        try (Connection localConnection = getDatabaseConnection()) {
+            List<Request> requests_local = getRequestsByDateAndTypeLocal(localConnection,receiptTypeName,dateFrom,dateTo);
+            requests.addAll(requests_local);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requests;
+    }
+    public static ObservableList<Receipt> getReceiptsByRequestId(String requestId) throws SQLException {
+        // Initialize the observable list
+        ObservableList<Receipt> receipts = FXCollections.observableArrayList();
+
+        try (Connection localConnection = getDatabaseConnection()) {
+            // Fetch receipts from the local method
+            List<Receipt> fetchedReceipts = getReceiptsByRequestIdLocal(localConnection, requestId);
+
+            // Add fetched receipts to the observable list
+            if (fetchedReceipts != null) {
+                receipts.addAll(fetchedReceipts);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Propagate the exception for further handling
+        }
+
+        return receipts;
+    }
+
+
+
 
 
     public void confirmRequest(Request request, List<Receipt> receiptsToDelete) {
