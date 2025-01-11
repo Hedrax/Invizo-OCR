@@ -87,6 +87,7 @@ public class ShowCsvsController {
 
         // Load data from the database
         ObservableList<Receipt> data = loadDataFromDatabase(receiptType, startDate.toString(), endDate.toString());
+        System.out.println(data.get(0).ocrData);
         displayCSVData(data);
     }
 
@@ -95,7 +96,7 @@ public class ShowCsvsController {
         ObservableList<Receipt> receipts = FXCollections.observableArrayList();
         try {
             receipts = getReceiptsByFilter(receiptType,startDate,endDate);
-            System.out.printf("receipts: %s\n", receipts);
+            System.out.printf("receiptscomes: %s\n", receipts);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -110,12 +111,11 @@ public class ShowCsvsController {
         for (Receipt receipt : data) {
             allKeys.addAll(receipt.ocrData.keySet()); // Add all keys from each Receipt's OCR data
         }
-        System.out.printf("receipts: %s\n", allKeys.toString());
         Set<String> allKeysString = new HashSet<>();
         HashMap<Integer, String> ColumnNames = new HashMap<>();
         // Convert Set to List for ordered access
         try {
-            ColumnNames = getColumnNames(data.get(0).receiptTypeName);
+            ColumnNames = getColumnNames(data.get(0).receiptTypeId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -4,10 +4,10 @@ import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 
 
 //TODO handle or caching and local storage interactions
@@ -63,7 +63,7 @@ public class Local {
                 preparedStatement.setString(6, ocrDataJson); // Store as JSON string
 
                 preparedStatement.setString(7, receipt.approvedByUserId);
-                preparedStatement.setString(8, receipt.approvedAt);
+                preparedStatement.setTimestamp(8, receipt.approvedAt);
 
                 preparedStatement.addBatch();
             }
@@ -103,39 +103,87 @@ public class Local {
         return receiptTypeNames;
     }
     public static ObservableList<Receipt> getReceiptsByDateAndType(Connection connection, String receiptTypeName, String dateFrom, String dateTo) throws SQLException {
-       // String query = "SELECT * FROM receipt WHERE receipt_type_name = ?";
-        String query = "SELECT * FROM receipt WHERE receipt_type_name = ? AND approved_at BETWEEN ? AND ?";
+        String query = "SELECT receipt.*" +
+                "FROM receipt " +
+                "JOIN receipt_type ON receipt.receipt_type_id = receipt_type.id " +
+                "WHERE receipt_type.name = ? AND receipt.approved_at BETWEEN ? AND ?";
+
         ObservableList<Receipt> receipts = FXCollections.observableArrayList();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            // Set query parameters
             preparedStatement.setString(1, receiptTypeName);
-            preparedStatement.setString(2, dateFrom);
-            preparedStatement.setString(3, dateTo);
+            preparedStatement.setTimestamp(2, convertDateToTimestamp(dateFrom));
+            preparedStatement.setTimestamp(3, convertDateToTimestamp(dateTo));
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
                 while (resultSet.next()) {
                     String receiptId = resultSet.getString("receipt_id");
-                    String typeName = resultSet.getString("receipt_type_name");
+                    String typeName = resultSet.getString("receipt_type_id");
                     String requestId = resultSet.getString("request_id");
                     String imageUrl = resultSet.getString("image_url");
                     String status = resultSet.getString("status");
                     String ocrData = resultSet.getString("ocr_data");
                     String approvedByUserId = resultSet.getString("approved_by_user_id");
-                    String approvedAt = resultSet.getString("approved_at");
+                    Timestamp approvedAt = resultSet.getTimestamp("approved_at");
 
                     // Parse OCR data
                     HashMap<Integer, String> parsedOcrData = parseOcrDataToIntegerKey(ocrData);
-
                     // Create Receipt object
                     Receipt receipt = new Receipt(receiptId, typeName, requestId, imageUrl, status, parsedOcrData, approvedByUserId, approvedAt);
                     receipts.add(receipt);
                 }
             }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
-
+        System.out.println(receipts);
         return receipts;
     }
+    public static ObservableList<Request> getRequestsByDateAndTypeLocal(Connection connection, String receiptTypeName, String dateFrom, String dateTo) throws SQLException {
+        // SQL query to fetch requests based on receipt type and date range from upload_requests table
+        String query = "SELECT upload_requests.request_id, upload_requests.status, upload_requests.uploaded_by_user_id, upload_requests.uploaded_at " +
+                "FROM upload_requests " +
+                "JOIN receipt ON upload_requests.request_id = receipt.request_id " +
+                "JOIN receipt_type ON receipt.receipt_type_id = receipt_type.id " +
+                "WHERE receipt_type.name = ? " +
+                "AND upload_requests.uploaded_at BETWEEN ? AND ?";
+
+
+        // Prepare the statement
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            // Set parameters for the query
+            preparedStatement.setString(1, receiptTypeName);
+            preparedStatement.setTimestamp(2, convertDateToTimestamp(dateFrom));
+            preparedStatement.setTimestamp(3, convertDateToTimestamp(dateTo));
+
+            // Execute the query and get the result
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // Create an ObservableList to store the result
+                ObservableList<Request> requests = FXCollections.observableArrayList();
+
+                // Iterate over the result set and populate the ObservableList
+                while (resultSet.next()) {
+                    // Create Request objects based on the result set
+                    Request request = new Request(
+                            resultSet.getString("request_id"),
+                            resultSet.getString("status"),
+                            resultSet.getString("uploaded_by_user_id"),
+                            resultSet.getTimestamp("uploaded_at")
+                    );
+                    requests.add(request);
+                }
+
+                return requests; // Return the populated ObservableList
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow exception if needed
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     // Manually parse OCR data JSON-like string into a Map<Integer, String>
     private static HashMap<Integer, String> parseOcrDataToIntegerKey(String ocrData) {
@@ -171,12 +219,12 @@ public class Local {
 
         return map;
     }
-    public static HashMap<Integer, String> getColumnNamesByName(Connection localConnection, String name) throws SQLException {
-        String queryReceiptTypeSQL = "SELECT columnNames FROM receipt_type WHERE name = ?";
+    public static HashMap<Integer, String> getColumnNamesById(Connection localConnection, String id) throws SQLException {
+        String queryReceiptTypeSQL = "SELECT columnNames FROM receipt_type WHERE id = ?";
         HashMap<Integer, String> columnNamesMap = new HashMap<>();
 
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryReceiptTypeSQL)) {
-            preparedStatement.setString(1, name);
+            preparedStatement.setString(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     String columnNamesJson = resultSet.getString("columnNames");
@@ -186,6 +234,21 @@ public class Local {
         }
 
         return columnNamesMap;
+    }
+    public static ReceiptType getReceiptTypeByIdLocal(Connection localConnection, String id) throws SQLException {
+        String queryReceiptTypeSQL = "SELECT * FROM receipt_type WHERE id = ?";
+        ReceiptType receiptType = new ReceiptType("","",new HashMap<>());
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryReceiptTypeSQL)) {
+            preparedStatement.setString(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    receiptType.id = resultSet.getString("id");
+                    receiptType.name = resultSet.getString("name");
+                    receiptType.columnIdx2NamesMap = parseOcrDataToIntegerKey(resultSet.getString("columnNames"));
+                }
+            }
+        }
+        return receiptType;
     }
 
     public static boolean isReceiptTypeNameAvailable(Connection localConnection, String name) throws SQLException {
@@ -301,6 +364,83 @@ public class Local {
         // Return the list of users
         return users;
     }
+    public static ObservableList<Request> getRequestByStatusLocal(Connection connection, String status) throws SQLException {
+        String query = "SELECT * FROM upload_requests WHERE status = ?";
+        if(Objects.equals(status, "All")){
+            query = "SELECT * FROM upload_requests";
+        }
+
+
+        ObservableList<Request> requests = FXCollections.observableArrayList();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            if(!Objects.equals(status, "All")){
+                preparedStatement.setString(1, status);
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    String id = resultSet.getString("request_id");
+                    String status_request = resultSet.getString("status");
+                    String uploaded_by_user_id = resultSet.getString("uploaded_by_user_id");
+                    Timestamp uploaded_at = resultSet.getTimestamp("uploaded_at");
+                    Request request = new Request(id, status_request, uploaded_by_user_id, uploaded_at);
+                    requests.add(request);
+                }
+            }
+        }
+        return requests;
+    }
+    public static ObservableList<Receipt> getReceiptsByRequestIdLocal(Connection connection, String requestId) throws SQLException {
+        String query = "SELECT * FROM receipt WHERE request_id = ?";
+
+        ObservableList<Receipt> receipts = FXCollections.observableArrayList();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, requestId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    String receiptId = resultSet.getString("receipt_id");
+                    String receiptTypeId = resultSet.getString("receipt_type_id");
+                    String request_id = resultSet.getString("request_id");
+                    String imageUrl = resultSet.getString("image_url");
+                    String status = resultSet.getString("status");
+                    String approvedByUserId = resultSet.getString("approved_by_user_id");
+                    Timestamp approvedAt = resultSet.getTimestamp("approved_at");
+
+                    // Assuming OCR data is stored as JSON or another serializable format in the database
+                    String ocrDataString = resultSet.getString("ocr_data");
+                    HashMap<Integer, String> ocrData = parseOcrDataToIntegerKey(ocrDataString);
+
+                    Receipt receipt = new Receipt(
+                            receiptId,
+                            receiptTypeId,
+                            request_id,
+                            imageUrl,
+                            status,
+                            ocrData,
+                            approvedByUserId,
+                            approvedAt
+                    );
+                    receipts.add(receipt);
+                }
+            }
+        }
+
+        return receipts;
+    }
+    public static Timestamp convertDateToTimestamp(String date) throws ParseException {
+        // Define the input format (from the date picker: "yyyy-MM-dd")
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        // Parse the input date
+        Date parsedDate = inputFormat.parse(date);
+
+        // Create a Timestamp from the parsed date and set the time to 00:00:00
+        return new Timestamp(parsedDate.getTime());
+    }
+
 
 
 
