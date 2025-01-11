@@ -4,7 +4,9 @@ import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.data.Repo;
 import com.example.ocrdesktop.ui.subelements.RequestItemBoxController;
-import com.example.ocrdesktop.utils.*;
+import com.example.ocrdesktop.utils.CachingManager;
+import com.example.ocrdesktop.utils.Receipt;
+import com.example.ocrdesktop.utils.Request;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,7 +22,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
 
 import static javafx.collections.FXCollections.observableArrayList;
 

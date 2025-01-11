@@ -36,15 +36,15 @@
         <!-- Email Field -->
         <HBox alignment="CENTER" prefWidth="450"
               style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
-            <TextField fx:id="usernameTextFiled" focusTraversable="false" prefHeight="50" prefWidth="400"
+            <TextField fx:id="usernameTextField" focusTraversable="false" prefHeight="50" prefWidth="400"
                        promptText="UserName"
                        style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 16;"/>
         </HBox>
         <!-- Email Field -->
         <HBox alignment="CENTER" prefWidth="450"
               style="-fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;">
-            <TextField fx:id="organizationTextFiled" focusTraversable="false" prefHeight="50" prefWidth="400"
-                       promptText="Organization"
+            <TextField fx:id="invitationTokenField" focusTraversable="false" prefHeight="50" prefWidth="400"
+                       promptText="Invitation Token"
                        style="-fx-background-color: transparent; -fx-border: none; -fx-font-size: 16;"/>
         </HBox>
 

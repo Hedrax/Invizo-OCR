@@ -1,62 +1,119 @@
 package com.example.ocrdesktop.data;
 
-
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.utils.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import java.io.IOException;
+import java.net.http.HttpResponse;
+import java.util.*;
 
-import static com.example.ocrdesktop.data.Local.getAllReceiptTypeNames;
-
-//TODO handle all service and storage interactions with the backend agent
+@Slf4j
 public class Remote {
-    public String  createNewReceiptType(ReceiptTypeJSON receiptTypeJSON) {
-        //TODO Rewan
-        // Insert new row in the production and wait for
-        // replay -> 200:ok, 400:Error then request for the object id
-        // or make the answer be a string of id and identify error in a different manner
-        // in any case of failure return null
+    static ApiClient apiClient = ApiClient.getInstance();
 
-        String name = receiptTypeJSON.getName();
-        JSONObject jsonObject = receiptTypeJSON.getJsonTemplate();
+    public String createNewReceiptType(ReceiptTypeJSON receiptTypeJSON) {
+        try {
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("name", receiptTypeJSON.getName());
+            payload.put("template", receiptTypeJSON.getJsonTemplate());
 
+            // Send POST request and receive ApiResponse<String>
+            ApiResponse<String> responseWrapper = ApiClient.post(
+                    "/receipt-types",
+                    payload,
+                    new TypeReference<>() {}
+            );
 
-        String receiptTypeId = "Dummy_ID";
-        return receiptTypeId;
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            String responseBody = responseWrapper.getBody();
+
+            // Handle response based on status code
+            if (statusCode == 201 || statusCode == 200) { // Assuming 201 Created or 200 OK
+                return responseBody;
+            } else {
+                log.error("Failed to create receipt type - Status Code: {}, Body: {}", statusCode, responseBody);
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Failed to create receipt type: {}", e.getMessage(), e);
+            return null;
+        }
     }
 
     public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON) {
-        String id = receiptTypeJSON.getId();
-        //TODO Rewan
-        // Modify the ReceiptType with id id and return
-        // 200 OK
-        // 400 Error
+        try {
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("name", receiptTypeJSON.getName());
+            payload.put("template", receiptTypeJSON.getJsonTemplate());
 
-        return 200;
+            // Send PUT request and receive ApiResponse<Void>
+            ApiResponse<Void> responseWrapper = ApiClient.put(
+                    "/receipt-types/" + receiptTypeJSON.getId(),
+                    payload,
+                    new TypeReference<>() {}
+            );
 
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+            // Handle response based on status code
+            if (statusCode == 200) { // Assuming 200 OK
+                return 200;
+            } else {
+                log.error("Failed to modify receipt type - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+                return 400;
+            }
+        } catch (Exception e) {
+            log.error("Failed to modify receipt type: {}", e.getMessage(), e);
+            return 400;
+        }
     }
-    public static ObservableList<ReceiptType> getReceiptTypes() {
-        //TODO Rewan
-        // need to get all receiptTypes with same data as ReceiptTypeJSON
-        // note the dataStructure of ReceiptTypeJSON as it's constructor
-        // ReceiptTypeJSON(String id, JSONObject templateJSON, HashMap<String, Integer> column2idxMap)
-        // If wanted to modify the data class, go ahead but make sure to not change any names of the methods and
-        // make sure that the output of the method is the same
+    public ObservableList<ReceiptType> getReceiptTypes() {
+        try {
+            // Send GET request and receive ApiResponse<List<Map<String, Object>>>
+            ApiResponse<List<Map<String, Object>>> responseWrapper = ApiClient.get(
+                    "/receipt-types",
+                    new TypeReference<>() {}
+            );
 
-        List<ReceiptTypeJSON> receiptTypeJSONS = List.of();
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            List<Map<String, Object>> responseBody = responseWrapper.getBody();
 
-        ObservableList<ReceiptType> receiptTypes = FXCollections.observableArrayList();
-        receiptTypeJSONS.forEach(it->{
-            it.saveJSONLocally();
-            receiptTypes.add(it.getReceiptType());
-        });
+            // Handle response based on status code
+            if (statusCode == 200) { 
+                ObservableList<ReceiptType> receiptTypes = FXCollections.observableArrayList();
 
-        return receiptTypes;
+                for (Map<String, Object> item : responseBody) {
+                    String id = (String) item.get("receiptTypeId");
+                    String name = (String) item.get("name");
+                    Map<String, Object> templateJSON = (Map<String, Object>) item.get("template");
+                    Map<String, Integer> column2idxMap = (Map<String, Integer>) item.get("column2idxMap");
+
+                    ReceiptTypeJSON receiptTypeJSON = new ReceiptTypeJSON(id, new JSONObject(templateJSON), new HashMap<>(column2idxMap));
+                    receiptTypeJSON.saveJSONLocally();
+                    receiptTypes.add(receiptTypeJSON.getReceiptType());
+                }
+
+                return receiptTypes;
+            } else {
+                log.error("Failed to fetch receipt types - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+                return FXCollections.observableArrayList();
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch receipt types: {}", e.getMessage(), e);
+            return FXCollections.observableArrayList();
+        }
     }
+    
     public static ObservableList<Request> getRequests() {
         ObservableList<Request> Requests = FXCollections.observableArrayList();
         //TODO Rewan need to get all Requests from upload_requests table in  Request format
@@ -68,75 +125,364 @@ public class Remote {
         // need to convert json to map<string,string>
         return Receipts;
     }
+    public int registerNewSuperAdmin(String username, String invitationToken, String email, String password, String confirmPassword) {
+        try {
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("username", username);
+            payload.put("invitationToken", invitationToken);
+            payload.put("email", email);
+            payload.put("password", password);
+            payload.put("confirmPassword", confirmPassword);
 
-    public int registerNewSuperAdmin(String username, String organization, String email, String password) {
-        //TODO Rewan
-        // if the email already exists return 409
-        // if the registration is successful return 200
-        // if there is any other error return 400
-        return 200;
+            ApiResponse<Map<String, Object>> responseWrapper = ApiClient.post(
+                    "/auth/register",
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+
+            // Handle response based on status code
+            if (statusCode == 200) {
+                return 200; // OK
+            } else if (statusCode == 409) {
+                return 409; // Conflict (e.g., email already exists)
+            } else {
+                return 400; // Bad Request or other client-side errors
+            }
+        } catch (Exception e) {
+            log.error("Failed to register new super admin: {}", e.getMessage(), e);
+            return 400;
+        }
+    }
+    public boolean authenticate(String email, String password) {
+        try {
+            // Prepare payload
+            Map<String, Object> loginPayload = new HashMap<>();
+            loginPayload.put("email", email);
+            loginPayload.put("password", password);
+
+            ApiResponse<Map<String, Object>> responseWrapper = ApiClient.post(
+                    "/auth/login",
+                    loginPayload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            Map<String, Object> responseBody = responseWrapper.getBody();
+
+            // Handle response based on status code
+            if (statusCode == 200) { 
+                String accessToken = (String) responseBody.get("accessToken");
+                String refreshToken = (String) responseBody.get("refreshToken");
+
+                if (accessToken != null) {
+                    AuthorizationInfo tempAuth = new AuthorizationInfo(null, null, accessToken, refreshToken);
+                    AppContext.getInstance().setAuthorizationInfo(tempAuth);
+                    return true;
+                }
+            } else {
+                log.error("Authentication failed - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+
+            return false;
+        } catch (Exception e) {
+            log.error("Authentication failed: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+    public AuthorizationInfo getAuthorizationInfo() {
+        try {
+            // Send GET request and receive ApiResponse<Map<String, Object>>
+            ApiResponse<Map<String, Object>> responseWrapper = ApiClient.get(
+                    "/users/me",
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            Map<String, Object> responseBody = responseWrapper.getBody();
+
+            if (statusCode == 200) {
+                String userId = (String) responseBody.get("id");
+                String username = (String) responseBody.get("username");
+                String email = (String) responseBody.get("email");
+                String role = (String) responseBody.get("role");
+
+                User.Role userRole = User.Role.valueOf(role);
+
+                String orgId = (String) responseBody.get("companyId");
+                String orgName = (String) responseBody.get("tenantName");
+
+                User user = new User(userId, username, email, userRole);
+                Company company = new Company(orgId, orgName);
+
+                return new AuthorizationInfo(user, company, AppContext.getInstance().getAuthorizationInfo().getAccessToken(), AppContext.getInstance().getAuthorizationInfo().getRefreshToken());
+            } else {
+                log.error("Failed to get authorization info - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+                AppContext.getInstance().getAuthorizationInfo().clearAuthentication();
+                return null;
+            }
+        } catch (IOException | InterruptedException e) {
+            log.error("Failed to get authorization info: {}", e.getMessage(), e);
+            AppContext.getInstance().getAuthorizationInfo().clearAuthentication();
+            return null;
+        }
+    }
+    public List<User> getAllUsers(Company company) {
+        try {
+            // Send GET request and receive ApiResponse<List<Map<String, Object>>>
+            ApiResponse<List<Map<String, Object>>> responseWrapper = ApiClient.get(
+                    "/company/" + company.companyId + "/users",
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            List<Map<String, Object>> responseBody = responseWrapper.getBody();
+
+            if (statusCode == 200) {
+                List<User> users = new ArrayList<>();
+                for (Map<String, Object> userObject : responseBody) {
+                    String userId = (String) userObject.get("id");
+                    String username = (String) userObject.get("username");
+                    String email = (String) userObject.get("email");
+                    String role = (String) userObject.get("userRole");
+                    User.Role userRole = User.Role.valueOf(role);
+
+                    users.add(new User(userId, username, email, userRole));
+                }
+                return users;
+            } else {
+                log.error("Failed to fetch users - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+                throw new RuntimeException("Failed to fetch users");
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch users: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch users", e);
+        }
+    }
+    public void updateUser(User user, Company company) {
+        try {
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("id", user.id);
+            payload.put("companyId", company.companyId);
+            payload.put("tenantName", company.name);
+            payload.put("email", user.email);
+            payload.put("role", user.role);
+
+            // Send PUT request
+            ApiResponse<Void> responseWrapper = ApiClient.put(
+                    "/users/" + user.id,
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+            if (statusCode != 200) { // Assuming 200 OK
+                log.error("Failed to update user - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+        } catch (Exception e) {
+            log.error("Failed to update user: {}", e.getMessage(), e);
+        }
     }
 
-    public String authenticate(String email, String password) {
-        //TODO Rewan
-        // if the email and password are correct return the user id
-        // if the email and password are incorrect return null
-        return "Dummy_ID";
-    }
+    public void addUser(User user) {
+        try {
+            System.out.println(user);
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("email", user.email);
+            payload.put("role", user.role);
 
-    public AuthorizationInfo getAuthorizationInfo(String userId) {
-        //TODO Rewan
-        // get the user and organization info from the database
-        // and return it in the AuthorizationInfo format
-        // if error try again or handle error in the calling function
-        return new AuthorizationInfo(new User("Dummy_ID", "Dummy_Name", "Dummy_Email", User.Role.DESKTOP_USER), new Organization("Dummy_ID", "Dummy_Name"));
-    }
+            // Send POST request
+            ApiResponse<Void> responseWrapper = ApiClient.post(
+                    "/users/admin-create",
+                    payload,
+                    new TypeReference<>() {}
+            );
 
-    public List<User> getAllUsers(Organization organization) {
-        //TODO Rewan
-        // get all users in the organization and return them
-        // Organization contains name and id
-        // can be modified to meet the backend logic
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
 
-        return List.of(new User("Dummy_ID", "Dummy_Name", "Dummy_Email", User.Role.DESKTOP_USER));
+            if (statusCode != 201 && statusCode != 200) { // Assuming 201 Created or 200 OK
+                log.error("Failed to add user - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+        } catch (IOException | InterruptedException e) {
+            log.error("Failed to add user: {}", e.getMessage(), e);
+        }
     }
-
-    public void updateUser(User user, Organization organization) {
-        //TODO Rewan
-        // update the user in the database
-        // if the user is in the database update it
-        // if error try again or handle error in the calling function
-    }
-    public void addUser(User user, Organization organization) {
-        //TODO Rewan
-        // update the user in the database
-        // if the user is in the database update it
-        // if error try again or handle error in the calling function
-    }
-
     public void deleteUsers(List<User> deletedUsers) {
-        //TODO Rewan
-        // delete the users from the production database
-        // if error try again or handle error in the calling function
-    }
+        try {
+            // Extract user IDs as UUIDs
+            List<UUID> uuids = new ArrayList<>();
+            for (User user : deletedUsers) {
+                uuids.add(UUID.fromString(user.id));
+            }
 
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("userIds", uuids);
+
+            // Send DELETE request
+            ApiResponse<Void> responseWrapper = ApiClient.delete(
+                    "/users/bulk-delete",
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+            if (statusCode != 200 && statusCode != 204) { // Assuming 200 OK or 204 No Content
+                log.error("Failed to delete users - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+        } catch (Exception e) {
+            log.error("Failed to delete users: {}", e.getMessage(), e);
+        }
+    }
     public void updateReceipts(ObservableList<Receipt> receipts) {
-        //TODO Rewan
-        // update the receipts in the production database
-        // "Note the incoming receipts are the approved ones and the status is already set to approved"
-        // if error try again or handle error in the calling function
-    }
+        try {
+            // Prepare payload
+            List<Map<String, Object>> receiptData = new ArrayList<>();
+            for (Receipt receipt : receipts) {
+                Map<String, Object> receiptMap = new HashMap<>();
+                receiptMap.put("receiptId", receipt.receiptId);
+                receiptMap.put("status", receipt.status);
+                receiptMap.put("approvedBy", receipt.approvedByUserId);
+                receiptMap.put("approvedAt", receipt.approvedAt);
+                receiptMap.put("ocrData", receipt.ocrData);
+                receiptData.add(receiptMap);
+            }
 
+            // Send PUT request
+            ApiResponse<Void> responseWrapper = ApiClient.put(
+                    "/receipts/update",
+                    receiptData,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+            if (statusCode != 200 && statusCode != 204) { // Assuming 200 OK or 204 No Content
+                log.error("Failed to update receipts - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+        } catch (Exception e) {
+            log.error("Failed to update receipts: {}", e.getMessage(), e);
+        }
+    }
     public void deleteReceipts(List<Receipt> receiptsToDelete) {
-        //TODO Rewan
-        // delete the receipts from the production database
-        // if error try again or handle error in the calling function
+        try {
+            // Extract receipt IDs as UUIDs
+            List<UUID> receiptIds = new ArrayList<>();
+            for (Receipt receipt : receiptsToDelete) {
+                receiptIds.add(UUID.fromString(receipt.receiptId));
+            }
+
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("receiptIds", receiptIds);
+
+            // Send DELETE request
+            ApiResponse<Void> responseWrapper = ApiClient.delete(
+                    "/bulk-delete",
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            
+            if (statusCode != 200 && statusCode != 204) { // Assuming 200 OK or 204 No Content
+                log.error("Failed to delete receipts - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+        } catch (Exception e) {
+            log.error("Failed to delete receipts: {}", e.getMessage(), e);
+        }
+    }
+    
+    public void updateRequest(Request request) {
+        try {
+            // Prepare payload
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("status", request.status.toString());
+
+            // Send PUT request
+            ApiResponse<Void> responseWrapper = ApiClient.put(
+                    "/request/" + request.id,
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+            
+
+            if (statusCode != 200 && statusCode != 204) { // Assuming 200 OK or 204 No Content
+                log.error("Failed to update request - Status Code: {}, Body: {}", statusCode, httpResponse.body());
+            }
+        } catch (Exception e) {
+            log.error("Failed to update request: {}", e.getMessage(), e);
+        }
     }
 
-    public void updateRequest(Request request) {
-        //TODO Rewan
-        // update the request in the production database
-        // "Note the incoming request are the processed ones and the status is already set to processed"
-        // if error try again or handle error in the calling function
+    public boolean refreshAuthToken() {
+        // 1) Retrieve the current refresh token from wherever you store it
+        String refreshToken = AppContext.getInstance().getAuthorizationInfo().getRefreshToken();
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            log.warn("No refresh token available; can't re-authenticate.");
+            return false;
+        }
+
+        // 2) Attempt to call the refresh endpoint
+        try {
+            // Construct JSON payload
+            Map<String, String> payload = new HashMap<>();
+            payload.put("refreshToken", refreshToken);
+
+            // Make a POST request to /auth/refresh with your existing 'sendRequestSync' or similar
+            ApiResponse<Map> responseWrapper = ApiClient.post(
+                    "/auth/refresh",
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+            if (statusCode == 200) {
+                // 3) Parse new tokens
+                Map body = responseWrapper.getBody();
+                String newAccessToken = (String) body.get("accessToken");
+                String newRefreshToken = (String) body.get("refreshToken");
+
+                if (newAccessToken == null || newRefreshToken == null) {
+                    log.error("Refresh endpoint returned null tokens!");
+                    return false;
+                }
+
+                // 4) Store new tokens in your context
+                AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
+                authInfo.setAccessToken(newAccessToken);
+                authInfo.setRefreshToken(newRefreshToken);
+
+                log.info("Successfully refreshed tokens. AccessToken: {}, RefreshToken: {}", newAccessToken, newRefreshToken);
+                return true;
+            } else {
+                log.error("Failed to refresh token. Status: {}, Body: {}", statusCode, httpResponse.body());
+                return false;
+            }
+        } catch (IOException | InterruptedException e) {
+            log.error("Exception while refreshing token: {}", e.getMessage(), e);
+            return false;
+        }
     }
 }

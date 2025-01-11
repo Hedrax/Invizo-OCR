@@ -11,7 +11,12 @@ module com.example.ocrdesktop {
     requires org.json;
     requires org.apache.commons.io;
     requires java.desktop;
-
+    requires java.net.http;
+    requires com.fasterxml.jackson.databind;
+    requires java.prefs;
+    requires static lombok;
+    requires org.slf4j;
+    requires com.fasterxml.jackson.datatype.jsr310;
 
     opens com.example.ocrdesktop to javafx.fxml;
     opens com.example.ocrdesktop.ui.subelements to javafx.fxml;
@@ -20,4 +25,5 @@ module com.example.ocrdesktop {
     exports com.example.ocrdesktop.ui;
     exports com.example.ocrdesktop.utils;
     opens com.example.ocrdesktop.utils to javafx.fxml;
+
 }

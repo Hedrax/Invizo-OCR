@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 
 // Note: Append variables based on requirements, but avoid modifications without notifying the team.
+
 public class Receipt {
     public String receiptId;
     public String receiptTypeName;

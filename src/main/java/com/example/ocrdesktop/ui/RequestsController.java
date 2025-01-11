@@ -21,13 +21,10 @@ import javafx.scene.layout.Pane;
 import javafx.animation.TranslateTransition;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.HashMap;
 
 import static com.example.ocrdesktop.data.Repo.*;
 import static com.example.ocrdesktop.data.Repo.getReceiptTypeById;
@@ -138,8 +135,8 @@ public class RequestsController {
     @FXML
     private void setUpProfileInfo(){
         String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
-        String organizationName = AppContext.getInstance().getAuthorizationInfo().organization.name;
-        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("_", " ");
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().company.name;
+        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replaceFirst("ROLE_", "").replace("_", " ");
         Platform.runLater(() -> {
             profileNameTopBanner.setText(userName);
             profileCompanyTopBanner.setText(organizationName);

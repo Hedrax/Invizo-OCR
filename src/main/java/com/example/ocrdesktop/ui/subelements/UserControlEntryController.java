@@ -23,9 +23,9 @@ public class UserControlEntryController {
     public BooleanProperty editProperty = new SimpleBooleanProperty(false);
 
     public UserControlEntryController() {
-        role2ChoiceMap.put(User.Role.SUPER_ADMIN, "Super Admin");
-        role2ChoiceMap.put(User.Role.DESKTOP_USER, "Desktop User");
-        role2ChoiceMap.put(User.Role.MOBILE_USER, "Mobile User");
+        role2ChoiceMap.put(User.Role.ROLE_COMPANY_ADMIN, "Super Admin");
+        role2ChoiceMap.put(User.Role.ROLE_DESKTOP_USER, "Desktop User");
+        role2ChoiceMap.put(User.Role.ROLE_MOBILE_USER, "Mobile User");
     }
 
     private void showConfirmationDialog() {
@@ -70,7 +70,7 @@ public class UserControlEntryController {
         emailTextField.setText(user.email);
         passwordTextField.setText("********");
         choiceBox.setValue(role2ChoiceMap.get(user.role));
-        if (user.role == User.Role.SUPER_ADMIN && AppContext.getInstance().getAuthorizationInfo().currentUser.role != User.Role.SUPER_ADMIN) {
+        if (user.role == User.Role.ROLE_COMPANY_ADMIN && AppContext.getInstance().getAuthorizationInfo().currentUser.role != User.Role.ROLE_COMPANY_ADMIN) {
             disableEdit();
         }
         if (user.id.equals(AppContext.getInstance().getAuthorizationInfo().currentUser.id)) {

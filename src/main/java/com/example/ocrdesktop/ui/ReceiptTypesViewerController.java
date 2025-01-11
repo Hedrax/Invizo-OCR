@@ -123,7 +123,7 @@ public class ReceiptTypesViewerController {
     @FXML
     private void setUpProfileInfo(){
         String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
-        String organizationName = AppContext.getInstance().getAuthorizationInfo().organization.name;
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().company.name;
         String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("_", " ");
         Platform.runLater(() -> {
             profileNameTopBanner.setText(userName);

@@ -14,8 +14,8 @@ public class User {
         this.role = role;
     }
     public enum Role{
-        SUPER_ADMIN,
-        DESKTOP_USER,
-        MOBILE_USER
+        ROLE_COMPANY_ADMIN,
+        ROLE_DESKTOP_USER,
+        ROLE_MOBILE_USER
     }
 }

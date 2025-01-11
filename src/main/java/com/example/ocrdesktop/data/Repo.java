@@ -4,13 +4,19 @@ import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.ocrdesktop.data.Local.*;
-import static com.example.ocrdesktop.data.Local.refreshReceiptType;
 
 public class Repo {
     static Remote remote = new Remote();
@@ -30,7 +36,7 @@ public class Repo {
 
         //TODO ANYONE
         // make the remote request on non IO-Working-Thread
-        //posting the new object on the production database
+        // posting the new object on the production database
         receiptType.id = remote.createNewReceiptType(receiptTypeJSON);
 
         if (receiptType.id == null)
@@ -58,25 +64,67 @@ public class Repo {
         return response;
     }
     public boolean authenticate(String email, String password) {
-        String userId = remote.authenticate(email, password);
-        if (userId != null) {
-            AppContext.getInstance().setAuthorizationInfo(remote.getAuthorizationInfo(userId));
-            return true;
+
+        boolean isAuthenticated = remote.authenticate(email, password);
+        if (isAuthenticated) {
+            AuthorizationInfo authInfo = remote.getAuthorizationInfo();
+            if (authInfo != null) {
+                AppContext.getInstance().setAuthorizationInfo(authInfo);
+                return true;
+            } else {
+                System.err.println("Failed to fetch user info after authentication.");
+                return false;
+            }
         }
         return false;
     }
 
-    public int registerNewSuperAdmin(String username, String organization, String email, String password) {
-        return remote.registerNewSuperAdmin(username, organization, email, password);
+    public int registerNewSuperAdmin(String username, String invitationToken, String email, String password, String confirmPassword) {
+        return remote.registerNewSuperAdmin(username, invitationToken, email, password, confirmPassword);
     }
     public static void getAllUsers(){
-        Organization organization = AppContext.getInstance().getAuthorizationInfo().organization;
-        List<User> companyUsers = remote.getAllUsers(organization);
-        try (Connection localConnection = getDatabaseConnection()) {
-            clearAndInsertCompanyUsers(localConnection, companyUsers);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Task<Void> fetchUsersTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                Company company = AppContext.getInstance()
+                        .getAuthorizationInfo()
+                        .company;
+
+                // 1. Fetch users from remote service
+                List<User> companyUsers = remote.getAllUsers(company);
+
+                // 2. Insert or update them in the local database
+                try (Connection localConnection = getDatabaseConnection()) {
+                    clearAndInsertCompanyUsers(localConnection, companyUsers);
+                } catch (SQLException e) {
+
+                    throw new RuntimeException("Failed to insert users into local DB", e);
+                }
+
+                return null;
+            }
+        };
+
+        // On success, this code runs on the JavaFX Application Thread
+        fetchUsersTask.setOnSucceeded(event -> {
+            System.out.println("Successfully fetched and stored users in the local database.");
+            // Optionally, update UI components here if needed
+        });
+
+        // On failure, this code runs on the JavaFX Application Thread
+        fetchUsersTask.setOnFailed(event -> {
+            Throwable exception = fetchUsersTask.getException();
+            if (exception != null) {
+                exception.printStackTrace();
+            }
+            // Optionally, show an alert or log the error
+            System.err.println("Failed to fetch or store users: " + exception);
+        });
+
+        // Start the background thread
+        Thread backgroundThread = new Thread(fetchUsersTask);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
     }
     public void updateUser(User user){
         try (Connection localConnection = getDatabaseConnection()) {
@@ -85,7 +133,7 @@ public class Repo {
             e.printStackTrace();
         }
 
-        remote.updateUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
+        remote.updateUser(user, AppContext.getInstance().getAuthorizationInfo().company);
     }
     public void addUser(User user) {
         try (Connection localConnection = getDatabaseConnection()) {
@@ -93,7 +141,7 @@ public class Repo {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        remote.addUser(user, AppContext.getInstance().getAuthorizationInfo().organization);
+        remote.addUser(user);
     }
     public List<User> getUsers() {
         List <User> users = new ArrayList<>();

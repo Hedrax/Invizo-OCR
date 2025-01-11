@@ -14,11 +14,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -27,7 +25,6 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UsersController {
 
@@ -68,14 +65,14 @@ public class UsersController {
         isMenuVisible = !isMenuVisible; // Toggle the menu state
     }
     void initFakeData() {
-        lst.add(new User("admin", "admin123", "admin.admin@admin.com", User.Role.SUPER_ADMIN));
-        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.DESKTOP_USER));
-        lst.add(new User("Dummy_id3", "Dummy_name3", "Dummy_email3", User.Role.MOBILE_USER));
-        lst.add(new User("Dummy_id1", "Dummy_name1", "Dummy_email1", User.Role.SUPER_ADMIN));
-        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.DESKTOP_USER));
-        lst.add(new User("Dummy_id3", "Dummy_name3", "Dummy_email3", User.Role.MOBILE_USER));
-        lst.add(new User("Dummy_id1", "Dummy_name1", "Dummy_email1", User.Role.SUPER_ADMIN));
-        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.DESKTOP_USER));
+        lst.add(new User("admin", "admin123", "admin.admin@admin.com", User.Role.ROLE_COMPANY_ADMIN));
+        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.ROLE_DESKTOP_USER));
+        lst.add(new User("Dummy_id3", "Dummy_name3", "Dummy_email3", User.Role.ROLE_MOBILE_USER));
+        lst.add(new User("Dummy_id1", "Dummy_name1", "Dummy_email1", User.Role.ROLE_COMPANY_ADMIN));
+        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.ROLE_DESKTOP_USER));
+        lst.add(new User("Dummy_id3", "Dummy_name3", "Dummy_email3", User.Role.ROLE_MOBILE_USER));
+        lst.add(new User("Dummy_id1", "Dummy_name1", "Dummy_email1", User.Role.ROLE_COMPANY_ADMIN));
+        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.ROLE_DESKTOP_USER));
     }
 
     void getDataFromRepo(){
@@ -143,8 +140,8 @@ public class UsersController {
     @FXML
     private void setUpProfileInfo(){
         String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
-        String organizationName = AppContext.getInstance().getAuthorizationInfo().organization.name;
-        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("_", " ");
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().company.name;
+        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("ROLE_", "").replace("_", " ");
         Platform.runLater(() -> {
             profileNameTopBanner.setText(userName);
             profileCompanyTopBanner.setText(organizationName);
@@ -177,6 +174,8 @@ public class UsersController {
     private void confirmUpdates(){
         //make a callback to the repo with the updates
         List<User> oldUsers = repo.getUsers();
+        System.out.println(lst);
+
         for (User user : lst) {
             if (!oldUsers.contains(user)) {
                 repo.addUser(user);
@@ -188,7 +187,7 @@ public class UsersController {
     }
 
     public void addNewUser() {
-        User user = new User(UUID.randomUUID().toString(), "New user", "", User.Role.DESKTOP_USER);
+        User user = new User(UUID.randomUUID().toString(), "New user", "", User.Role.ROLE_DESKTOP_USER);
         lst.add(user);
         edited.set(true);
     }

@@ -3,6 +3,7 @@ package com.example.ocrdesktop.control;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.ui.DetailReceiptTypeController;
 import com.example.ocrdesktop.ui.DetailRequestController;
+import com.example.ocrdesktop.utils.AuthorizationInfo;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +19,7 @@ public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
     private final Stack<String> backStack; // Stack for back navigation
     //Todo Change the default status to false when finished login mechanism
-    private boolean authorized = true;
+//    private boolean authorized = true;
 
     private Stage currentStage;
     private NavigationManager() {
@@ -32,6 +33,10 @@ public class NavigationManager {
         return instance;
     }
     //First base functions
+    private boolean isAuthorized() {
+        AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
+        return authInfo != null && authInfo.getAccessToken() != null;
+    }
     private Object navigate(String path){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
@@ -77,14 +82,21 @@ public class NavigationManager {
     }
 
     //high-end functions
-    public void login() throws IOException {authorized = true; start(currentStage);}
-    public void logout() throws IOException {authorized = false; start(currentStage);}
-
+    public void login() throws IOException {start(currentStage);}
+    public void logout() throws IOException {
+        AppContext.getInstance().getAuthorizationInfo().clearAuthentication();
+        AppContext.getInstance().setAuthorizationInfo(null);
+        start(currentStage);
+    }
     public void start(Stage stage) throws IOException {
         makeSavingDirs();
         currentStage = stage;
-        if (authorized) startMain();
-        else startLogin();
+        AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
+        if (authInfo != null) {
+            startMain();
+        } else {
+            startLogin();
+        }
     }
 
     private void startLogin() throws IOException {
@@ -146,16 +158,16 @@ public class NavigationManager {
 
 
     //NAVIGATION FUNCTIONS
-    public void navigateToMainPage(){if (authorized) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
+    public void navigateToMainPage(){if (isAuthorized()) navigate(MAIN_PAGE); else System.out.println("Not Authorized");}
     public void navigateToDetailRequest(Request request){
-        if (authorized){
+        if (isAuthorized()){
             DetailRequestController controller = (DetailRequestController) navigate(DETAIL_ITEMS);
             if  (controller == null) System.out.println("Controller is null");
             else controller.setData(request);
         }
         else System.out.println("Not Authorized");}
     public void navigateToDetailReceiptType(ReceiptTypeJSON receiptTypeJSON){
-        if (authorized){
+        if (isAuthorized()){
             DetailReceiptTypeController controller = (DetailReceiptTypeController) navigate(DETAIL_RECEIPT_TYPE);
             if  (controller == null) System.out.println("Controller is null");
             else {
@@ -168,10 +180,10 @@ public class NavigationManager {
         }
         else System.out.println("Not Authorized");}
 
-    public void navigateToSHOWCSVs(){if (authorized) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
+    public void navigateToSHOWCSVs(){if (isAuthorized()) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}
     public void navigateToLogin(){navigate(LOGIN_PAGE);}
-    public void navigateToRequestsPage(){if (authorized) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
-    public void navigateToIntroReceiptTypePage(){if (authorized) navigate(INTRO_TO_RECEIPT_TYPE); else System.out.println("Not Authorized");}
-    public void navigateToUsersControllerPage(){if (authorized) navigate(USERS_CONTROLLER); else System.out.println("Not Authorized");}
+    public void navigateToRequestsPage(){if (isAuthorized()) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
+    public void navigateToIntroReceiptTypePage(){if (isAuthorized()) navigate(INTRO_TO_RECEIPT_TYPE); else System.out.println("Not Authorized");}
+    public void navigateToUsersControllerPage(){if (isAuthorized()) navigate(USERS_CONTROLLER); else System.out.println("Not Authorized");}
 }
