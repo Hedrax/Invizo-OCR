@@ -100,7 +100,7 @@ public class Remote {
 
         return List.of(new User("Dummy_ID", "Dummy_Name", "Dummy_Email", User.Role.DESKTOP_USER));
     }
-
+    //TODO update check if the user.password == User.PASSWORD_DEFAULT otherwise we're changing the password
     public void updateUser(User user, Organization organization) {
         //TODO Rewan
         // update the user in the database
