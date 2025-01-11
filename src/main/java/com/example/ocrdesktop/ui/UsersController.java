@@ -14,6 +14,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
@@ -24,7 +25,12 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class UsersController {
 
@@ -64,16 +70,6 @@ public class UsersController {
         transition.play();
         isMenuVisible = !isMenuVisible; // Toggle the menu state
     }
-    void initFakeData() {
-        lst.add(new User("admin", "admin123", "admin.admin@admin.com", User.Role.ROLE_COMPANY_ADMIN));
-        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.ROLE_DESKTOP_USER));
-        lst.add(new User("Dummy_id3", "Dummy_name3", "Dummy_email3", User.Role.ROLE_MOBILE_USER));
-        lst.add(new User("Dummy_id1", "Dummy_name1", "Dummy_email1", User.Role.ROLE_COMPANY_ADMIN));
-        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.ROLE_DESKTOP_USER));
-        lst.add(new User("Dummy_id3", "Dummy_name3", "Dummy_email3", User.Role.ROLE_MOBILE_USER));
-        lst.add(new User("Dummy_id1", "Dummy_name1", "Dummy_email1", User.Role.ROLE_COMPANY_ADMIN));
-        lst.add(new User("Dummy_id2", "Dummy_name2", "Dummy_email2", User.Role.ROLE_DESKTOP_USER));
-    }
 
     void getDataFromRepo(){
         lst.addAll(repo.getUsers());
@@ -85,7 +81,7 @@ public class UsersController {
         userListVbox.getChildren().remove(pane);
     }
 
-    private HBox loadEntry(User user) {
+    private HBox loadEntry(User user, int idx) {
         try {
         // Load the custom view FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/user_control_entry.fxml"));
@@ -103,6 +99,7 @@ public class UsersController {
         controller.editProperty.addListener((obs, old, val) -> {
             if (val) {
                 edited.set(true);
+                lst.set(idx, controller.user);
             }
         });
         return pane;
@@ -120,9 +117,9 @@ public class UsersController {
 
         ListChangeListener<User> listChangeListener = change -> {
             while (change.next()) {
-                if (change.wasAdded() && !change.wasPermutated() && !change.wasUpdated()) {
+                if (change.wasAdded() && !change.wasPermutated() && !change.wasUpdated() && !change.wasReplaced()) {
                     for (User addedItem : change.getAddedSubList()) {
-                        HBox pane = loadEntry(addedItem);
+                        HBox pane = loadEntry(addedItem, lst.size()-1);
                         userListVbox.getChildren().add(pane);
                     }
                 }
@@ -131,6 +128,28 @@ public class UsersController {
         lst.addListener(listChangeListener);
 
         getDataFromRepo();
+    }
+
+    public static boolean isValidEmail(String email) {
+        if (email == null) {
+            return false;
+        }
+        // Define the regular expression for a valid email structure
+        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+
+        // Compile the pattern and match the provided email
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+
+        return matcher.matches();
+    }
+    // Method to show alert messages
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public UsersController() {
@@ -173,14 +192,39 @@ public class UsersController {
     @FXML
     private void confirmUpdates(){
         //make a callback to the repo with the updates
-        List<User> oldUsers = repo.getUsers();
-        System.out.println(lst);
-
+        Map<String, User> userMap = repo.getUsers().stream()
+                .collect(Collectors.toMap(user -> user.id, user -> user, (existing, replacement) -> existing));
         for (User user : lst) {
-            if (!oldUsers.contains(user)) {
+            if (!userMap.containsKey(user.id)) {
+                if (Objects.equals(user.getPassword(), User.PASSWORD_DEFAULT))
+                {
+                    showAlert("Invalid Input",
+                            "User with Email" + user.email +
+                                    " username: " + user.userName +
+                                    " must have a password");
+                    continue;
+                }
+                else if  (Objects.equals(user.userName, "New user")){
+                    showAlert("Invalid Input",
+                            "User with Email" + user.email +
+                                    " username: " + user.userName +
+                                    " must have a username");
+                    continue;
+                }
+                else if (!isValidEmail(user.email))
+                {
+                    showAlert("Invalid Input",
+                            "User with Email" + user.email +
+                                    " username: " + user.userName +
+                                    " must have a valid email address");
+                    continue;
+                }
                 repo.addUser(user);
-            } else{
-                repo.updateUser(user);
+            }
+            else {
+                if (!userMap.get(user.id).equals(user)) {
+                    repo.updateUser(user);
+                }
             }
         }
         repo.deleteUsers(deletedUsers);

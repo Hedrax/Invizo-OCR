@@ -7,6 +7,7 @@ public class User {
     public String userName;
     public String email;
     public Role role;
+    private String password = PASSWORD_DEFAULT;
     public User (String id, String userName,String email, Role role){
         this.id =id;
         this.userName = userName;
@@ -18,4 +19,25 @@ public class User {
         ROLE_DESKTOP_USER,
         ROLE_MOBILE_USER
     }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getPassword() {
+        return password;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        // Check if the same reference
+        if (this == obj) return true;
+        // Check for null or different class
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        // Cast and compare based on 'id'
+        User user = (User) obj;
+        return this.id.equals(user.id) &&
+                this.userName.equals(user.userName) &&
+                this.email.equals(user.email) &&
+                this.role == user.role && this.password.equals(user.password);
+    }
+    public static String PASSWORD_DEFAULT = "********";
 }

@@ -89,7 +89,7 @@ public class Remote {
             List<Map<String, Object>> responseBody = responseWrapper.getBody();
 
             // Handle response based on status code
-            if (statusCode == 200) { 
+            if (statusCode == 200) {
                 ObservableList<ReceiptType> receiptTypes = FXCollections.observableArrayList();
 
                 for (Map<String, Object> item : responseBody) {
@@ -113,7 +113,6 @@ public class Remote {
             return FXCollections.observableArrayList();
         }
     }
-    
     public static ObservableList<Request> getRequests() {
         ObservableList<Request> Requests = FXCollections.observableArrayList();
         //TODO Rewan need to get all Requests from upload_requests table in  Request format
@@ -176,7 +175,7 @@ public class Remote {
             Map<String, Object> responseBody = responseWrapper.getBody();
 
             // Handle response based on status code
-            if (statusCode == 200) { 
+            if (statusCode == 200) {
                 String accessToken = (String) responseBody.get("accessToken");
                 String refreshToken = (String) responseBody.get("refreshToken");
 
@@ -266,6 +265,7 @@ public class Remote {
             throw new RuntimeException("Failed to fetch users", e);
         }
     }
+    //TODO update check if the user.password == User.PASSWORD_DEFAULT otherwise we're changing the password
     public void updateUser(User user, Company company) {
         try {
             // Prepare payload
@@ -400,7 +400,7 @@ public class Remote {
 
             HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
             int statusCode = httpResponse.statusCode();
-            
+
             if (statusCode != 200 && statusCode != 204) { // Assuming 200 OK or 204 No Content
                 log.error("Failed to delete receipts - Status Code: {}, Body: {}", statusCode, httpResponse.body());
             }
@@ -408,7 +408,7 @@ public class Remote {
             log.error("Failed to delete receipts: {}", e.getMessage(), e);
         }
     }
-    
+
     public void updateRequest(Request request) {
         try {
             // Prepare payload
@@ -424,7 +424,7 @@ public class Remote {
 
             HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
             int statusCode = httpResponse.statusCode();
-            
+
 
             if (statusCode != 200 && statusCode != 204) { // Assuming 200 OK or 204 No Content
                 log.error("Failed to update request - Status Code: {}, Body: {}", statusCode, httpResponse.body());
