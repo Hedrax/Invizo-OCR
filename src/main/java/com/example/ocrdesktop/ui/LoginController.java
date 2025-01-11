@@ -90,8 +90,8 @@ public class LoginController {
             );
 
             if (response == 200) {
-                showAlert("Success", "Registration Successful");
                 try {
+                    showAlert("Success Signup", "Registration Successful");
                     NavigationManager.getInstance().navigateToLogin();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -106,7 +106,6 @@ public class LoginController {
             }
         }
     }
-
 
     private boolean validateLogin() {
 
