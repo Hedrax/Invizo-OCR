@@ -69,13 +69,11 @@ public class LoginController {
     @FXML
     private void signUp() {
         if(validateSignUp()){
-            //Todo Anyone
-            // make a spinning waiting wheel
 
             int response = repo.registerNewSuperAdmin(usernameTextFiled.getText(),organizationTextFiled.getText(),emailFieldSignUp.getText(),passwordFieldSignUp.getText());
             if (response == 200){
                 try {
-                    showAlert("Invalid Password", "Registration Successful");
+                    showAlert("Success Signup", "Registration Successful");
                     NavigationManager.getInstance().navigateToLogin();
                 } catch (Exception e) {e.printStackTrace();}
             }
