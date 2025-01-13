@@ -19,8 +19,6 @@ import java.util.Stack;
 public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
     private final Stack<FXMLLoader> backStack; // Stack for back navigation
-    //Todo Change the default status to false when finished login mechanism
-//    private boolean authorized = true;
 
     private Stage currentStage;
     private NavigationManager() {

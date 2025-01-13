@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ApiClient {
 
     private static final ApiClient INSTANCE = new ApiClient();
-    private static final String BASE_URL = "http://localhost:8080"; // Adjust as needed
+    private static final String BASE_URL = "https://invizo-app.koyeb.app"; // Adjust as needed
     private static final int MAX_RETRIES = 3;
     private static final Duration RETRY_DELAY = Duration.ofSeconds(2);
 
