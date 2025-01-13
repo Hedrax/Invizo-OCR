@@ -7,6 +7,7 @@ import com.example.ocrdesktop.utils.AuthorizationInfo;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -17,7 +18,7 @@ import java.util.Stack;
 //Append the navigation modification to the end of the class
 public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
-    private final Stack<String> backStack; // Stack for back navigation
+    private final Stack<FXMLLoader> backStack; // Stack for back navigation
     //Todo Change the default status to false when finished login mechanism
 //    private boolean authorized = true;
 
@@ -42,13 +43,17 @@ public class NavigationManager {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
             Scene scene = new Scene(fxmlLoader.load(), currentStage.getWidth(), currentStage.getHeight());
             currentStage.setScene(scene);
-            backStack.push(path);
+            backStack.push(fxmlLoader);
             return fxmlLoader.getController();
         }
         catch (IOException e) {e.printStackTrace();}
         return null;
     }
 
+    private Object navigate(FXMLLoader fxmlLoader){
+        currentStage.setScene(((Parent)fxmlLoader.getRoot()).getScene());
+        return fxmlLoader.getController();
+    }
 
     public void goBack() {
         if (backStack.isEmpty()) {
@@ -109,7 +114,7 @@ public class NavigationManager {
         currentStage.setScene(scene);
         currentStage.show();
 
-        backStack.push(LOGIN_PAGE);
+        backStack.push(fxmlLoader);
 
     }
 
@@ -123,7 +128,7 @@ public class NavigationManager {
         currentStage.setScene(scene);
         currentStage.show();
 
-        backStack.push(MAIN_PAGE);
+        backStack.push(fxmlLoader);
 
         AppContext.getInstance().setWidth(currentStage.getWidth());
         AppContext.getInstance().setHeight(currentStage.getHeight());
