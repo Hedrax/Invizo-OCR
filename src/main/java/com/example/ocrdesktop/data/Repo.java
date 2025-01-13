@@ -5,6 +5,7 @@ import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -127,21 +128,27 @@ public class Repo {
         backgroundThread.start();
     }
     public void updateUser(User user){
-        try (Connection localConnection = getDatabaseConnection()) {
-            updateUserLocal(localConnection, user);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (remote.updateUser(user)) {
+            try (Connection localConnection = getDatabaseConnection()) {
+                updateUserLocal(localConnection, user);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            showAlert("","");
         }
 
-        remote.updateUser(user, AppContext.getInstance().getAuthorizationInfo().company);
     }
     public void addUser(User user) {
-        try (Connection localConnection = getDatabaseConnection()) {
-            addUserLocal(localConnection, user);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (remote.addUser(user)) {
+            try (Connection localConnection = getDatabaseConnection()) {
+                addUserLocal(localConnection, user);
+            } catch (SQLException e) {
+                e.printStackTrace();
+
+            }
         }
-        remote.addUser(user);
+
     }
     public List<User> getUsers() {
         List <User> users = new ArrayList<>();
@@ -341,4 +348,14 @@ public class Repo {
         // get all receiptTypes from the local database
         return receiptTypes;
     }
+
+    // Method to show an alert
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

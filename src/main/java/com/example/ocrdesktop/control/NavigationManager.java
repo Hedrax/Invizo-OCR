@@ -178,7 +178,8 @@ public class NavigationManager {
                 }
             }
         }
-        else System.out.println("Not Authorized");}
+        else System.out.println("Not Authorized");
+    }
 
     public void navigateToSHOWCSVs(){if (isAuthorized()) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
     public void navigateToSignup(){navigate(SIGNUP_PAGE);}

@@ -22,12 +22,15 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import static java.lang.Math.max;
 import java.io.File;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.Math.max;
 import static javafx.collections.FXCollections.observableArrayList;
 
 public class DetailReceiptTypeController {
@@ -449,7 +452,6 @@ public class DetailReceiptTypeController {
                 //else delete old name id and insert new
                 else response = repo.modifyReceiptType(receiptTypeJSON);
                 if (response == 200) navigateBack();
-                else showAlert("Error creating the Receipt");
             }
         }
     }

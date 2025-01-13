@@ -1,7 +1,6 @@
 package com.example.ocrdesktop.utils;
 
 import com.example.ocrdesktop.AppContext;
-import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.data.Remote;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ApiClient {
 
     private static final ApiClient INSTANCE = new ApiClient();
-    private static final String BASE_URL = "https://invizo-app.koyeb.app"; // Adjust as needed
+    private static final String BASE_URL = "http://localhost:8080"; // Adjust as needed
     private static final int MAX_RETRIES = 3;
     private static final Duration RETRY_DELAY = Duration.ofSeconds(2);
 
@@ -92,55 +91,38 @@ public class ApiClient {
 
             HttpRequest request = requestBuilder.build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
-            if (isSuccessful(response.statusCode())) {
+            try {
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                int statusCode = response.statusCode();
+                T body = null;
+
                 if (typeReference.getType().equals(Void.class)) {
                     return new ApiResponse<>(null, response);
                 }
-                T body = deserialize(response.body(), typeReference);
+                body = deserialize(response.body(), typeReference);
                 return new ApiResponse<>(body, response);
-            } else if (isUnauthorized(response.statusCode())) {
-                boolean refreshed = handleUnauthorized();
-                if (refreshed) {
-                    retryCount.incrementAndGet(); // Retry the request after refreshing the token
-                    continue;
-                } else {
-                    NavigationManager.getInstance().logout();
-                    throw new RuntimeException("Unauthorized and refresh failed.");
+
+
+            } catch (IOException | InterruptedException e) {
+                // Handle network-related exceptions
+                if (retryCount.incrementAndGet() > MAX_RETRIES) {
+                    throw e;
                 }
-            } else if (isTransientError(response.statusCode()) && retryCount.getAndIncrement() < MAX_RETRIES) {
-                try {
-                    Thread.sleep(RETRY_DELAY.toMillis());
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Retry interrupted.", e);
-                }
-                continue;
-            } else {
-                throw new RuntimeException("Request failed with status code: " + response.statusCode());
+                System.err.println("Network error occurred, retrying... (" + retryCount.get() + ")");
+                Thread.sleep(RETRY_DELAY.toMillis());
             }
         }
         throw new RuntimeException("Exceeded maximum retry attempts.");
     }
-
     private boolean isSuccessful(int statusCode) {
         return statusCode >= 200 && statusCode < 300;
     }
 
-    private boolean isUnauthorized(int statusCode) {
-        return statusCode == 401 || statusCode == 403;
-    }
-
-    private boolean isTransientError(int statusCode) {
-        return statusCode == 500 || statusCode == 502 || statusCode == 503 || statusCode == 504;
-    }
 
     private <T> T deserialize(String json, TypeReference<T> typeReference) {
         try {
             return objectMapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
-
             throw new RuntimeException("Failed to deserialize JSON response", e);
         }
     }
@@ -166,6 +148,7 @@ public class ApiClient {
         }
     }
 
+
     // Convenience methods for HTTP verbs returning ApiResponse
 
     public static <T> ApiResponse<T> get(String endpoint, TypeReference<T> typeReference) throws IOException, InterruptedException {
@@ -186,5 +169,9 @@ public class ApiClient {
 
     public static <T> ApiResponse<T> delete(String endpoint, Object requestBody, TypeReference<T> typeReference) throws IOException, InterruptedException {
         return getInstance().sendRequestSync("DELETE", endpoint, requestBody, typeReference);
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
 }
