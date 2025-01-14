@@ -87,7 +87,6 @@ public class Remote {
         } catch (Exception e) {
             log.error("Failed to modify receipt type: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to modify receipt type.");
-            return 400;
         }
     }
     public ObservableList<ReceiptType> getReceiptTypes() {
@@ -161,7 +160,6 @@ public class Remote {
         } catch (Exception e) {
             log.error("Failed to register new super admin: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to register new super admin.");
-            return 400;
         }
     }
     public boolean authenticate(String email, String password) {
@@ -271,7 +269,6 @@ public class Remote {
         } catch (Exception e) {
             log.error("Failed to fetch users: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to fetch users.");
-            throw new RuntimeException("Failed to fetch users", e);
         }
     }
 
@@ -332,17 +329,14 @@ public class Remote {
                 return true;
             } else if (statusCode == 409) {
                 throw new RuntimeException("User already exists.");
-                return false;
             } else {
                 handleError(httpResponse);
                 throw new RuntimeException("Failed to add user.");
-                return false;
             }
 
         } catch (IOException | InterruptedException e) {
             log.error("Failed to add user: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to add user.");
-            return false;
         }
     }
     public void deleteUsers(List<User> deletedUsers) {
