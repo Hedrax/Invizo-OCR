@@ -408,6 +408,9 @@ public class Remote {
         }
     }
     public void deleteReceipts(List<Receipt> receiptsToDelete) {
+        if (receiptsToDelete.isEmpty()) {
+            return;
+        }
         try {
             List<UUID> receiptIds = new ArrayList<>();
             for (Receipt receipt : receiptsToDelete) {
