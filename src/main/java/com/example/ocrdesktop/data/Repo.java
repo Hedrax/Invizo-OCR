@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -240,19 +241,23 @@ public class Repo {
 
     // Refresh data method
     public static void refreshData() {
+        Timestamp timestamp = null;
+        ObservableList<Request> emptyRequests = FXCollections.observableArrayList();
+        ObservableList<Receipt> emptyReceipts = FXCollections.observableArrayList();
+        Pair<ObservableList<Request>, ObservableList<Receipt>> emptyPair =
+                new Pair<>(emptyRequests, emptyReceipts);
         try (Connection localConnection = getDatabaseConnection()) {
+            timestamp = getMaxUploadedAtTime(localConnection);
             // Get dummy data
-            ObservableList<ReceiptType> receiptTypes = getDummyReceiptTypes();
+           /* ObservableList<ReceiptType> receiptTypes = getDummyReceiptTypes();
             ObservableList<Request> requests = getDummyRequests();
-            ObservableList<Receipt> receipts = getDummyReceipts();
+            ObservableList<Receipt> receipts = getDummyReceipts();*/
             getAllUsers();
-           /* ObservableList<ReceiptType> receiptTypes = getReceiptTypes();
-            ObservableList<Request> requests = getRequests();
-            ObservableList<Receipt> receipts = getReceipts();
-            */
-//            refreshReceiptType(localConnection, receiptTypes);
-//            refreshUploadRequests(localConnection, requests);
-//            refreshReceipt(localConnection, receipts);
+            ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
+            emptyPair = remote.getRequestsAndReceipts(timestamp);
+            refreshReceiptType(localConnection, receiptTypes);
+            refreshUploadRequests(localConnection, emptyPair.getKey());
+            refreshReceipt(localConnection, emptyPair.getValue());
         } catch (SQLException e) {
             e.printStackTrace();
         }

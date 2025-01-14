@@ -565,6 +565,19 @@ public class Local {
             connection.setAutoCommit(true);
         }
     }
+    public static Timestamp getMaxUploadedAtTime(Connection localConnection) throws SQLException {
+        String getMaxUploadedAtSQL = "SELECT MAX(uploaded_at) AS max_uploaded_at FROM upload_requests";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(getMaxUploadedAtSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getTimestamp("max_uploaded_at");
+            }
+        }
+
+        // Return null if no records exist
+        return null;
+    }
 
 
 
