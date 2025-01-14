@@ -1,7 +1,9 @@
 package com.example.ocrdesktop.data;
 
 import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.utils.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -168,21 +170,13 @@ public class Repo {
         }
 
         remote.deleteUsers(deletedUsers);
-
-//        try (Connection localConnection = getDatabaseConnection()) {
-
-//            deleteUsersLocal(localConnection, deletedUsers);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-        //TODO ALI on failed
-        // throw new RuntimeException("Failed to delete users Locally");
-
-
-
-
-
-
+        try (Connection localConnection = getDatabaseConnection()) {
+            deleteUsersLocal(localConnection, deletedUsers);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Log or handle the specific error
+            throw new RuntimeException("Failed to delete users locally. Error: " + e.getMessage(), e);
+        }
     }
     // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {
@@ -245,22 +239,61 @@ public class Repo {
 
     // Refresh data method
     public static void refreshData() {
-        Timestamp timestamp;
-        ObservableList<Request> emptyRequests = FXCollections.observableArrayList();
-        ObservableList<Receipt> emptyReceipts = FXCollections.observableArrayList();
-        Pair<ObservableList<Request>, ObservableList<Receipt>> emptyPair;
-        try (Connection localConnection = getDatabaseConnection()) {
-            timestamp = getMaxUploadedAtTime(localConnection);
-            getAllUsers();
-            ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
-            emptyPair = remote.getRequestsAndReceipts(timestamp);
-            refreshReceiptType(localConnection, receiptTypes);
-            refreshUploadRequests(localConnection, emptyPair.getKey());
-            refreshReceipt(localConnection, emptyPair.getValue());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Initialize required variables
+        final Timestamp[] timestamp = new Timestamp[1];
+        final ObservableList<Request>[] emptyRequests = new ObservableList[]{FXCollections.observableArrayList()};
+        final ObservableList<Receipt>[] emptyReceipts = new ObservableList[]{FXCollections.observableArrayList()};
+        final Pair<ObservableList<Request>, ObservableList<Receipt>>[] emptyPair = new Pair[]{null};
+
+        // Show a loading indicator
+        NavigationManager.getInstance().showLoading();
+
+        // Create a background task
+        Task<Void> refreshTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                try (Connection localConnection = getDatabaseConnection()) {
+                    // Fetch data and refresh logic
+                    timestamp[0] = getMaxUploadedAtTime(localConnection);
+                    getAllUsers();
+                    ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
+                    emptyPair[0] = remote.getRequestsAndReceipts(timestamp[0]);
+
+                    refreshReceiptType(localConnection, receiptTypes);
+                    refreshUploadRequests(localConnection, emptyPair[0].getKey());
+                    refreshReceipt(localConnection, emptyPair[0].getValue());
+
+                    // Assign updated data
+                    emptyRequests[0] = emptyPair[0].getKey();
+                    emptyReceipts[0] = emptyPair[0].getValue();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Failed to refresh data.", e);
+                }
+                return null;
+            }
+        };
+
+        // Handle success
+        refreshTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                showAlert("Success", "Data refreshed successfully.");
+            });
+        });
+
+        // Handle failure
+        refreshTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                e.getSource().getException().printStackTrace();
+                showAlert("Error", e.getSource().getException().getMessage());
+            });
+        });
+
+        // Submit the task to the executor
+        AppContext.getInstance().executorService.submit(refreshTask);
     }
+
 
     public static ObservableList<String> getReceiptTypeNames() {
         ObservableList<String> receiptTypeNames = FXCollections.observableArrayList();
@@ -380,12 +413,13 @@ public class Repo {
     }
 
     // Method to show an alert
-    private void showAlert(String title, String message) {
+    private static void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 
 }
