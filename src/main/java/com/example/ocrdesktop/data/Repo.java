@@ -175,7 +175,7 @@ public class Repo {
         } catch (SQLException e) {
             e.printStackTrace();
             // Log or handle the specific error
-            throw new RuntimeException("Failed to delete users locally. Error: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to delete users locally.");
         }
     }
     // Database connection helper
