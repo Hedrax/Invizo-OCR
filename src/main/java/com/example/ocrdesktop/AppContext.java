@@ -5,6 +5,8 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 //Note: that you can append variables to the class based on the required,
@@ -15,6 +17,9 @@ public class AppContext {
     private static AppContext instance;
     private Stage stage;
     private AuthorizationInfo authorizationInfo;
+    //Thread Pool variable
+    public final ExecutorService executorService = Executors.newFixedThreadPool(10);
+
 
     //Saving Directory Property
 

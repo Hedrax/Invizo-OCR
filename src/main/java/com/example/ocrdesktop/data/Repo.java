@@ -1,11 +1,14 @@
 package com.example.ocrdesktop.data;
 
 import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.utils.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -127,17 +130,18 @@ public class Repo {
         backgroundThread.setDaemon(true);
         backgroundThread.start();
     }
-    public void updateUser(User user){
+    public boolean updateUser(User user){
         if (remote.updateUser(user)) {
             try (Connection localConnection = getDatabaseConnection()) {
                 updateUserLocal(localConnection, user);
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
-            showAlert("","");
+            throw new RuntimeException("Failed to update user");
         }
-
     }
     public void addUser(User user) {
         if (remote.addUser(user)) {
@@ -145,10 +149,10 @@ public class Repo {
                 addUserLocal(localConnection, user);
             } catch (SQLException e) {
                 e.printStackTrace();
-
+                throw new RuntimeException("Failed to add user locally");
             }
         }
-
+        else throw new RuntimeException("Failed to add new user");
     }
     public List<User> getUsers() {
         List <User> users = new ArrayList<>();
@@ -161,11 +165,18 @@ public class Repo {
         return users;
     }
     public void deleteUsers(List<User> deletedUsers) {
-        //TODO ALI
-        // delete the users in the local database
-
+        if (deletedUsers.isEmpty()) {
+            return;
+        }
 
         remote.deleteUsers(deletedUsers);
+        try (Connection localConnection = getDatabaseConnection()) {
+            deleteUsersLocal(localConnection, deletedUsers);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Log or handle the specific error
+            throw new RuntimeException("Failed to delete users locally.");
+        }
     }
     // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {
@@ -228,23 +239,61 @@ public class Repo {
 
     // Refresh data method
     public static void refreshData() {
-        try (Connection localConnection = getDatabaseConnection()) {
-            // Get dummy data
-            ObservableList<ReceiptType> receiptTypes = getDummyReceiptTypes();
-            ObservableList<Request> requests = getDummyRequests();
-            ObservableList<Receipt> receipts = getDummyReceipts();
-            getAllUsers();
-           /* ObservableList<ReceiptType> receiptTypes = getReceiptTypes();
-            ObservableList<Request> requests = getRequests();
-            ObservableList<Receipt> receipts = getReceipts();
-            */
-            refreshReceiptType(localConnection, receiptTypes);
-            refreshUploadRequests(localConnection, requests);
-            refreshReceipt(localConnection, receipts);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Initialize required variables
+        final Timestamp[] timestamp = new Timestamp[1];
+        final ObservableList<Request>[] emptyRequests = new ObservableList[]{FXCollections.observableArrayList()};
+        final ObservableList<Receipt>[] emptyReceipts = new ObservableList[]{FXCollections.observableArrayList()};
+        final Pair<ObservableList<Request>, ObservableList<Receipt>>[] emptyPair = new Pair[]{null};
+
+        // Show a loading indicator
+        NavigationManager.getInstance().showLoading();
+
+        // Create a background task
+        Task<Void> refreshTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                try (Connection localConnection = getDatabaseConnection()) {
+                    // Fetch data and refresh logic
+                    timestamp[0] = getMaxUploadedAtTime(localConnection);
+                    getAllUsers();
+                    ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
+                    emptyPair[0] = remote.getRequestsAndReceipts(timestamp[0]);
+
+                    refreshReceiptType(localConnection, receiptTypes);
+                    refreshUploadRequests(localConnection, emptyPair[0].getKey());
+                    refreshReceipt(localConnection, emptyPair[0].getValue());
+
+                    // Assign updated data
+                    emptyRequests[0] = emptyPair[0].getKey();
+                    emptyReceipts[0] = emptyPair[0].getValue();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Failed to refresh data.", e);
+                }
+                return null;
+            }
+        };
+
+        // Handle success
+        refreshTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                showAlert("Success", "Data refreshed successfully.");
+            });
+        });
+
+        // Handle failure
+        refreshTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                e.getSource().getException().printStackTrace();
+                showAlert("Error", e.getSource().getException().getMessage());
+            });
+        });
+
+        // Submit the task to the executor
+        AppContext.getInstance().executorService.submit(refreshTask);
     }
+
 
     public static ObservableList<String> getReceiptTypeNames() {
         ObservableList<String> receiptTypeNames = FXCollections.observableArrayList();
@@ -353,7 +402,6 @@ public class Repo {
 
     public List<ReceiptType> getReceiptTypes() throws SQLException {
         List<ReceiptType> receiptTypes = new ArrayList<>();
-        //TODO ALI
         // get all receiptTypes from the local database
         try (Connection localConnection = getDatabaseConnection()) {
             receiptTypes = getAllReceiptTypes(localConnection);
@@ -365,12 +413,13 @@ public class Repo {
     }
 
     // Method to show an alert
-    private void showAlert(String title, String message) {
+    private static void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 
 }
