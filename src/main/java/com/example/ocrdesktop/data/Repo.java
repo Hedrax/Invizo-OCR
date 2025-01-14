@@ -241,17 +241,12 @@ public class Repo {
 
     // Refresh data method
     public static void refreshData() {
-        Timestamp timestamp = null;
+        Timestamp timestamp;
         ObservableList<Request> emptyRequests = FXCollections.observableArrayList();
         ObservableList<Receipt> emptyReceipts = FXCollections.observableArrayList();
-        Pair<ObservableList<Request>, ObservableList<Receipt>> emptyPair =
-                new Pair<>(emptyRequests, emptyReceipts);
+        Pair<ObservableList<Request>, ObservableList<Receipt>> emptyPair;
         try (Connection localConnection = getDatabaseConnection()) {
             timestamp = getMaxUploadedAtTime(localConnection);
-            // Get dummy data
-           /* ObservableList<ReceiptType> receiptTypes = getDummyReceiptTypes();
-            ObservableList<Request> requests = getDummyRequests();
-            ObservableList<Receipt> receipts = getDummyReceipts();*/
             getAllUsers();
             ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
             emptyPair = remote.getRequestsAndReceipts(timestamp);
