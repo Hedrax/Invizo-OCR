@@ -161,8 +161,12 @@ public class Repo {
         return users;
     }
     public void deleteUsers(List<User> deletedUsers) {
-        //TODO ALI
-        // delete the users in the local database
+        try (Connection localConnection = getDatabaseConnection()) {
+            deleteUsersLocal(localConnection, deletedUsers);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 
 
         remote.deleteUsers(deletedUsers);
@@ -353,7 +357,6 @@ public class Repo {
 
     public List<ReceiptType> getReceiptTypes() throws SQLException {
         List<ReceiptType> receiptTypes = new ArrayList<>();
-        //TODO ALI
         // get all receiptTypes from the local database
         try (Connection localConnection = getDatabaseConnection()) {
             receiptTypes = getAllReceiptTypes(localConnection);
