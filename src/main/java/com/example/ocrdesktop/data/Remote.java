@@ -7,12 +7,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.util.Pair;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Slf4j
@@ -122,13 +124,11 @@ public class Remote {
             return FXCollections.observableArrayList();
         }
     }
-    public static ObservableList<Request> getRequests() {
+    public static Pair<ObservableList<Request>,ObservableList<Receipt>> getRequestsAndReceipts(Timestamp timestamp) {
         // TODO: fetch from backend if needed
-        return FXCollections.observableArrayList();
-    }
-    public static ObservableList<Receipt> getReceipts() {
-        // TODO: fetch from backend if needed
-        return FXCollections.observableArrayList();
+        ObservableList<Request> requests = FXCollections.observableArrayList();
+        ObservableList<Receipt> receipts = FXCollections.observableArrayList();
+        return new Pair<>(requests, receipts);
     }
     public int registerNewSuperAdmin(String username, String invitationToken, String email, String password, String confirmPassword) {
         try {

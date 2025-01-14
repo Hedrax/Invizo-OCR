@@ -22,6 +22,8 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.SQLException;
+import java.util.HashMap;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -254,7 +256,7 @@ public class DetailRequestController {
         return true;
     }
     @FXML
-    private void confirmChanges(){
+    private void confirmChanges() throws SQLException {
         //Check that every Receipt has a confirmed Status
         if (!checkAllConfirmed()) return;
         request.receipts.removeAll(receiptsToDelete);

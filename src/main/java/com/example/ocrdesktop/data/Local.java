@@ -534,6 +534,51 @@ public class Local {
         }
         return receiptTypes;
     }
+    public static void deleteUsersLocal(Connection connection, List<User> users) throws SQLException {
+        // SQL statement for deleting users by ID
+        String deleteUserSQL = "DELETE FROM users WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteUserSQL)) {
+            // Disable auto-commit for batch processing
+            connection.setAutoCommit(false);
+
+            // Add delete operations to the batch for each user
+            for (User user : users) {
+                preparedStatement.setString(1, user.id);
+                preparedStatement.addBatch();
+            }
+
+            // Execute the batch
+            int[] rowsDeleted = preparedStatement.executeBatch();
+
+            // Commit the transaction
+            connection.commit();
+
+            // Log the result
+            System.out.println("Deleted " + rowsDeleted.length + " users successfully.");
+        } catch (SQLException e) {
+            // Rollback in case of an error
+            connection.rollback();
+            throw new SQLException("Error deleting users. Transaction rolled back.", e);
+        } finally {
+            // Restore the auto-commit setting
+            connection.setAutoCommit(true);
+        }
+    }
+    public static Timestamp getMaxUploadedAtTime(Connection localConnection) throws SQLException {
+        String getMaxUploadedAtSQL = "SELECT MAX(uploaded_at) AS max_uploaded_at FROM upload_requests";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(getMaxUploadedAtSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getTimestamp("max_uploaded_at");
+            }
+        }
+
+        // Return null if no records exist
+        return null;
+    }
+
 
 
 
