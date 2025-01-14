@@ -141,18 +141,16 @@ public class Repo {
         return false;
         }
     }
-    public boolean addUser(User user) {
+    public void addUser(User user) {
         if (remote.addUser(user)) {
             try (Connection localConnection = getDatabaseConnection()) {
                 addUserLocal(localConnection, user);
-                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
-                return false;
+                throw new RuntimeException("Failed to add user locally");
             }
         }
-        else return false;
-
+        else throw new RuntimeException("Failed to add new user");
     }
     public List<User> getUsers() {
         List <User> users = new ArrayList<>();
@@ -168,16 +166,23 @@ public class Repo {
         if (deletedUsers.isEmpty()) {
             return;
         }
+
+        remote.deleteUsers(deletedUsers);
+
 //        try (Connection localConnection = getDatabaseConnection()) {
 
 //            deleteUsersLocal(localConnection, deletedUsers);
 //        } catch (SQLException e) {
 //            e.printStackTrace();
 //        }
+        //TODO ALI on failed
+        // throw new RuntimeException("Failed to delete users Locally");
 
 
 
-        remote.deleteUsers(deletedUsers);
+
+
+
     }
     // Database connection helper
     private static Connection getDatabaseConnection() throws SQLException {

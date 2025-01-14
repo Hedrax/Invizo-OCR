@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -191,10 +194,13 @@ public class UsersController {
     }
     @FXML
     private void confirmUpdates(){
+        //TODO to be tested when backend deployed on a more decent server
         //make a callback to the repo with the updates
         Map<String, User> userMap = repo.getUsers().stream()
                 .collect(Collectors.toMap(user -> user.id, user -> user, (existing, replacement) -> existing));
+        Task<String> apiTask;
         for (User user : lst) {
+            apiTask = null;
             if (!userMap.containsKey(user.id)) {
                 if (Objects.equals(user.getPassword(), User.PASSWORD_DEFAULT))
                 {
@@ -219,15 +225,74 @@ public class UsersController {
                                     " must have a valid email address");
                     continue;
                 }
-                repo.addUser(user);
+                apiTask = new Task<>() {
+                    @Override
+                    protected String call(){
+                        repo.addUser(user);
+                        return "Success";
+                    }
+                };
             }
             else {
                 if (!userMap.get(user.id).equals(user)) {
-                    repo.updateUser(user);
+                    apiTask = new Task<>() {
+                        @Override
+                        protected String call() throws Exception {
+                            if (repo.updateUser(user)){
+                                return "User Added Successfully!";
+                            } else {
+                                throw new RuntimeException("Failed to add user");
+                            }
+                        }
+                    };
+
                 }
             }
+            if (apiTask == null) {
+                continue;
+            }
+            // Manage loading animation visibility
+            apiTask.setOnRunning(e -> NavigationManager.getInstance().showLoading());
+            apiTask.setOnSucceeded(e -> {
+                NavigationManager.getInstance().hideLoading();
+           });
+            apiTask.setOnFailed(e -> {
+                Platform.runLater(() -> {
+                    NavigationManager.getInstance().hideLoading();
+                    showAlert("Error", e.getSource().getException().getMessage());
+                });
+            });
+            AppContext.getInstance().executorService.submit(apiTask);
+
         }
-        repo.deleteUsers(deletedUsers);
+
+        apiTask = new Task<>() {
+            @Override
+            protected String call() {
+                repo.deleteUsers(deletedUsers);
+                return "Success";
+            }
+        };
+
+        // Manage loading animation visibility
+        apiTask.setOnRunning(e ->
+                Platform.runLater(() -> NavigationManager.getInstance().showLoading()));
+        apiTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+            });
+        });
+        apiTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                Platform.runLater(() -> {
+
+                    NavigationManager.getInstance().hideLoading();
+                showAlert("Error", e.getSource().getException().getMessage());
+            });
+            });
+
+        });
+        edited.set(false);
     }
 
     public void addNewUser() {
