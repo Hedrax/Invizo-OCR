@@ -259,9 +259,14 @@ public class DetailRequestController {
         if (!checkAllConfirmed()) return;
         request.receipts.removeAll(receiptsToDelete);
         request.status = Request.RequestStatus.COMPLETED;
-        repo.confirmRequest(request, receiptsToDelete);
+        try {
+            repo.confirmRequest(request, receiptsToDelete);
+            navigateBack();
 
-        navigateBack();
+        }
+        catch (Exception e){
+            showAlert("Failed to confirm request.");
+        }
     }
     @FXML
     private void navigateBack(){NavigationManager.getInstance().goBack();}

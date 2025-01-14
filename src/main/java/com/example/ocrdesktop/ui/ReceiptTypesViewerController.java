@@ -17,6 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,13 @@ public class ReceiptTypesViewerController {
     }
 
     private void initOperation() {
-        receiptTypes.addAll(repo.getReceiptTypes());
+        try {
+            receiptTypes.addAll(repo.getReceiptTypes());
+        } catch (SQLException e) {
+
+            throw new RuntimeException(e);
+
+        }
     }
     private void refreshCheckBox() {
         typeCheckBox.getItems().clear();
