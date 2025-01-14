@@ -274,23 +274,38 @@ public class Repo {
 
 
 
-    public void confirmRequest(Request request, List<Receipt> receiptsToDelete) {
+    public void confirmRequest(Request request, List<Receipt> receiptsToDelete) throws SQLException {
         AtomicInteger response = new AtomicInteger(400);
 
         remote.updateReceipts(request.receipts);
         remote.deleteReceipts(receiptsToDelete);
         remote.updateRequest(request);
+        try (Connection localConnection = getDatabaseConnection()) {
+            // update the receipts in the local database
+            updateReceipts(localConnection,request.receipts);
+            // delete the receipts in the local database
+            deleteReceipts(localConnection, (ObservableList<Receipt>) receiptsToDelete);
+            // update the request in the local database
+            updateRequest(localConnection,request);
 
-        //TODO ALI
-        // update the receipts in the local database
-        // delete the receipts in the local database
-        // update the request in the local database
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Propagate the exception for further handling
+        }
+
     }
 
-    public List<ReceiptType> getReceiptTypes() {
+    public List<ReceiptType> getReceiptTypes() throws SQLException {
         List<ReceiptType> receiptTypes = new ArrayList<>();
         //TODO ALI
         // get all receiptTypes from the local database
+        try (Connection localConnection = getDatabaseConnection()) {
+            receiptTypes = getAllReceiptTypes(localConnection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Propagate the exception for further handling
+        }
         return receiptTypes;
     }
 }

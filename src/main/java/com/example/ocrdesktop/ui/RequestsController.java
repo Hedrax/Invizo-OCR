@@ -190,22 +190,36 @@ public class RequestsController {
     @FXML
     private void Logout(){}
 
+
     @FXML
     private void onFilterClicked() {
         String receiptTypeValue = receiptTypeComboBox.getValue();
         LocalDate startDate = fromDatePicker.getValue();
         LocalDate endDate = toDatePicker.getValue();
+
+        // Check if any of the required fields are null or invalid
+        if (receiptTypeValue == null || startDate == null || endDate == null) {
+            showAlert("Invalid Input", "Please ensure all fields (Receipt Type, Start Date, and End Date) are selected.");
+            return;  // Exit the method early to avoid further processing
+        }
+
+        // Clear the list to remove any previously loaded data
         lst.clear();
+
+        // Clear any UI elements already added to the VBox (request cells)
+        requestsListVBox.getChildren().clear();
+
         // Initialize the ObservableList for Requests
         ObservableList<Request> requests = FXCollections.observableArrayList();
         try {
-            // Fetch requests with the specified status
-            requests = getRequestsByDateAndType(receiptTypeValue,startDate.toString(),endDate.toString());
+            // Fetch requests with the specified receipt type and date range
+            requests = getRequestsByDateAndType(receiptTypeValue, startDate.toString(), endDate.toString());
             System.out.printf("Requests found: %d\n", requests.size());
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching requests by status", e);
+            throw new RuntimeException("Error fetching requests by date and type", e);
         }
 
+        // Add the filtered requests to the list and populate the UI
         for (Request request : requests) {
             try {
                 // Fetch receipts for the current request
@@ -226,13 +240,17 @@ public class RequestsController {
                     // Set additional data in the request object
                     request.setData(receipts, receiptType);
                 }
+
+                // Add the request to the final list
                 lst.add(request);
+
             } catch (SQLException e) {
                 throw new RuntimeException("Error loading data for request ID: " + request.id, e);
             }
         }
-
     }
+
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

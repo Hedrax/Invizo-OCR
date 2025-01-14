@@ -440,8 +440,100 @@ public class Local {
         // Create a Timestamp from the parsed date and set the time to 00:00:00
         return new Timestamp(parsedDate.getTime());
     }
+    public static void updateReceipts(Connection localConnection, ObservableList<Receipt> receipts) throws SQLException {
+        // SQL query to update receipt
+        String updateReceiptSQL =
+                "UPDATE receipt SET receipt_type_id = ?, request_id = ?, image_url = ?, status = ?, ocr_data = ?, approved_by_user_id = ?, approved_at = ? " +
+                        "WHERE receipt_id = ?";
 
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(updateReceiptSQL)) {
+            // Iterate through each receipt in the list
+            for (Receipt receipt : receipts) {
+                // Set the prepared statement parameters from the receipt data
+                preparedStatement.setString(1, receipt.receiptTypeId);  // receipt_type_id
+                preparedStatement.setString(2, receipt.requestId);  // request_id
+                preparedStatement.setString(3, receipt.imageUrl);  // image_url
+                preparedStatement.setString(4, receipt.status.toString());  // status (converted to string)
 
+                // Serialize the ocrData (Map<String, String>) to a JSON-like string
+                String ocrDataJson = mapToJsonString(receipt.ocrData);  // Helper function to convert Map to JSON string
+                preparedStatement.setString(5, ocrDataJson);  // Store OCR data as JSON string
+
+                preparedStatement.setString(6, receipt.approvedByUserId);  // approved_by_user_id
+                preparedStatement.setTimestamp(7, receipt.approvedAt);  // approved_at
+                preparedStatement.setString(8, receipt.receiptId);  // receipt_id (for WHERE clause)
+
+                // Execute the update for this receipt
+                preparedStatement.addBatch();
+            }
+
+            // Execute the batch of updates
+            preparedStatement.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error while updating receipt records.", e);
+        }
+    }
+    public static void deleteReceipts(Connection localConnection, ObservableList<Receipt> receipts) throws SQLException {
+        // SQL query to delete receipt
+        String deleteReceiptSQL = "DELETE FROM receipt WHERE receipt_id = ?";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(deleteReceiptSQL)) {
+            // Iterate through each receipt in the list
+            for (Receipt receipt : receipts) {
+                // Set the prepared statement parameter for the receipt_id
+                preparedStatement.setString(1, receipt.receiptId);  // receipt_id (for WHERE clause)
+
+                // Execute the delete operation for this receipt
+                preparedStatement.addBatch();
+            }
+
+            // Execute the batch of deletions
+            preparedStatement.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error while deleting receipt records.", e);
+        }
+    }
+    public static void updateRequest(Connection localConnection, Request request) throws SQLException {
+        String updateUploadRequestSQL =
+                "UPDATE upload_requests SET status = ?, uploaded_by_user_id = ?, uploaded_at = ? WHERE request_id = ?";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(updateUploadRequestSQL)) {
+            // Set the prepared statement parameters for the update operation
+            preparedStatement.setString(1, request.status.toString());  // status
+            preparedStatement.setString(2, request.uploaded_by_user_id);  // uploaded_by_user_id
+            preparedStatement.setTimestamp(3, new Timestamp(request.uploaded_at.getTime()));  // uploaded_at
+            preparedStatement.setString(4, request.id);  // request_id (for WHERE clause)
+
+            // Execute the update operation
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error while updating the upload request.", e);
+        }
+    }
+    public static List<ReceiptType> getAllReceiptTypes(Connection localConnection) throws SQLException {
+        String queryReceiptTypesSQL = "SELECT * FROM receipt_type";
+        List<ReceiptType> receiptTypes = new ArrayList<>();
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(queryReceiptTypesSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            // Iterate over all the result set rows
+            while (resultSet.next()) {
+                ReceiptType receiptType = new ReceiptType("","",new HashMap<>());
+
+                // Set the fields directly like the original method
+                receiptType.id = resultSet.getString("id");
+                receiptType.name = resultSet.getString("name");
+                receiptType.columnIdx2NamesMap = parseOcrDataToIntegerKey(resultSet.getString("columnNames"));
+
+                receiptTypes.add(receiptType);
+            }
+        }
+        return receiptTypes;
+    }
 
 
 

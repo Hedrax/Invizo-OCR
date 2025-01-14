@@ -151,6 +151,8 @@ public class MainController{
     @FXML
     private void Refresh(){
         refreshData();
+        requestsListVBox.getChildren().clear();
+        lst.clear();
         loadDataFromDatabase();
         System.out.printf("Refreshed!\n");
         System.out.printf(getReceiptTypeNames().toString());
