@@ -137,8 +137,7 @@ public class Repo {
                 return false;
             }
         } else {
-            showAlert("","");
-        return false;
+            throw new RuntimeException("Failed to update user");
         }
     }
     public void addUser(User user) {

@@ -84,7 +84,7 @@ public class Remote {
 
         } catch (Exception e) {
             log.error("Failed to modify receipt type: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to modify receipt type.");
+            throw new RuntimeException("Failed to modify receipt type.");
             return 400;
         }
     }
@@ -160,7 +160,7 @@ public class Remote {
 
         } catch (Exception e) {
             log.error("Failed to register new super admin: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to register new super admin.");
+            throw new RuntimeException("Failed to register new super admin.");
             return 400;
         }
     }
@@ -194,8 +194,7 @@ public class Remote {
 
         } catch (Exception e) {
             log.error("Authentication failed: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Authentication failed.");
-            return false;
+            throw new RuntimeException("Authentication failed");
         }
     }
     public AuthorizationInfo getAuthorizationInfo() {
@@ -271,7 +270,7 @@ public class Remote {
 
         } catch (Exception e) {
             log.error("Failed to fetch users: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to fetch users.");
+            throw new RuntimeException("Failed to fetch users.");
             throw new RuntimeException("Failed to fetch users", e);
         }
     }
@@ -332,17 +331,17 @@ public class Remote {
             if (statusCode == 200) {
                 return true;
             } else if (statusCode == 409) {
-                showAlert(Alert.AlertType.ERROR, "Error", "User already exists.");
+                throw new RuntimeException("User already exists.");
                 return false;
             } else {
                 handleError(httpResponse);
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to add user.");
+                throw new RuntimeException("Failed to add user.");
                 return false;
             }
 
         } catch (IOException | InterruptedException e) {
             log.error("Failed to add user: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to add user.");
+            throw new RuntimeException("Failed to add user.");
             return false;
         }
     }
@@ -372,7 +371,7 @@ public class Remote {
             }
         } catch(Exception e) {
                 log.error("Failed to delete users: {}", e.getMessage(), e);
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete users.");
+                throw new RuntimeException("Failed to delete users");
         }
 
     }
@@ -404,7 +403,7 @@ public class Remote {
             }
         } catch (Exception e) {
             log.error("Failed to update receipts: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to update receipts.");
+            throw new RuntimeException("Failed to update receipts.");
         }
     }
     public void deleteReceipts(List<Receipt> receiptsToDelete) {
@@ -432,7 +431,7 @@ public class Remote {
             }
         } catch (Exception e) {
             log.error("Failed to delete receipts: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete receipts.");
+            throw new RuntimeException("Failed to delete receipts.");
         }
     }
 
@@ -456,7 +455,7 @@ public class Remote {
             }
         } catch (Exception e) {
             log.error("Failed to update request: {}", e.getMessage(), e);
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to update request.");
+            throw new RuntimeException("Failed to update request.");
         }
     }
 
@@ -528,21 +527,13 @@ public class Remote {
             String errorMessage = errorResponse != null ? errorResponse.toString() : "An error occurred (HTTP " + statusCode + ").";
 
             // Show the error message
-            showAlert(Alert.AlertType.ERROR, "Error", errorMessage);
+            throw new RuntimeException( errorMessage);
 
         } catch (Exception e) {
             // If deserialization fails, show a generic error message
-            showAlert(Alert.AlertType.ERROR, "Error", "An error occurred.");
+            throw new RuntimeException( "An error occurred.");
         }
     }
 
 
-
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }
