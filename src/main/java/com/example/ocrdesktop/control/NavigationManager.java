@@ -6,10 +6,23 @@ import com.example.ocrdesktop.ui.DetailRequestController;
 import com.example.ocrdesktop.utils.AuthorizationInfo;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +32,8 @@ import java.util.Stack;
 public class NavigationManager {
     private static NavigationManager instance; // Singleton instance
     private final Stack<FXMLLoader> backStack; // Stack for back navigation
+    private static final StackPane loadingPane = initLoadingPane();
+
 
     private Stage currentStage;
     private NavigationManager() {
@@ -30,6 +45,73 @@ public class NavigationManager {
             instance = new NavigationManager();
         }
         return instance;
+    }
+    private static StackPane initLoadingPane(){
+        StackPane loadingPane = new StackPane();
+        loadingPane.setAlignment(Pos.CENTER);
+        loadingPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+
+        // Create animated dots (6 dots rotating)
+        Circle[] dots = new Circle[10];
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new Circle(5, Color.BLUE);
+            dots[i].setTranslateX(60 * Math.cos(2 * Math.PI * i / dots.length));
+            dots[i].setTranslateY(60 * Math.sin(2 * Math.PI * i / dots.length));
+            loadingPane.getChildren().add(dots[i]);
+        }
+
+        // Timeline for rotating dots
+        Timeline timeline = new Timeline();
+        for (int i = 0; i < dots.length; i++) {
+            final Circle dot = dots[i];
+            KeyValue keyValueOpacity = new KeyValue(dot.opacityProperty(), 0);
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.5 + i * 0.1), keyValueOpacity);
+            timeline.getKeyFrames().add(keyFrame);
+        }
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(true);
+        timeline.play();
+
+        // Loading label
+        Label loadingLabel = new Label("Loading...");
+        loadingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+        loadingPane.getChildren().addLast(loadingLabel);
+        return  loadingPane;
+    }
+    public void showLoading() {
+
+        Parent root = currentStage.getScene().getRoot();
+        BoxBlur blurEffect = new BoxBlur(10, 10, 3);
+        root.getChildrenUnmodifiable().forEach(node -> {node.setEffect(blurEffect);node.setDisable(true);});
+
+        loadingPane.setVisible(true);
+        if (root instanceof VBox) {
+            ((VBox) root).getChildren().add(loadingPane);
+        } else if (root instanceof StackPane) {
+            ((StackPane) root).getChildren().add(loadingPane);
+        } else if (root instanceof AnchorPane) {
+            ((AnchorPane) root).getChildren().add(loadingPane);
+            // Center the loading pane for AnchorPane
+            AnchorPane.setTopAnchor(loadingPane, AppContext.getInstance().getStageHeight() / 2);
+            AnchorPane.setLeftAnchor(loadingPane, AppContext.getInstance().getStageWidth() / 2);
+        } else {
+            throw new IllegalStateException("Unsupported root node type.");
+        }
+    }
+    public void hideLoading() {
+        Parent root = currentStage.getScene().getRoot();
+        loadingPane.setVisible(true);
+        if (root instanceof VBox) {
+            ((VBox) root).getChildren().remove(loadingPane);
+        } else if (root instanceof StackPane) {
+            ((StackPane) root).getChildren().remove(loadingPane);
+        } else if (root instanceof AnchorPane) {
+            ((AnchorPane) root).getChildren().remove(loadingPane);
+        } else {
+            throw new IllegalStateException("Unsupported root node type.");
+        }
+        root.getChildrenUnmodifiable().forEach(node -> {node.setEffect(null);node.setDisable(false);});
+
     }
     //First base functions
     private boolean isAuthorized() {
@@ -47,7 +129,6 @@ public class NavigationManager {
         catch (IOException e) {e.printStackTrace();}
         return null;
     }
-
     private Object navigate(FXMLLoader fxmlLoader){
         currentStage.setScene(((Parent)fxmlLoader.getRoot()).getScene());
         return fxmlLoader.getController();

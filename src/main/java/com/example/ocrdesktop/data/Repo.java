@@ -127,27 +127,31 @@ public class Repo {
         backgroundThread.setDaemon(true);
         backgroundThread.start();
     }
-    public void updateUser(User user){
+    public boolean updateUser(User user){
         if (remote.updateUser(user)) {
             try (Connection localConnection = getDatabaseConnection()) {
                 updateUserLocal(localConnection, user);
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             showAlert("","");
+        return false;
         }
-
     }
-    public void addUser(User user) {
+    public boolean addUser(User user) {
         if (remote.addUser(user)) {
             try (Connection localConnection = getDatabaseConnection()) {
                 addUserLocal(localConnection, user);
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
-
+                return false;
             }
         }
+        else return false;
 
     }
     public List<User> getUsers() {
@@ -161,11 +165,15 @@ public class Repo {
         return users;
     }
     public void deleteUsers(List<User> deletedUsers) {
-        try (Connection localConnection = getDatabaseConnection()) {
-            deleteUsersLocal(localConnection, deletedUsers);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (deletedUsers.isEmpty()) {
+            return;
         }
+//        try (Connection localConnection = getDatabaseConnection()) {
+
+//            deleteUsersLocal(localConnection, deletedUsers);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
 
 
@@ -242,9 +250,9 @@ public class Repo {
             ObservableList<Request> requests = getRequests();
             ObservableList<Receipt> receipts = getReceipts();
             */
-            refreshReceiptType(localConnection, receiptTypes);
-            refreshUploadRequests(localConnection, requests);
-            refreshReceipt(localConnection, receipts);
+//            refreshReceiptType(localConnection, receiptTypes);
+//            refreshUploadRequests(localConnection, requests);
+//            refreshReceipt(localConnection, receipts);
         } catch (SQLException e) {
             e.printStackTrace();
         }

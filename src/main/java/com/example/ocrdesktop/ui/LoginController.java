@@ -1,12 +1,18 @@
 package com.example.ocrdesktop.ui;
 
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.data.Repo;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LoginController {
     @FXML
@@ -54,27 +60,45 @@ public class LoginController {
     }
     @FXML
     private void login() {
+       if (validateLogin()) {
+                       final boolean[] isAuthenticated = new boolean[1];
+                       NavigationManager.getInstance().showLoading();
+                       Task<Object> apiTask = new Task<>() {
+                           @Override
+                           protected String call() {
+                               isAuthenticated[0] = repo.authenticate(emailFieldLogin.getText(), passwordFieldLogin.getText());
+                               if (isAuthenticated[0]) return "Login Successful";
+                               else {
+                                   throw new RuntimeException("Invalid Credentials");
+                               }
+                           }
+                       };
 
-       try {
-           if (validateLogin()) {
-            //Todo Anyone
-            // make a spinning waiting wheel
-            boolean isAuthenticated = repo.authenticate(emailFieldLogin.getText(), passwordFieldLogin.getText());
 
-            if (isAuthenticated){
-                try {
-                    NavigationManager.getInstance().login();
-                } catch (Exception e) {e.printStackTrace();}
-            }
-            else {
-                showAlert("Invalid Credentials", "Enter valid credentials.");
-            }
+                       apiTask.setOnSucceeded(e -> {
+                           Platform.runLater(() -> {
+                               NavigationManager.getInstance().hideLoading();
+                               //Navigate to dashboard
+                               try {
+                                   NavigationManager.getInstance().login();
+                               } catch (Exception ex) {
+                                   showAlert("Error", "Failed to navigate to dashboard.");
+
+                               }
+                           });
+                       });
+                       apiTask.setOnFailed(e -> {
+                           Platform.runLater(() -> {
+                               NavigationManager.getInstance().hideLoading();
+                               e.getSource().getException().printStackTrace();
+                               showAlert("Error", e.getSource().getException().getMessage());
+                           });
+                       });
+               AppContext.getInstance().executorService.submit(apiTask);
+
            }
-       } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "An unexpected error occurred during login.");
+
        }
-    }
 
 
     @FXML
