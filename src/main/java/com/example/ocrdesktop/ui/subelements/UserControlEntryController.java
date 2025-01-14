@@ -5,6 +5,7 @@ import com.example.ocrdesktop.utils.User;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UserControlEntryController {
     public User user;
-    public Label userLabel;
+    public TextField userLabel;
     public TextField emailTextField;
     public TextField passwordTextField;
     public ChoiceBox choiceBox;
@@ -21,11 +22,24 @@ public class UserControlEntryController {
     HashMap<User.Role, String> role2ChoiceMap = new HashMap<>();
     public BooleanProperty deleteProperty = new SimpleBooleanProperty(false);
     public BooleanProperty editProperty = new SimpleBooleanProperty(false);
+    public BooleanProperty editPassword = new SimpleBooleanProperty(false);
 
     public UserControlEntryController() {
-        role2ChoiceMap.put(User.Role.SUPER_ADMIN, "Super Admin");
-        role2ChoiceMap.put(User.Role.DESKTOP_USER, "Desktop User");
-        role2ChoiceMap.put(User.Role.MOBILE_USER, "Mobile User");
+        role2ChoiceMap.put(User.Role.ROLE_COMPANY_ADMIN, "Super Admin");
+        role2ChoiceMap.put(User.Role.ROLE_DESKTOP_USER, "Desktop User");
+        role2ChoiceMap.put(User.Role.ROLE_MOBILE_USER, "Mobile User");
+    }
+    @FXML
+    private void initialize(){
+        userLabel.setOnMouseClicked(event ->{userLabel.setFocusTraversable(true);});
+        userLabel.focusTraversableProperty().addListener((obs) -> {
+            if (!userLabel.isFocused()) {
+                userLabel.setEditable(false);
+            }
+            else {
+                userLabel.setEditable(true);
+            }
+        });
     }
 
     private void showConfirmationDialog() {
@@ -68,9 +82,9 @@ public class UserControlEntryController {
         this.user = user;
         userLabel.setText(user.userName);
         emailTextField.setText(user.email);
-        passwordTextField.setText("********");
+        passwordTextField.setText(user.getPassword());
         choiceBox.setValue(role2ChoiceMap.get(user.role));
-        if (user.role == User.Role.SUPER_ADMIN && AppContext.getInstance().getAuthorizationInfo().currentUser.role != User.Role.SUPER_ADMIN) {
+        if (user.role == User.Role.ROLE_COMPANY_ADMIN && AppContext.getInstance().getAuthorizationInfo().currentUser.role != User.Role.ROLE_COMPANY_ADMIN) {
             disableEdit();
         }
         if (user.id.equals(AppContext.getInstance().getAuthorizationInfo().currentUser.id)) {
@@ -83,15 +97,19 @@ public class UserControlEntryController {
     private void setEditListener(){
         userLabel.textProperty().addListener((obs) -> {
             editProperty.set(true);
+            user.userName = userLabel.getText();
         });
         emailTextField.textProperty().addListener((obs) -> {
             editProperty.set(true);
+            user.email = emailTextField.getText();
         });
         passwordTextField.textProperty().addListener((obs) -> {
             editProperty.set(true);
+            user.setPassword(passwordTextField.getText());
         });
         choiceBox.valueProperty().addListener((obs) -> {
             editProperty.set(true);
+            user.role = User.Role.valueOf(choiceBox.getValue().toString().toUpperCase().replace(" ", "_"));
         });
         deleteProperty.addListener((obs) -> {
             editProperty.set(true);

@@ -9,9 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
 public class LoginController {
-    public TextField organizationTextFiled;
-    public TextField usernameTextFiled;
-
     @FXML
     private TextField emailFieldLogin;
 //
@@ -20,6 +17,12 @@ public class LoginController {
 
     @FXML
     private ImageView eyeIcon;
+
+    @FXML
+    private TextField invitationTokenField;
+
+    @FXML
+    public TextField usernameTextField;
 
     @FXML
     private TextField emailFieldSignUp;
@@ -51,10 +54,14 @@ public class LoginController {
     }
     @FXML
     private void login() {
-        if(validateLogin()){
+
+       try {
+           if (validateLogin()) {
             //Todo Anyone
             // make a spinning waiting wheel
-            if (repo.authenticate(emailFieldLogin.getText(), passwordFieldLogin.getText())){
+            boolean isAuthenticated = repo.authenticate(emailFieldLogin.getText(), passwordFieldLogin.getText());
+
+            if (isAuthenticated){
                 try {
                     NavigationManager.getInstance().login();
                 } catch (Exception e) {e.printStackTrace();}
@@ -62,25 +69,41 @@ public class LoginController {
             else {
                 showAlert("Invalid Credentials", "Enter valid credentials.");
             }
-        }
+           }
+       } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "An unexpected error occurred during login.");
+       }
     }
 
 
     @FXML
     private void signUp() {
-        if(validateSignUp()){
-            //Todo Anyone
-            // make a spinning waiting wheel
+        if (validateSignUp()) {
+            // TODO: Show a spinning waiting wheel
+            int response = repo.registerNewSuperAdmin(
+                    usernameTextField.getText(),
+                    invitationTokenField.getText(),
+                    emailFieldSignUp.getText(),
+                    passwordFieldSignUp.getText(),
+                    confirmPasswordFieldSignUp.getText()
+            );
 
-            int response = repo.registerNewSuperAdmin(usernameTextFiled.getText(),organizationTextFiled.getText(),emailFieldSignUp.getText(),passwordFieldSignUp.getText());
-            if (response == 200){
+            if (response == 200) {
                 try {
-                    showAlert("Invalid Password", "Registration Successful");
+                    showAlert("Success Signup", "Registration Successful");
                     NavigationManager.getInstance().navigateToLogin();
-                } catch (Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert("Error", "Failed to navigate to login page.");
+                }
+            } else if (response == 409) {
+                showAlert("Conflict", "Email already exists.");
+            } else if (response == 400) {
+                showAlert("Bad Request", "Registration failed. Please check your details and try again.");
+            } else {
+                showAlert("Error", "An unexpected error occurred during registration.");
             }
-            else if (response == 409) showAlert("Invalid Credentials", "Email Already exists");
-            else showAlert("Invalid Credentials", "Error");
         }
     }
 
@@ -107,6 +130,20 @@ public class LoginController {
         String email = emailFieldSignUp.getText();
         String password = passwordFieldSignUp.getText();
         String confirmPassword = confirmPasswordFieldSignUp.getText();
+        String username = usernameTextField.getText();
+        String invitationToken = invitationTokenField.getText();
+
+        // Validate Invitation Token Field
+        if (invitationToken.isEmpty()) {
+            showAlert("Missing Invitation Token", "Please enter your invitation token.");
+            return false;
+        }
+
+        // Validate Invitation Token Length
+        if (invitationToken.length() != 8) {
+            showAlert("Invalid Invitation Token", "Invitation token must be exactly 8 characters.");
+            return false;
+        }
 
         // Validate Email Format
         if (isNotValidEmail(email)) {

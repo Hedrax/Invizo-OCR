@@ -3,10 +3,10 @@ package com.example.ocrdesktop.ui;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.subelements.ApprovalListCellController;
-
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.ReceiptType;
 import com.example.ocrdesktop.utils.Request;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -14,22 +14,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.animation.TranslateTransition;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import static com.example.ocrdesktop.data.Repo.*;
 
@@ -190,8 +184,8 @@ public class MainController{
     @FXML
     private void setUpProfileInfo(){
         String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
-        String organizationName = AppContext.getInstance().getAuthorizationInfo().organization.name;
-        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replace("_", " ");
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().company.name;
+        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replaceFirst("ROLE_", "").replace("_", " ");
         Platform.runLater(() -> {
             profileNameTopBanner.setText(userName);
             profileCompanyTopBanner.setText(organizationName);
