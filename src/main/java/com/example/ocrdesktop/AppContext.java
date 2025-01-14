@@ -18,7 +18,7 @@ public class AppContext {
     private Stage stage;
     private AuthorizationInfo authorizationInfo;
     //Thread Pool variable
-    public final ExecutorService executorService = Executors.newFixedThreadPool(2);
+    public final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
 
     //Saving Directory Property
