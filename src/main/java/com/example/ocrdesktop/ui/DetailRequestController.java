@@ -8,7 +8,9 @@ import com.example.ocrdesktop.utils.CachingManager;
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.Request;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -261,14 +263,34 @@ public class DetailRequestController {
         if (!checkAllConfirmed()) return;
         request.receipts.removeAll(receiptsToDelete);
         request.status = Request.RequestStatus.COMPLETED;
-        try {
-            repo.confirmRequest(request, receiptsToDelete);
-            navigateBack();
+        NavigationManager.getInstance().showLoading();
+        Task<Object> apiTask = new Task<>() {
+            @Override
+            protected String call() {
+                try {
+                    repo.confirmRequest(request, receiptsToDelete);
+                    return "Request Confirmed Successfully";
+                }
+                catch (SQLException e) {
+                    return e.getMessage();
+                }
+            }
+        };
 
-        }
-        catch (Exception e){
-            showAlert("Failed to confirm request.");
-        }
+
+        apiTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                navigateBack();
+            });
+        });
+        apiTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                showAlert(e.getSource().getException().getMessage());
+            });
+        });
+        AppContext.getInstance().executorService.submit(apiTask);
     }
     @FXML
     private void navigateBack(){NavigationManager.getInstance().goBack();}
