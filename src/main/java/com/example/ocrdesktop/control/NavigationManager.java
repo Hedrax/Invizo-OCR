@@ -27,6 +27,7 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 //Append the navigation modification to the end of the class
 public class NavigationManager {
@@ -46,6 +47,7 @@ public class NavigationManager {
         }
         return instance;
     }
+    //UI functions for loading mechanism
     private static StackPane initLoadingPane(){
         StackPane loadingPane = new StackPane();
         loadingPane.setAlignment(Pos.CENTER);
@@ -74,7 +76,7 @@ public class NavigationManager {
 
         // Loading label
         Label loadingLabel = new Label("Loading...");
-        loadingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+        loadingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: black;");
         loadingPane.getChildren().addLast(loadingLabel);
         return  loadingPane;
     }
@@ -82,6 +84,11 @@ public class NavigationManager {
 
         Parent root = currentStage.getScene().getRoot();
         BoxBlur blurEffect = new BoxBlur(10, 10, 3);
+
+        AtomicBoolean existed = new AtomicBoolean(false);
+        root.getChildrenUnmodifiable().forEach(node -> existed.set((node == loadingPane)));
+        if (existed.get()) return;
+
         root.getChildrenUnmodifiable().forEach(node -> {node.setEffect(blurEffect);node.setDisable(true);});
 
         loadingPane.setVisible(true);
@@ -115,8 +122,7 @@ public class NavigationManager {
     }
     //First base functions
     private boolean isAuthorized() {
-        AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
-        return authInfo != null && authInfo.getAccessToken() != null;
+        return AppContext.getInstance().isLoggedIn();
     }
     private Object navigate(String path){
         try {
@@ -168,15 +174,14 @@ public class NavigationManager {
     //high-end functions
     public void login() throws IOException {start(currentStage);}
     public void logout() throws IOException {
-        AppContext.getInstance().getAuthorizationInfo().clearAuthentication();
-        AppContext.getInstance().setAuthorizationInfo(null);
+        AppContext.getInstance().clearAuthorizationInfo();
         start(currentStage);
     }
     public void start(Stage stage) throws IOException {
         makeSavingDirs();
         currentStage = stage;
-        AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
-        if (authInfo != null) {
+        boolean isLoggedIn = AppContext.getInstance().isLoggedIn();
+        if (isLoggedIn) {
             startMain();
         } else {
             startLogin();

@@ -13,15 +13,12 @@ public class AuthorizationInfo {
     public String accessToken;
     public String refreshToken;
 
-    // We'll make this observable for reactive UI updates
-    private final ObjectProperty<Boolean> isAuthenticated = new SimpleObjectProperty<>(false);
 
     public AuthorizationInfo(User user, Company company, String accessToken, String refreshToken) {
         this.currentUser = user;
         this.company = company;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.isAuthenticated.set(true);
     }
 
 
@@ -30,10 +27,6 @@ public class AuthorizationInfo {
         this.company = null;
         this.accessToken = null;
         this.refreshToken = null;
-        this.isAuthenticated.set(false);
     }
 
-    public ObjectProperty<Boolean> isAuthenticated() {
-        return isAuthenticated;
-    }
 }

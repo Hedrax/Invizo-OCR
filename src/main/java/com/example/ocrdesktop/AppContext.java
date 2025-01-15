@@ -1,5 +1,6 @@
 package com.example.ocrdesktop;
 
+import com.example.ocrdesktop.data.UserPreferences;
 import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.stage.Stage;
@@ -15,8 +16,6 @@ public class AppContext {
 
     // Private static instance of the class
     private static AppContext instance;
-    private Stage stage;
-    private AuthorizationInfo authorizationInfo;
     //Thread Pool variable
     public final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -41,10 +40,25 @@ public class AppContext {
     }
 
     public void setAuthorizationInfo(AuthorizationInfo authorizationInfo) {
-        this.authorizationInfo = authorizationInfo;
+        try {
+            UserPreferences.saveCredentials(authorizationInfo);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public AuthorizationInfo getAuthorizationInfo(){
-        return authorizationInfo;
+        return UserPreferences.getCredentials();
+    }
+    public void clearAuthorizationInfo() {
+        try {
+            UserPreferences.clearCredentials();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isLoggedIn() {
+        return UserPreferences.isLoggedIn();
     }
 
     public void setStageWidth(Double value){

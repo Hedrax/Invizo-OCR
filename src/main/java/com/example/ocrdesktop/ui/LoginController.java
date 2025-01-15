@@ -90,7 +90,6 @@ public class LoginController {
                        apiTask.setOnFailed(e -> {
                            Platform.runLater(() -> {
                                NavigationManager.getInstance().hideLoading();
-                               e.getSource().getException().printStackTrace();
                                showAlert("Error", e.getSource().getException().getMessage());
                            });
                        });
