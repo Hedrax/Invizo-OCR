@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 import javafx.util.Pair;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -23,20 +22,29 @@ public class Remote {
     private static final ApiClient apiClient = ApiClient.getInstance();
 
 
-     public String createNewReceiptType(ReceiptTypeJSON receiptTypeJSON) {
-         try {
-             // Prepare payload
-             Map<String, Object> payload = new HashMap<>();
-             payload.put("name", receiptTypeJSON.getName());
-             payload.put("column2idxMap", receiptTypeJSON.getMap());
-             payload.put("template", receiptTypeJSON.getJsonTemplate());
 
-             // Send POST request
-             ApiResponse<Map<String, Object>> response = ApiClient.post(
-                     "/receipt-types",
-                     payload,
-                     new TypeReference<>() {}
-             );
+    // Update the createNewReceiptType method
+    public String createNewReceiptType(ReceiptTypeJSON receiptTypeJSON) {
+        try {
+
+            ObjectMapper mapper = ApiClient.getInstance().getObjectMapper();
+            Map<String, Object> templateMap = mapper.readValue(
+                    receiptTypeJSON.getJsonTemplate().toString(),
+                    new TypeReference<Map<String, Object>>() {}
+            );
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("name", receiptTypeJSON.getName());
+            payload.put("column2idxMap", receiptTypeJSON.getMap());
+            payload.put("template", templateMap);
+
+            System.out.println("Sending payload: " + mapper.writeValueAsString(payload));
+
+            ApiResponse<Map<String, Object>> response = ApiClient.post(
+                    "/receipt-types",
+                    payload,
+                    new TypeReference<>() {}
+            );
 
              HttpResponse<String> httpResponse = response.getHttpResponse();
              int statusCode = httpResponse.statusCode();
@@ -52,19 +60,26 @@ public class Remote {
              }
              return null;
 
-         } catch (Exception e) {
-             log.error("Failed to create receipt type: {}", e.getMessage(), e);
-             return null;
-         }
-     }
+        } catch (Exception e) {
+            System.err.println("Failed to create receipt type: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON) {
         try {
+            ObjectMapper mapper = ApiClient.getInstance().getObjectMapper();
+            Map<String, Object> templateMap = mapper.readValue(
+                    receiptTypeJSON.getJsonTemplate().toString(),
+                    new TypeReference<Map<String, Object>>() {}
+            );
             // Prepare payload
             Map<String, Object> payload = new HashMap<>();
             payload.put("name", receiptTypeJSON.getName());
             payload.put("column2idxMap", receiptTypeJSON.getMap());
-            payload.put("template", receiptTypeJSON.getJsonTemplate());
+            payload.put("template", templateMap);
 
             // Send PUT request
             ApiResponse<Void> responseWrapper = ApiClient.put(

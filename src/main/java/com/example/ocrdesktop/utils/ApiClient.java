@@ -114,9 +114,6 @@ public class ApiClient {
         }
         throw new RuntimeException("Exceeded maximum retry attempts.");
     }
-    private boolean isSuccessful(int statusCode) {
-        return statusCode >= 200 && statusCode < 300;
-    }
 
 
     private <T> T deserialize(String json, TypeReference<T> typeReference) {
