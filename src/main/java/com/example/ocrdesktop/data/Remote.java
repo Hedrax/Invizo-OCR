@@ -34,8 +34,6 @@ public class Remote {
             payload.put("column2idxMap", receiptTypeJSON.getMap());
             payload.put("template", templateMap);
 
-            System.out.println("Sending payload: " + mapper.writeValueAsString(payload));
-
             ApiResponse<Map<String, Object>> response = ApiClient.post(
                     "/receipt-types",
                     payload,
@@ -121,8 +119,12 @@ public class Remote {
                     Map<String, Integer> column2idxMap = (Map<String, Integer>) item.get("column2idxMap");
 
                     ReceiptTypeJSON receiptTypeJSON = new ReceiptTypeJSON(id, new JSONObject(templateJSON), new HashMap<>(column2idxMap));
-                    receiptTypeJSON.saveJSONLocally();
-                    receiptTypes.add(receiptTypeJSON.getReceiptType());
+                    try {
+                        receiptTypes.add(receiptTypeJSON.getReceiptType());
+                        receiptTypeJSON.saveJSONLocally();
+                    } catch (Exception e) {
+                        log.error("Failed to create receipt type: {}", e.getMessage(), e);
+                    }
                 }
                 return receiptTypes;
             } else {
