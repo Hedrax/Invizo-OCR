@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.ocrdesktop.data.Local.*;
+import static javafx.scene.control.Alert.AlertType.ERROR;
+import static javafx.scene.control.Alert.AlertType.INFORMATION;
 
 public class Repo {
     static Remote remote = new Remote();
@@ -274,7 +276,7 @@ public class Repo {
         refreshTask.setOnSucceeded(e -> {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
-                showAlert("Success", "Data refreshed successfully.");
+                showAlert("Success", "Data refreshed successfully.", INFORMATION);
             });
         });
 
@@ -283,7 +285,7 @@ public class Repo {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
                 e.getSource().getException().printStackTrace();
-                showAlert("Error", e.getSource().getException().getMessage());
+                showAlert("Error", e.getSource().getException().getMessage(), ERROR);
             });
         });
 
@@ -410,8 +412,8 @@ public class Repo {
     }
 
     // Method to show an alert
-    private static void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private static void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
