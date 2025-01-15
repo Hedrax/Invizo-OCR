@@ -2,8 +2,7 @@ package com.example.ocrdesktop.ui.subelements;
 
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.utils.User;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,14 +19,18 @@ public class UserControlEntryController {
     public ChoiceBox choiceBox;
     public StackPane deleteButton;
     HashMap<User.Role, String> role2ChoiceMap = new HashMap<>();
+    HashMap<String, User.Role> choice2RoleMap = new HashMap<>();
     public BooleanProperty deleteProperty = new SimpleBooleanProperty(false);
-    public BooleanProperty editProperty = new SimpleBooleanProperty(false);
-    public BooleanProperty editPassword = new SimpleBooleanProperty(false);
+    public ObjectProperty<User> userProperty = new SimpleObjectProperty<>();
 
     public UserControlEntryController() {
         role2ChoiceMap.put(User.Role.ROLE_COMPANY_ADMIN, "Super Admin");
         role2ChoiceMap.put(User.Role.ROLE_DESKTOP_USER, "Desktop User");
         role2ChoiceMap.put(User.Role.ROLE_MOBILE_USER, "Mobile User");
+
+        choice2RoleMap.put("Super Admin", User.Role.ROLE_COMPANY_ADMIN);
+        choice2RoleMap.put("Desktop User", User.Role.ROLE_DESKTOP_USER);
+        choice2RoleMap.put("Mobile User", User.Role.ROLE_MOBILE_USER);
     }
     @FXML
     private void initialize(){
@@ -80,6 +83,7 @@ public class UserControlEntryController {
 
     public void setData(User user) {
         this.user = user;
+        userProperty.setValue(user);
         userLabel.setText(user.userName);
         emailTextField.setText(user.email);
         passwordTextField.setText(user.getPassword());
@@ -96,23 +100,20 @@ public class UserControlEntryController {
     }
     private void setEditListener(){
         userLabel.textProperty().addListener((obs) -> {
-            editProperty.set(true);
             user.userName = userLabel.getText();
+            this.userProperty.set(new User(user.id, user.userName, user.email, user.role));
         });
         emailTextField.textProperty().addListener((obs) -> {
-            editProperty.set(true);
             user.email = emailTextField.getText();
+            this.userProperty.set(new User(user.id, user.userName, user.email, user.role));
         });
         passwordTextField.textProperty().addListener((obs) -> {
-            editProperty.set(true);
             user.setPassword(passwordTextField.getText());
+            this.userProperty.set(new User(user.id, user.userName, user.email, user.role));
         });
         choiceBox.valueProperty().addListener((obs) -> {
-            editProperty.set(true);
-            user.role = User.Role.valueOf(choiceBox.getValue().toString().toUpperCase().replace(" ", "_"));
-        });
-        deleteProperty.addListener((obs) -> {
-            editProperty.set(true);
+            user.role = choice2RoleMap.get(choiceBox.getValue());
+            this.userProperty.set(new User(user.id, user.userName, user.email, user.role));
         });
     }
 

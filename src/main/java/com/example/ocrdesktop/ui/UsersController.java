@@ -25,12 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +47,14 @@ public class UsersController {
     ObservableList<User> lst = FXCollections.observableArrayList();
     List<User> deletedUsers = FXCollections.observableArrayList();
     BooleanProperty edited = new SimpleBooleanProperty(false);
+    HashMap<String, Boolean> userId2EditedMap = new HashMap<>();
+
+    private void setMap(){
+        userId2EditedMap.clear();
+        for (User user : lst) {
+            userId2EditedMap.put(user.id, false);
+        }
+    }
 
     @FXML
     private void toggleMenu() {
@@ -84,7 +87,7 @@ public class UsersController {
         userListVbox.getChildren().remove(pane);
     }
 
-    private HBox loadEntry(User user, int idx) {
+    private HBox loadEntry(User user) {
         try {
         // Load the custom view FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/user_control_entry.fxml"));
@@ -97,23 +100,44 @@ public class UsersController {
         controller.deleteProperty.addListener((obs, old, val) -> {
             if (val) {
                 deleteUser(user, pane);
+                userId2EditedMap.put(user.id, true);
+                edited.set(true);
+
             }
         });
-        controller.editProperty.addListener((obs, old, val) -> {
-            if (val) {
+        controller.userProperty.addListener((obs, old, val) -> {
+            if (!user.equals(val)) {
                 edited.set(true);
-                lst.set(idx, controller.user);
+                userId2EditedMap.put(user.id, true);
+                lst.set(lst.indexOf(user), controller.user);
+            }
+            else {
+                userId2EditedMap.put(user.id, true);
+                checkMap();
             }
         });
         return pane;
         }catch (IOException ignore){}
         return null;
     }
+
+    private void checkMap() {
+        for (Map.Entry<String, Boolean> entry : userId2EditedMap.entrySet()) {
+            if (entry.getValue()) {
+                edited.set(true);
+                return;
+            }
+        }
+        edited.set(false);
+    }
+
     @FXML
     private void initialize() {
         edited.addListener((obs, old, val) -> {
             confirmUpdatesButton.setDisable(!val);
         });
+
+        setMap();
 
         // Add a listener to synchronize changes from the ObservableList to the VBox
 //        ListChangeListener.Change<? extends User> previousChange = null;
@@ -122,7 +146,7 @@ public class UsersController {
             while (change.next()) {
                 if (change.wasAdded() && !change.wasPermutated() && !change.wasUpdated() && !change.wasReplaced()) {
                     for (User addedItem : change.getAddedSubList()) {
-                        HBox pane = loadEntry(addedItem, lst.size()-1);
+                        HBox pane = loadEntry(addedItem);
                         userListVbox.getChildren().add(pane);
                     }
                 }
@@ -194,7 +218,6 @@ public class UsersController {
     }
     @FXML
     private void confirmUpdates(){
-        //TODO to be tested when backend deployed on a more decent server
         //make a callback to the repo with the updates
         Map<String, User> userMap = repo.getUsers().stream()
                 .collect(Collectors.toMap(user -> user.id, user -> user, (existing, replacement) -> existing));
@@ -237,11 +260,13 @@ public class UsersController {
                 if (!userMap.get(user.id).equals(user)) {
                     apiTask = new Task<>() {
                         @Override
-                        protected String call() throws Exception {
+                        protected String call(){
                             if (repo.updateUser(user)){
-                                return "User Added Successfully!";
+                                return "User Updated Successfully!";
                             } else {
-                                throw new RuntimeException("Failed to add user");
+                                //roll back  changes
+                                lst.set(lst.indexOf(userMap.get(user.id)), user);
+                                throw new RuntimeException("Failed to Update user");
                             }
                         }
                     };
@@ -278,21 +303,23 @@ public class UsersController {
         apiTask.setOnRunning(e ->
                 Platform.runLater(() -> NavigationManager.getInstance().showLoading()));
         apiTask.setOnSucceeded(e -> {
+            deletedUsers.clear();
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
             });
         });
         apiTask.setOnFailed(e -> {
             Platform.runLater(() -> {
-                Platform.runLater(() -> {
-
-                    NavigationManager.getInstance().hideLoading();
+                NavigationManager.getInstance().hideLoading();
+                lst.addAll(deletedUsers);
                 showAlert("Error", e.getSource().getException().getMessage());
-            });
             });
 
         });
+        AppContext.getInstance().executorService.submit(apiTask);
+
         edited.set(false);
+        setMap();
     }
 
     public void addNewUser() {

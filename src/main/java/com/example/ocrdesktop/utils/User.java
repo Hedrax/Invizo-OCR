@@ -31,13 +31,23 @@ public class User {
         if (this == obj) return true;
         // Check for null or different class
         if (obj == null || getClass() != obj.getClass()) return false;
-
         // Cast and compare based on 'id'
         User user = (User) obj;
         return this.id.equals(user.id) &&
                 this.userName.equals(user.userName) &&
                 this.email.equals(user.email) &&
                 this.role == user.role && this.password.equals(user.password);
+    }
+
+    @Override
+    public String toString() {
+        return " User{" +
+                "id='" + id + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", password='" + password + '\'' +
+                '}';
     }
     public static String PASSWORD_DEFAULT = "********";
 }
