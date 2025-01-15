@@ -26,7 +26,7 @@ public class Repo {
     static Remote remote = new Remote();
 
     public boolean checkReceiptTypeNameAvailable(String text) {
-        Boolean Available = false;
+        boolean Available = false;
         try (Connection localConnection = getDatabaseConnection()) {
             Available = isReceiptTypeNameAvailable(localConnection, text);
         } catch (SQLException e) {
@@ -38,9 +38,6 @@ public class Repo {
     public int createReceiptType(ReceiptTypeJSON receiptTypeJSON) {
         ReceiptType receiptType = receiptTypeJSON.getReceiptType();
 
-        //TODO ANYONE
-        // make the remote request on non IO-Working-Thread
-        // posting the new object on the production database
         receiptType.id = remote.createNewReceiptType(receiptTypeJSON);
 
         if (receiptType.id == null)

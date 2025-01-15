@@ -38,25 +38,19 @@ public class ReceiptTypesViewerController {
     private static Repo repo = new Repo();
     private List<ReceiptType> receiptTypes = new ArrayList<>();
 
-    //TODO Callbacks
 @FXML
     void initialize() {
     initOperation();
     setupPhoto();
     setUpProfileInfo();
-//    initFakeData();
     refreshCheckBox();
-
-
     }
 
     private void initOperation() {
         try {
             receiptTypes.addAll(repo.getReceiptTypes());
         } catch (SQLException e) {
-
             throw new RuntimeException(e);
-
         }
     }
     private void refreshCheckBox() {

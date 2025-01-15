@@ -9,6 +9,7 @@ import com.example.ocrdesktop.utils.TextFieldBoundingBox.ENTRY_TYPE;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -387,7 +388,6 @@ public class DetailReceiptTypeController {
     private boolean validateName() {
         return repo.checkReceiptTypeNameAvailable(receiptName.getText());
     }
-    //TODO final function that wrap up elements and send them back
     ReceiptTypeJSON createReceipt(){
         try {
             HashMap<String,Integer> column2idxMap = getNewMap();
@@ -445,13 +445,39 @@ public class DetailReceiptTypeController {
             }
             else{
                 receiptTypeJSON.saveJSONLocally();
-                //send back to the backend agent
-                //if new, just send the new value
-                int response;
-                if (newReceiptType) response = repo.createReceiptType(receiptTypeJSON);
-                //else delete old name id and insert new
-                else response = repo.modifyReceiptType(receiptTypeJSON);
-                if (response == 200) navigateBack();
+                NavigationManager.getInstance().showLoading();
+                Task<Object> apiTask = new Task<>() {
+                    @Override
+                    protected String call() {
+
+                        //send back to the backend agent
+                        //if new, just send the new value
+                        int response;
+                        if (newReceiptType) response = repo.createReceiptType(receiptTypeJSON);
+                            //else delete old name id and insert new
+                        else response = repo.modifyReceiptType(receiptTypeJSON);
+                        if (response != 200) throw new RuntimeException("Error in receipt type operation ");
+                        return "Receipt Type Operation Successful";
+                    }
+                };
+
+
+                apiTask.setOnSucceeded(e -> {
+                    Platform.runLater(() -> {
+                        NavigationManager.getInstance().hideLoading();
+                        //Navigate to dashboard
+                        NavigationManager.getInstance().goBack();
+
+                    });
+                });
+                apiTask.setOnFailed(e -> {
+                    Platform.runLater(() -> {
+                        NavigationManager.getInstance().hideLoading();
+                        showAlert(e.getSource().getException().getMessage());
+                    });
+                });
+                AppContext.getInstance().executorService.submit(apiTask);
+
             }
         }
     }
