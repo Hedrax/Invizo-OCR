@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,19 +61,19 @@ public class ApiClient {
                     break;
                 case "POST":
                     String postJson = serialize(requestBody);
-                    requestBuilder.POST(HttpRequest.BodyPublishers.ofString(postJson));
-                    requestBuilder.header("Content-Type", "application/json");
+                    requestBuilder.POST(HttpRequest.BodyPublishers.ofString(postJson, StandardCharsets.UTF_8));
+                    requestBuilder.header("Content-Type", "application/json; charset=UTF-8");
                     break;
                 case "PUT":
                     String putJson = serialize(requestBody);
-                    requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(putJson));
-                    requestBuilder.header("Content-Type", "application/json");
+                    requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(putJson, StandardCharsets.UTF_8));
+                    requestBuilder.header("Content-Type", "application/json; charset=UTF-8");
                     break;
                 case "DELETE":
                     if (requestBody != null) {
                         String deleteJson = serialize(requestBody);
-                        requestBuilder.method("DELETE", HttpRequest.BodyPublishers.ofString(deleteJson));
-                        requestBuilder.header("Content-Type", "application/json");
+                        requestBuilder.method("DELETE", HttpRequest.BodyPublishers.ofString(deleteJson, StandardCharsets.UTF_8));
+                        requestBuilder.header("Content-Type", "application/json; charset=UTF-8");
                     } else {
                         requestBuilder.DELETE();
                     }
@@ -92,7 +93,9 @@ public class ApiClient {
             HttpRequest request = requestBuilder.build();
 
             try {
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                // Specify UTF-8 charset explicitly
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+
                 int statusCode = response.statusCode();
                 T body = null;
 
@@ -101,7 +104,6 @@ public class ApiClient {
                 }
                 body = deserialize(response.body(), typeReference);
                 return new ApiResponse<>(body, response);
-
 
             } catch (IOException | InterruptedException e) {
                 // Handle network-related exceptions

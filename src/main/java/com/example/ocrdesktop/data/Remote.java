@@ -19,10 +19,6 @@ import java.util.*;
 @Slf4j
 public class Remote {
 
-    private static final ApiClient apiClient = ApiClient.getInstance();
-
-
-
     // Update the createNewReceiptType method
     public String createNewReceiptType(ReceiptTypeJSON receiptTypeJSON) {
         try {
@@ -131,11 +127,10 @@ public class Remote {
                 return receiptTypes;
             } else {
                 handleError(httpResponse);
-                return FXCollections.observableArrayList();
+                throw new RuntimeException("Failed to fetch receipt types: " + httpResponse);
             }
         } catch (Exception e) {
-            log.error("Failed to fetch receipt types: {}", e.getMessage(), e);
-            return FXCollections.observableArrayList();
+            throw new RuntimeException("Failed to fetch receipt types: " + e.getMessage());
         }
     }
     public static Pair<ObservableList<Request>,ObservableList<Receipt>> getRequestsAndReceipts(Timestamp timestamp) {
