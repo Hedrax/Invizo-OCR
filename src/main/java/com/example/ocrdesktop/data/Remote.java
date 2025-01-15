@@ -509,6 +509,24 @@ public class Remote {
             return false;
         }
     }
+    public boolean deleteReceiptType(String receiptTypeId) {
+        try {
+            // Send DELETE request
+            ApiResponse<Void> responseWrapper = ApiClient.delete(
+                    "/receipt-types/" + receiptTypeId,
+                    null,
+                    new TypeReference<>() {}
+            );
+
+            HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
+            int statusCode = httpResponse.statusCode();
+
+            return statusCode == 200;
+        } catch (Exception e) {
+            log.error("Failed to delete receipt type: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to delete receipt type.");
+        }
+    }
 
     // ------------------------------------------------------
     // PRIVATE HELPER METHODS
@@ -538,6 +556,8 @@ public class Remote {
             throw new RuntimeException( "An error occurred.");
         }
     }
+    
+    
 
 
 }
