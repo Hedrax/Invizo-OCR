@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.example.ocrdesktop.data.Local.*;
 import static javafx.scene.control.Alert.AlertType.ERROR;
@@ -276,7 +277,8 @@ public class Repo {
         refreshTask.setOnSucceeded(e -> {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
-                showAlert("Success", "Data refreshed successfully.", INFORMATION);
+                //Sorry but it's so annoying to see this alert every time
+//                showAlert("Success", "Data refreshed successfully.", INFORMATION);
             });
         });
 
@@ -421,4 +423,13 @@ public class Repo {
     }
 
 
+    public void deleteReceiptType(ReceiptType receiptType) {
+        remote.deleteReceiptType(receiptType.id);
+        try (Connection localConnection = getDatabaseConnection()) {
+            deleteReceiptTypeById(localConnection, receiptType.id);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        refreshData();
+    }
 }

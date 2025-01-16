@@ -29,6 +29,15 @@ public class Local {
         }
     }
 
+    public static void deleteReceiptTypeById(Connection localConnection, String receiptTypeId) throws SQLException {
+        String deleteReceiptTypeSQL = "DELETE FROM receipt_type WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(deleteReceiptTypeSQL)) {
+            preparedStatement.setString(1, receiptTypeId);
+            preparedStatement.executeUpdate();
+        }
+    }
+
     public static void refreshUploadRequests(Connection localConnection, ObservableList<Request> requests) throws SQLException {
         String insertOrUpdateUploadRequestsSQL =
                 "INSERT OR REPLACE INTO upload_requests (request_id, status, uploaded_by_user_id, uploaded_at) VALUES (?, ?, ?, ?)";

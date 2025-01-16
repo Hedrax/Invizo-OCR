@@ -48,13 +48,19 @@
                     <Image url="@../gifs/receipt_creation_demo.gif" />
                 </ImageView>
             </HBox>
-            <HBox alignment="CENTER_RIGHT" layoutX="92.0" layoutY="-36.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <padding>
-                    <Insets right="15.0" />
-                </padding>
+            <HBox alignment="CENTER_RIGHT" layoutX="92.0" layoutY="-36.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <StackPane>
+               <children>
+                  <ImageView onMousePressed="#refreshCheckBox" fitHeight="150.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" styleClass="hover-hand">
+                     <image>
+                        <Image url="@../images/refresh.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Choose Document Type:">
                     <HBox.margin>
-                        <Insets right="-5.0" />
+                        <Insets right="-3.0" />
                     </HBox.margin>
                     <font>
                         <Font size="14.0" />
@@ -67,7 +73,7 @@
                         </FXCollections>
                     </items>
                 </ChoiceBox>
-                <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#proceed" prefHeight="33.0" prefWidth="163.0" text="Proceed">
+                <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#proceed" prefHeight="33.0" prefWidth="120.0" text="Proceed">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -75,6 +81,11 @@
                         <Insets left="10.0" />
                     </HBox.margin>
                 </Button>
+            <Button fx:id="deleteButton" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="752.0" layoutY="10.0" mnemonicParsing="false" onMousePressed="#deleteReceiptType" prefHeight="33.0" prefWidth="120.0" styleClass="delete_button" stylesheets="@../style/style.css" text="Delete">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
             </HBox>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Document Templates" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                 <font>

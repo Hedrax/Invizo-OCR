@@ -64,7 +64,7 @@ public class DatabaseInitializer {
                         "ocr_data TEXT, " +
                         "approved_by_user_id TEXT, " +
                         "approved_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (id) ON DELETE CASCADE, " +
+                        "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (id) ON DELETE SET NULL," +
                         "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE SET NULL " +
                         ");";
 
