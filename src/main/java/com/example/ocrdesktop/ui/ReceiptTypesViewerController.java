@@ -7,7 +7,10 @@ import com.example.ocrdesktop.utils.ReceiptType;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
@@ -19,7 +22,6 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,26 +36,47 @@ public class ReceiptTypesViewerController {
     public Label profileRoleSideMenuLabel;
     public ChoiceBox typeCheckBox;
     public ImageView gifImage;
+    public Button deleteButton;
     private boolean isMenuVisible = false; // Tracks menu state
     private static Repo repo = new Repo();
     private List<ReceiptType> receiptTypes = new ArrayList<>();
 
 @FXML
     void initialize() {
-    initOperation();
+    setupListeners();
     setupPhoto();
     setUpProfileInfo();
     refreshCheckBox();
     }
 
-    private void initOperation() {
+    private void setupListeners() {
+    deleteButton.getStyleClass().clear(); // Remove default styles
+    deleteButton.getStyleClass().add("delete_button");
+
+    typeCheckBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        if (newValue == null) {
+            typeCheckBox.setValue("Create New Receipt Type");
+            return;
+        }
+        if (newValue.equals("Create New Receipt Type")) {
+            deleteButton.setDisable(true);
+        } else {
+            deleteButton.setDisable(false);
+        }
+        });
+    }
+
+    private void restoreReceiptTypes() {
+    receiptTypes.clear();
         try {
             receiptTypes.addAll(repo.getReceiptTypes());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+    @FXML
     private void refreshCheckBox() {
+        restoreReceiptTypes();
         typeCheckBox.getItems().clear();
         try {
             typeCheckBox.getItems().add("Create New Receipt Type");
@@ -63,14 +86,6 @@ public class ReceiptTypesViewerController {
             e.printStackTrace();
         }
     }
-    private void initFakeData(){
-
-        receiptTypes.add(new ReceiptType("1", "Receipt Type 1", new HashMap<>()));
-        receiptTypes.add(new ReceiptType("2", "Receipt Type 2", new HashMap<>()));
-        receiptTypes.add(new ReceiptType("3", "Receipt Type 3", new HashMap<>()));
-        receiptTypes.add(new ReceiptType("4", "Receipt Type 4", new HashMap<>()));
-    }
-
 
     private void setupPhoto() {
         gifImage.setFitHeight(AppContext.getInstance().getStageHeight() - 150);
@@ -133,6 +148,42 @@ public class ReceiptTypesViewerController {
             profileRoleSideMenuLabel.setText(role);
         });
     }
+    @FXML
+    private void deleteReceiptType(){
+        AtomicReference<ReceiptType> receiptType = new AtomicReference<>();
+        receiptTypes.forEach(it->{
+            if (it.name.equals(typeCheckBox.getValue().toString())) {
+                receiptType.set(it);
+            }
+        });
+
+        NavigationManager.getInstance().showLoading();
+        Task<Object> apiTask = new Task<>() {
+            @Override
+            protected String call() {
+                repo.deleteReceiptType(receiptType.getAcquire());;
+                return "Receipt Type Operation Successful";
+            }
+        };
+
+
+        apiTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                //Navigate to dashboard
+
+                refreshCheckBox();
+            });
+        });
+        apiTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                NavigationManager.getInstance().hideLoading();
+                showAlert(e.getSource().getException().getMessage());
+            });
+        });
+        AppContext.getInstance().executorService.submit(apiTask);
+
+    }
 
     public void navigateToMain() {
         NavigationManager.getInstance().navigateToMainPage();
@@ -151,4 +202,14 @@ public class ReceiptTypesViewerController {
             });
         }
     }
+
+    // Method to show an alert
+    private static void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

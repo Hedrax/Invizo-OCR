@@ -15,6 +15,21 @@
     -fx-background-color:#F7F9FC;
 }
 
+.delete_button{
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-radius: 38px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 3, 0, 0, 2);
+    -fx-cursor: hand;
+    -fx-background-color: #BB0000; /* dark Red */
+}
+
+.delete_button:disabled{
+    -fx-background-color: #E0E0E0; /* Gray */
+    -fx-text-fill: #999999; /* Light gray text */
+    -fx-cursor: default;
+}
 /* Welcome Text Styling */
 .welcome-text {
     -fx-font-family: Zen Kaku Gothic Antique;
