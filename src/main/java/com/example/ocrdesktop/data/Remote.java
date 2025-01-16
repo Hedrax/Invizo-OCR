@@ -62,7 +62,7 @@ public class Remote {
     }
 
 
-    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON) {
+    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON, String oldName) {
         try {
             ObjectMapper mapper = ApiClient.getInstance().getObjectMapper();
             Map<String, Object> templateMap = mapper.readValue(

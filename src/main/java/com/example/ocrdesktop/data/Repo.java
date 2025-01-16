@@ -55,8 +55,8 @@ public class Repo {
         return 200;
     }
 
-    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON) {
-        int response = remote.modifyReceiptType(receiptTypeJSON);
+    public int modifyReceiptType(ReceiptTypeJSON receiptTypeJSON, String oldName) {
+        int response = remote.modifyReceiptType(receiptTypeJSON, oldName);
         if (response == 400) return response;
 
         ReceiptType receiptType = receiptTypeJSON.getReceiptType();

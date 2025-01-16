@@ -338,7 +338,7 @@ public class DetailReceiptTypeController {
     public void retrievalError(){
         showAlert("Error in retrieving the receipt type");
     }
-    //Todo function to set the data when navigating to the receiptType page
+
     public void setData(ReceiptTypeJSON receiptTypeJSON){
         this.receiptTypeJSON = receiptTypeJSON;
         this.receiptId = receiptTypeJSON.getId();
@@ -347,12 +347,13 @@ public class DetailReceiptTypeController {
         setImage(receiptTypeJSON.getImage());
         boundingBoxes.addAll(receiptTypeJSON.getTextFieldsBBoxes());
         boundingBoxes.forEach(this::createNewRectangle);
+        oldName = receiptTypeJSON.getName();
         newReceiptType = false;
 
         //Testing saving and loading "Done"
     }
     boolean validLabel(String label){
-        return label != null && label.length() > 0;
+        return label != null && !label.isEmpty();
     }
 
     boolean validation(){
@@ -375,7 +376,7 @@ public class DetailReceiptTypeController {
                 return;
             }
             map.put(it.label.getValue(), 1);
-            if (it.possibilities.size() == 0 && it.type == ENTRY_TYPE.DEFINED_LABEL){
+            if (it.possibilities.isEmpty() && it.type == ENTRY_TYPE.DEFINED_LABEL){
                 showAlert("The labels " +  it.label.getValue() + " with type Defined finite set has no possibilities");
                 result.set(false);
                 return;
@@ -445,18 +446,16 @@ public class DetailReceiptTypeController {
                 System.out.println("Error in the created JSON file");
             }
             else{
-                receiptTypeJSON.saveJSONLocally();
                 NavigationManager.getInstance().showLoading();
                 Task<Object> apiTask = new Task<>() {
                     @Override
                     protected String call() {
-
                         //send back to the backend agent
                         //if new, just send the new value
                         int response;
                         if (newReceiptType) response = repo.createReceiptType(receiptTypeJSON);
                             //else delete old name id and insert new
-                        else response = repo.modifyReceiptType(receiptTypeJSON);
+                        else response = repo.modifyReceiptType(receiptTypeJSON, oldName);
                         if (response != 200) throw new RuntimeException("Error in receipt type operation ");
                         return "Receipt Type Operation Successful";
                     }
@@ -466,9 +465,11 @@ public class DetailReceiptTypeController {
                 apiTask.setOnSucceeded(e -> {
                     Platform.runLater(() -> {
                         NavigationManager.getInstance().hideLoading();
-                        //Navigate to dashboard
+                        //deleting old saved file
+                        this.receiptTypeJSON.deleteLocalJSON();
+                        //caching the new file...
+                        receiptTypeJSON.saveJSONLocally();
                         NavigationManager.getInstance().goBack();
-
                     });
                 });
                 apiTask.setOnFailed(e -> {
