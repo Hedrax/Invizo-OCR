@@ -117,6 +117,24 @@ public class ReceiptTypeJSON {
             fileWriter.close();  // Close the writer
         }catch (Exception e){e.printStackTrace();}
     }
+    public void deleteLocalJSON() {
+        try {
+            // Create a File object using the same file path
+            File file = new File(AppContext.getInstance().JSONsSavingDir + name + ".json");
+
+            // Check if the file exists before attempting deletion
+            if (file.exists()) {
+                if (!file.delete()) {
+                    System.out.println("Failed to delete the old JSON file.");
+                }
+            } else {
+                System.out.println("JSON File not found.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public ReceiptType getReceiptType(){
         //No id is given to
         return new ReceiptType(id ,name, column2idxMap);
@@ -157,4 +175,13 @@ public class ReceiptTypeJSON {
     public HashMap<String, Integer> getMap(){return column2idxMap;}
 
     public String getId() { return id;}
+    @Override
+    public String toString() {
+        return "ReceiptTypeJSON{" +
+                "\nname='" + name + '\'' +
+                "\n, id='" + id + '\'' +
+                "\n, column2idxMap=" + column2idxMap.toString() +
+                "\n, templateJSON=" + !templateJSON.isEmpty() +
+                '}';
+    }
 }
