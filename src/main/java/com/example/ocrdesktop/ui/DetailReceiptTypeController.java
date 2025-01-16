@@ -390,8 +390,9 @@ public class DetailReceiptTypeController {
     }
     ReceiptTypeJSON createReceipt(){
         try {
+            String id = newReceiptType ? null : receiptId;
             HashMap<String,Integer> column2idxMap = getNewMap();
-            return new ReceiptTypeJSON(receiptId, receiptName.getText(), objectsListView.getItems(), imageView.getImage(),column2idxMap);
+            return new ReceiptTypeJSON(id, receiptName.getText(), objectsListView.getItems(), imageView.getImage(), column2idxMap);
         }
         catch (Exception e){e.printStackTrace();}
         return null;
@@ -401,7 +402,7 @@ public class DetailReceiptTypeController {
         HashMap<String, Integer> resultMap = new HashMap<>();
         AtomicInteger i = new AtomicInteger(0);
         boolean createNew = true;
-
+        System.out.println("ReceiptTypeJSON: " +  (receiptTypeJSON != null));
         if (receiptTypeJSON != null){
             HashMap<String, Integer> oldMap = receiptTypeJSON.getMap();
             for (Map.Entry<String, Integer> entry : oldMap.entrySet()) {

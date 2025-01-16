@@ -22,6 +22,7 @@ public class ReceiptTypeJSON {
     HashMap<String, Integer> column2idxMap = new HashMap<>();
     JSONObject templateJSON = new JSONObject();
     public ReceiptTypeJSON(String id, String name, List<TextFieldBoundingBox> textFieldBoundingBoxes, Image image, HashMap<String, Integer> column2idxMap){
+        this.id = id;
         this.name = name;
         this.column2idxMap = column2idxMap;
         templateJSON.put("name", name);
