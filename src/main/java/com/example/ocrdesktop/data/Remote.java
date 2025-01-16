@@ -14,12 +14,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
 public class Remote {
 
-    // Update the createNewReceiptType method
     public String createNewReceiptType(ReceiptTypeJSON receiptTypeJSON) {
         try {
 
@@ -135,10 +135,94 @@ public class Remote {
             throw new RuntimeException("Failed to fetch receipt types: " + e.getMessage());
         }
     }
-    public static Pair<ObservableList<Request>,ObservableList<Receipt>> getRequestsAndReceipts(Timestamp timestamp) {
-        // TODO: fetch from backend if needed
+    public static Pair<ObservableList<Request>, ObservableList<Receipt>> getRequestsAndReceipts(Timestamp timestamp) {
         ObservableList<Request> requests = FXCollections.observableArrayList();
         ObservableList<Receipt> receipts = FXCollections.observableArrayList();
+
+        try {
+            // Convert Timestamp to LocalDateTime string format
+            LocalDateTime dateTime = timestamp.toLocalDateTime();
+            String dateTimeStr = dateTime.toString();
+
+            // Create a type reference that matches the backend response structure
+            TypeReference<List<Map<String, Object>>> typeRef = new TypeReference<>() {};
+            ApiResponse<List<Map<String, Object>>> response = ApiClient.get("/request/after?dateTime=" + dateTimeStr, typeRef);
+
+            ObjectMapper mapper = ApiClient.getInstance().getObjectMapper();
+
+            if (response.getHttpResponse().statusCode() == 200 && response.getBody() != null) {
+                for (Map<String, Object> requestData : response.getBody()) {
+                    // Extract request fields from the response
+                    String requestId = ((String) requestData.get("requestId"));
+                    String status = (String) requestData.get("status");
+                    String uploadedBy = (String) requestData.get("uploadedBy");
+                    Timestamp uploadedAt = Timestamp.valueOf(LocalDateTime.parse((String) requestData.get("uploadedAt")));
+
+                    // Create Request object
+                    Request request = new Request(
+                            requestId,
+                            status,
+                            uploadedBy,
+                            uploadedAt
+                    );
+
+                    // Handle receipts
+                    ObservableList<Receipt> requestReceipts = FXCollections.observableArrayList();
+                    List<Map<String, Object>> receiptsList = mapper.convertValue(
+                            requestData.get("receipts"),
+                            new TypeReference<List<Map<String, Object>>>() {}
+                    );
+
+                    if (receiptsList != null) {
+                        for (Map<String, Object> receiptData : receiptsList) {
+                            // Extract receipt fields
+                            String receiptId = (String) receiptData.get("receiptId");
+                            String receiptTypeId = (String) receiptData.get("receiptTypeId");
+                            String imageUrl = (String) receiptData.get("imageUrl");
+                            String receiptStatus = (String) receiptData.get("status");
+                            String approvedBy = (String) receiptData.get("approvedBy");
+
+                            // Convert approvedAt if present
+                            Timestamp approvedAt = null;
+                            if (receiptData.get("approvedAt") != null) {
+                                approvedAt = Timestamp.valueOf(LocalDateTime.parse((String) receiptData.get("approvedAt")));
+                            }
+
+                            // Convert ocrData
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> ocrDataRaw = (Map<String, Object>) receiptData.get("ocrData");
+                            HashMap<Integer, String> ocrData = new HashMap<>();
+                            if (ocrDataRaw != null) {
+                                ocrDataRaw.forEach((key, value) ->
+                                        ocrData.put(Integer.parseInt(key), (String) value)
+                                );
+                            }
+
+                            Receipt receipt = new Receipt(
+                                    receiptId,
+                                    receiptTypeId,
+                                    requestId,
+                                    imageUrl,
+                                    receiptStatus,
+                                    ocrData,
+                                    approvedBy,
+                                    approvedAt
+                            );
+
+                            requestReceipts.add(receipt);
+                            receipts.add(receipt);
+                        }
+                    }
+
+                    request.setData(requestReceipts, null); // ReceiptType can be set later if needed
+                    requests.add(request);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("Failed to fetch requests and receipts: " + e.getMessage());
+        }
+
         return new Pair<>(requests, receipts);
     }
     public int registerNewSuperAdmin(String username, String invitationToken, String email, String password, String confirmPassword) {
