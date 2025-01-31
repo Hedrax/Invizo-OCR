@@ -465,8 +465,10 @@ public class DetailReceiptTypeController {
                 apiTask.setOnSucceeded(e -> {
                     Platform.runLater(() -> {
                         NavigationManager.getInstance().hideLoading();
-                        //deleting old saved file
-                        this.receiptTypeJSON.deleteLocalJSON();
+                        if (!newReceiptType) try {
+                            //deleting old saved file
+                            this.receiptTypeJSON.deleteLocalJSON();
+                        }catch (Exception ignore){}
                         //caching the new file...
                         receiptTypeJSON.saveJSONLocally();
                         NavigationManager.getInstance().goBack();
