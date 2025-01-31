@@ -471,8 +471,7 @@ public class Remote {
             for (Receipt receipt : receipts) {
                 Map<String, Object> receiptMap = new HashMap<>();
                 receiptMap.put("receiptId", receipt.receiptId);
-                receiptMap.put("status", receipt.status);
-                receiptMap.put("approvedBy", receipt.approvedByUserId);
+                receiptMap.put("status", receipt.status.toString());
                 receiptMap.put("approvedAt", receipt.approvedAt);
                 receiptMap.put("ocrData", receipt.ocrData);
                 receiptData.add(receiptMap);
@@ -527,18 +526,18 @@ public class Remote {
 
     public void updateRequest(Request request) {
         try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("status", request.status.toString());
-
+            // Construct the URL with the status as a query parameter
+            String url = "/request/" + request.id + "?status=" + request.status.toString();
+    
             ApiResponse<Void> responseWrapper = ApiClient.put(
-                    "/request/" + request.id,
-                    payload,
+                    url,
+                    null,
                     new TypeReference<>() {}
             );
-
+    
             HttpResponse<String> httpResponse = responseWrapper.getHttpResponse();
             int statusCode = httpResponse.statusCode();
-
+    
             if (statusCode != 200 && statusCode != 204) {
                 handleError(httpResponse);
                 log.error("Failed to update request - Status: {}, Body: {}", statusCode, httpResponse.body());

@@ -1,12 +1,14 @@
 package com.example.ocrdesktop.utils;
 
 import com.example.ocrdesktop.AppContext;
-import com.example.ocrdesktop.data.Remote;
+import com.example.ocrdesktop.control.NavigationManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,6 +17,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ApiClient {
@@ -42,6 +46,7 @@ public class ApiClient {
         return INSTANCE;
     }
 
+
     public <T> ApiResponse<T> sendRequestSync(
             String method,
             String endpoint,
@@ -49,74 +54,161 @@ public class ApiClient {
             TypeReference<T> typeReference
     ) throws IOException, InterruptedException {
         AtomicInteger retryCount = new AtomicInteger(0);
+        boolean tokenRefreshed = false;
+
         while (retryCount.get() <= MAX_RETRIES) {
-            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + endpoint))
-                    .timeout(Duration.ofSeconds(10));
-
-            // Set HTTP method and body
-            switch (method.toUpperCase()) {
-                case "GET":
-                    requestBuilder.GET();
-                    break;
-                case "POST":
-                    String postJson = serialize(requestBody);
-                    requestBuilder.POST(HttpRequest.BodyPublishers.ofString(postJson, StandardCharsets.UTF_8));
-                    requestBuilder.header("Content-Type", "application/json; charset=UTF-8");
-                    break;
-                case "PUT":
-                    String putJson = serialize(requestBody);
-                    requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(putJson, StandardCharsets.UTF_8));
-                    requestBuilder.header("Content-Type", "application/json; charset=UTF-8");
-                    break;
-                case "DELETE":
-                    if (requestBody != null) {
-                        String deleteJson = serialize(requestBody);
-                        requestBuilder.method("DELETE", HttpRequest.BodyPublishers.ofString(deleteJson, StandardCharsets.UTF_8));
-                        requestBuilder.header("Content-Type", "application/json; charset=UTF-8");
-                    } else {
-                        requestBuilder.DELETE();
-                    }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("HTTP method not supported: " + method);
-            }
-
-            // Add Authorization header if needed
-            if (!endpoint.equals("/auth/login") && !endpoint.equals("/auth/register")) {
-                String authToken = AppContext.getInstance().getAuthorizationInfo().getAccessToken();
-                if (authToken != null && !authToken.isEmpty()) {
-                    requestBuilder.header("Authorization", "Bearer " + authToken);
-                }
-            }
-
-            HttpRequest request = requestBuilder.build();
+            HttpRequest request = buildRequest(method, endpoint, requestBody);
 
             try {
-                // Specify UTF-8 charset explicitly
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-
                 int statusCode = response.statusCode();
-                T body = null;
 
-                if (typeReference.getType().equals(Void.class)) {
-                    return new ApiResponse<>(null, response);
+                // Handle unauthorized responses
+                if (statusCode == 401) {
+                    if (!tokenRefreshed) {
+                        if (handleTokenRefresh()) {
+                            tokenRefreshed = true;
+                            retryCount.decrementAndGet(); // Reset retry count after successful refresh
+                            continue; // Retry with new token
+                        } else {
+                            handleLogout();
+                            throw new RuntimeException("Session expired. Please login again.");
+                        }
+                    } else {
+                        handleLogout();
+                        throw new RuntimeException("Authorization failed. Insufficient permissions.");
+                    }
                 }
-                body = deserialize(response.body(), typeReference);
+
+                // Handle forbidden responses (role-based access)
+                if (statusCode == 403) {
+                    Platform.runLater(() -> showErrorAlert("Permission Denied",
+                            "You don't have permission to perform this action."));
+                    throw new RuntimeException("Insufficient permissions");
+                }
+
+                // Handle successful responses
+                T body = null;
+                if (statusCode != 204 && !response.body().isEmpty()) {
+                    body = deserialize(response.body(), typeReference);
+                }
                 return new ApiResponse<>(body, response);
 
             } catch (IOException | InterruptedException e) {
-                // Handle network-related exceptions
                 if (retryCount.incrementAndGet() > MAX_RETRIES) {
+                    handleLogout();
                     throw e;
                 }
                 System.err.println("Network error occurred, retrying... (" + retryCount.get() + ")");
                 Thread.sleep(RETRY_DELAY.toMillis());
             }
         }
+        handleLogout();
         throw new RuntimeException("Exceeded maximum retry attempts.");
     }
 
+    private synchronized boolean handleTokenRefresh() {
+        try {
+            AuthorizationInfo authInfo = AppContext.getInstance().getAuthorizationInfo();
+            if (authInfo == null || authInfo.getRefreshToken() == null) {
+                return false;
+            }
+
+            // Call refresh endpoint
+            Map<String, String> payload = new HashMap<>();
+            payload.put("refreshToken", authInfo.getRefreshToken());
+
+            ApiResponse<Map<String, Object>> response = ApiClient.post(
+                    "/auth/refresh",
+                    payload,
+                    new TypeReference<>() {}
+            );
+
+            if (response.getHttpResponse().statusCode() == 200) {
+                Map<String, Object> body = response.getBody();
+                String newAccessToken = (String) body.get("accessToken");
+                String newRefreshToken = (String) body.get("refreshToken");
+
+                // Update auth context
+                authInfo.setAccessToken(newAccessToken);
+                authInfo.setRefreshToken(newRefreshToken);
+                AppContext.getInstance().setAuthorizationInfo(authInfo);
+
+                return true;
+            }
+        } catch (Exception e) {
+            System.err.println("Token refresh failed: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private void handleLogout() {
+        Platform.runLater(() -> {
+            try {
+                NavigationManager.getInstance().logout();
+                showErrorAlert("Session Expired", "Your session has expired. Please login again.");
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+    }
+
+    private HttpRequest buildRequest(String method, String endpoint, Object requestBody) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + endpoint))
+                .timeout(Duration.ofSeconds(10));
+
+        // Add authorization header if needed
+        if (!endpoint.equals("/auth/login") && !endpoint.equals("/auth/register")) {
+            String token = AppContext.getInstance().getAuthorizationInfo().getAccessToken();
+            if (token != null) {
+                builder.header("Authorization", "Bearer " + token);
+            }
+        }
+
+        // Set request method and body
+        switch (method.toUpperCase()) {
+            case "GET":
+                builder.GET();
+                break;
+            case "POST": {
+                String json = serialize(requestBody);
+                builder.POST(HttpRequest.BodyPublishers.ofString(json))
+                        .header("Content-Type", "application/json");
+                break;
+            }
+            case "PUT": {
+                String json = serialize(requestBody);
+                builder.PUT(HttpRequest.BodyPublishers.ofString(json))
+                        .header("Content-Type", "application/json");
+                break;
+            }
+            case "DELETE": {
+                if (requestBody != null) {
+                    String json = serialize(requestBody);
+                    builder.method("DELETE", HttpRequest.BodyPublishers.ofString(json))
+                            .header("Content-Type", "application/json");
+                } else {
+                    builder.DELETE();
+                }
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported HTTP method: " + method);
+        }
+
+        return builder.build();
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     private <T> T deserialize(String json, TypeReference<T> typeReference) {
         try {
@@ -135,17 +227,6 @@ public class ApiClient {
         }
     }
 
-
-    private boolean handleUnauthorized() {
-        try {
-
-            boolean success = new Remote().refreshAuthToken();
-            return success;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
 
     // Convenience methods for HTTP verbs returning ApiResponse
