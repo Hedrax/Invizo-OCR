@@ -14,16 +14,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.example.ocrdesktop.data.Local.*;
 import static javafx.scene.control.Alert.AlertType.ERROR;
-import static javafx.scene.control.Alert.AlertType.INFORMATION;
 
 public class Repo {
     static Remote remote = new Remote();
@@ -255,6 +254,11 @@ public class Repo {
                 try (Connection localConnection = getDatabaseConnection()) {
                     // Fetch data and refresh logic
                     timestamp[0] = getMaxUploadedAtTime(localConnection);
+
+                    if (timestamp[0] == null) {
+                        timestamp[0] = Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 0, 0));
+
+                    }
                     getAllUsers();
                     ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
                     emptyPair[0] = remote.getRequestsAndReceipts(timestamp[0]);

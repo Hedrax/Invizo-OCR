@@ -119,6 +119,17 @@ public class MainController{
                 throw new RuntimeException("Error loading data for request ID: " + request.id, e);
             }
         }
+
+        Platform.runLater(() -> {
+            requestsListVBox.getChildren().clear(); // Clear UI list before adding
+            for (Request request : lst) {
+                try {
+                    addRequestCell(request);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 
@@ -146,11 +157,13 @@ public class MainController{
     @FXML
     private void Refresh(){
         refreshData();
-        requestsListVBox.getChildren().clear();
-        lst.clear();
-        loadDataFromDatabase();
-        System.out.printf("Refreshed!\n");
-        System.out.printf(getReceiptTypeNames().toString());
+        Platform.runLater(() -> {
+            requestsListVBox.getChildren().clear();
+            lst.clear();
+            loadDataFromDatabase();
+            System.out.printf("Refreshed!\n");
+            System.out.printf(getReceiptTypeNames().toString());
+        });
 
     }
     public void removeRequest(Request request) {
