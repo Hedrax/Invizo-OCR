@@ -57,6 +57,8 @@ public class MainController{
 
     @FXML
     public void initialize() {
+        AppContext.getInstance().setMainController(this);
+
         // Add listener for dynamic updates to the list
         lst.addListener((ListChangeListener<? super Request>) (change) -> {
             while (change.next()) {
@@ -71,7 +73,6 @@ public class MainController{
                 }
             }
         });
-
         // Load data from the database and populate the list
         Platform.runLater(() -> {
             lst.clear(); // Clear any existing items to avoid duplication
@@ -86,7 +87,7 @@ public class MainController{
         ObservableList<Request> requests = FXCollections.observableArrayList();
         try {
             // Fetch requests with the specified status
-            requests = getRequestByStatus(String.valueOf(Receipt.ReceiptStatus.PENDING));
+            requests = getRequestByStatus(String.valueOf(Request.RequestStatus.PENDING));
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching requests by status", e);
         }
@@ -152,6 +153,19 @@ public class MainController{
         System.out.printf(getReceiptTypeNames().toString());
 
     }
+    public void removeRequest(Request request) {
+        Platform.runLater(() -> {
+            lst.remove(request);
+            requestsListVBox.getChildren().clear();
+            lst.forEach(req -> {
+                try {
+                    addRequestCell(req);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
 
     //Todo The following navigation items are a draft and might be changed to another navigation mechanism after finding optimal methodology
     @FXML
@@ -193,4 +207,5 @@ public class MainController{
             profileRoleSideMenuLabel.setText(role);
         });
     }
+
 }

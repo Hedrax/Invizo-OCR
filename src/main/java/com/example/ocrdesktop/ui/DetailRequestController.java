@@ -25,7 +25,6 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -248,8 +247,13 @@ public class DetailRequestController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    boolean checkAllConfirmed(){
-        for (Receipt receipt : request.receipts) {
+    boolean checkAllConfirmed() {
+        // Create a filtered list excluding receipts marked for deletion
+        ObservableList<Receipt> remainingReceipts = request.receipts.filtered(receipt ->
+                !receiptsToDelete.contains(receipt)
+        );
+
+        for (Receipt receipt : remainingReceipts) {
             if (receipt.status != Receipt.ReceiptStatus.APPROVED) {
                 showAlert("All Receipts must be confirmed.");
                 return false;
@@ -281,6 +285,9 @@ public class DetailRequestController {
         apiTask.setOnSucceeded(e -> {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
+                String successMessage = (String) apiTask.getValue();
+                System.out.println(successMessage); // You can replace this with a logger or UI update
+                removeConfirmedRequestFromUI();
                 navigateBack();
             });
         });
@@ -291,6 +298,12 @@ public class DetailRequestController {
             });
         });
         AppContext.getInstance().executorService.submit(apiTask);
+    }
+    private void removeConfirmedRequestFromUI() {
+        Platform.runLater(() -> {
+            MainController mainController = AppContext.getInstance().getMainController();
+            mainController.removeRequest(request);
+        });
     }
     @FXML
     private void navigateBack(){NavigationManager.getInstance().goBack();}

@@ -1,11 +1,10 @@
 package com.example.ocrdesktop;
 
 import com.example.ocrdesktop.data.UserPreferences;
+import com.example.ocrdesktop.ui.MainController;
 import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +17,7 @@ public class AppContext {
     private static AppContext instance;
     //Thread Pool variable
     public final ExecutorService executorService = Executors.newFixedThreadPool(10);
-
+    private MainController mainController;
 
     //Saving Directory Property
 
@@ -55,6 +54,13 @@ public class AppContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
     public boolean isLoggedIn() {
