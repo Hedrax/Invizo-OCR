@@ -73,11 +73,7 @@ public class MainController{
                 }
             }
         });
-        // Load data from the database and populate the list
-        Platform.runLater(() -> {
-            lst.clear(); // Clear any existing items to avoid duplication
-            loadDataFromDatabase();
-        });
+       loadDataFromDatabase();
 
         setUpProfileInfo();
     }
@@ -119,6 +115,8 @@ public class MainController{
                 throw new RuntimeException("Error loading data for request ID: " + request.id, e);
             }
         }
+        System.out.println("main: "+ lst );
+
     }
 
 
@@ -145,12 +143,13 @@ public class MainController{
 
     @FXML
     private void Refresh(){
-        refreshData();
-        requestsListVBox.getChildren().clear();
-        lst.clear();
-        loadDataFromDatabase();
-        System.out.printf("Refreshed!\n");
-        System.out.printf(getReceiptTypeNames().toString());
+        refreshData(() -> {
+            Platform.runLater(() -> {
+                requestsListVBox.getChildren().clear();
+                loadDataFromDatabase();
+                System.out.println("Refreshed!\n");
+            });
+        });
 
     }
     public void removeRequest(Request request) {

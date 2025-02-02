@@ -522,6 +522,24 @@ public class Local {
             throw new SQLException("Error while updating the upload request.", e);
         }
     }
+    public static void deleteRequest(Connection localConnection, Request request) throws SQLException {
+        String deleteRequestSQL = "DELETE FROM upload_requests WHERE request_id = ?";
+
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(deleteRequestSQL)) {
+            preparedStatement.setString(1, request.id);
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Request deleted successfully from local database: " + request.id);
+            } else {
+                System.out.println("Request not found in local database: " + request.id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error while deleting request from local database.", e);
+        }
+    }
+
     public static List<ReceiptType> getAllReceiptTypes(Connection localConnection) throws SQLException {
         String queryReceiptTypesSQL = "SELECT * FROM receipt_type";
         List<ReceiptType> receiptTypes = new ArrayList<>();

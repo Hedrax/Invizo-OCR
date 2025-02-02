@@ -14,16 +14,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.example.ocrdesktop.data.Local.*;
 import static javafx.scene.control.Alert.AlertType.ERROR;
-import static javafx.scene.control.Alert.AlertType.INFORMATION;
 
 public class Repo {
     static Remote remote = new Remote();
@@ -238,7 +237,7 @@ public class Repo {
     }
 
     // Refresh data method
-    public static void refreshData() {
+    public static void refreshData(Runnable onSuccess) {
         // Initialize required variables
         final Timestamp[] timestamp = new Timestamp[1];
         final ObservableList<Request>[] emptyRequests = new ObservableList[]{FXCollections.observableArrayList()};
@@ -255,6 +254,11 @@ public class Repo {
                 try (Connection localConnection = getDatabaseConnection()) {
                     // Fetch data and refresh logic
                     timestamp[0] = getMaxUploadedAtTime(localConnection);
+
+                    if (timestamp[0] == null) {
+                        timestamp[0] = Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 0, 0));
+
+                    }
                     getAllUsers();
                     ObservableList<ReceiptType> receiptTypes = remote.getReceiptTypes();
                     emptyPair[0] = remote.getRequestsAndReceipts(timestamp[0]);
@@ -277,8 +281,9 @@ public class Repo {
         refreshTask.setOnSucceeded(e -> {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
-                //Sorry but it's so annoying to see this alert every time
-//                showAlert("Success", "Data refreshed successfully.", INFORMATION);
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
             });
         });
 
@@ -384,15 +389,24 @@ public class Repo {
 
         remote.updateReceipts(request.receipts);
         remote.deleteReceipts(receiptsToDelete);
-        remote.updateRequest(request);
+
+        boolean allReceiptsDeleted = request.receipts.isEmpty() || request.receipts.size() == receiptsToDelete.size();
+
+        if (!allReceiptsDeleted) {
+            remote.updateRequest(request);
+        }
+
         try (Connection localConnection = getDatabaseConnection()) {
             // update the receipts in the local database
             updateReceipts(localConnection,request.receipts);
             // delete the receipts in the local database
             deleteReceipts(localConnection, (ObservableList<Receipt>) receiptsToDelete);
             // update the request in the local database
-            updateRequest(localConnection,request);
-
+            if (allReceiptsDeleted) {
+                deleteRequest(localConnection, request);
+            } else {
+                updateRequest(localConnection,request);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -430,6 +444,6 @@ public class Repo {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        refreshData();
+        refreshData(null);
     }
 }
