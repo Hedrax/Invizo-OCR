@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -76,7 +77,29 @@ public class RequestItemBoxController {
         disableButton();
         callBackChanges();
     }
-    void navigate_to_detail(){}
+    @FXML
+    void navigate_to_detail() {
+        try {
+            // Load the detail page FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/detailPage.fxml"));
+            AnchorPane detailPage = loader.load();
+
+            // Get the controller and pass the receipt data
+            DetailPageController controller = loader.getController();
+            controller.setData(this.receipt, this::handleReceiptUpdate);
+
+            // Replace the current scene with the detail page
+            customVbox.getScene().setRoot(detailPage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleReceiptUpdate(Receipt updatedReceipt) {
+        // Update the receipt data in the RequestItemBoxController
+        this.receipt = updatedReceipt;
+        updateCustomVBox(); // Refresh the UI to reflect changes
+    }
     @FXML
     void deleteItem(){
         deleted.set(true);

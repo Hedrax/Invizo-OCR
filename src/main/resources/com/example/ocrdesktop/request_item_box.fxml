@@ -17,7 +17,7 @@
       </Text>
    </StackPane>
    <Label fx:id="confirmButton" layoutX="48.0" layoutY="362.4" onMouseClicked="#confirm" styleClass="button" text="Confirm" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="48.0" />
-   <Label layoutX="176.4" layoutY="361.4" styleClass="button" text="View Details" AnchorPane.bottomAnchor="13.0" AnchorPane.rightAnchor="35.0" />
+   <Label fx:id="viewDetailsButton" layoutX="176.4" layoutY="361.4" styleClass="button" text="View Details" onMouseClicked="#navigate_to_detail" AnchorPane.bottomAnchor="13.0" AnchorPane.rightAnchor="35.0" />
    <ScrollPane layoutX="20.0" layoutY="153.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="246.0">
       <VBox fx:id="customVbox" />
    </ScrollPane>
