@@ -152,35 +152,56 @@ public class DetailRequestController {
         button.setVisible(true);
         button.setDisable(false);
     }
-    void dragScreenRight(){
-        // Create a transition to slide the VBox out to the left
+    void dragScreenRight() {
+        // Check if the screen is "full" based on your logic
+        boolean isFullScreen = hListContainer.getWidth() > 1600; // Adjust threshold as needed
+
+        // Create transitions for sliding
         TranslateTransition slideOut = new TranslateTransition(Duration.seconds(1), hListContainer);
         TranslateTransition slideIn = new TranslateTransition(Duration.seconds(1), gridScrollPane);
 
-        slideOut.setToX(1600); // Moves the VBox out of the screen to the left
-        slideIn.setToX(0); // Moves the VBox out of the screen to the left
+        // Adjust slide-out distance dynamically
+        if (isFullScreen) {
+            slideOut.setToX(2000); // Slide out further if content is full
+        } else {
+            slideOut.setToX(1600); // Default slide out distance
+        }
 
+        slideIn.setToX(0); // Default slide-in distance
+
+        // Configure and play animations
         slideOut.setCycleCount(1);
         slideIn.setCycleCount(1);
 
         slideOut.play();
         slideIn.play();
     }
-    void dragScreenLeft(){
-        // Create a transition to slide the VBox out to the left
+
+    void dragScreenLeft() {
+        // Check if the screen is "full" based on your logic
+        boolean isFullScreen = gridScrollPane.getWidth() > 1600; // Adjust threshold as needed
+
+        // Create transitions for sliding
         TranslateTransition slideOut = new TranslateTransition(Duration.seconds(1), gridScrollPane);
-        TranslateTransition slideIn = new TranslateTransition(Duration.seconds(1),  hListContainer);
+        TranslateTransition slideIn = new TranslateTransition(Duration.seconds(1), hListContainer);
 
-        slideOut.setToX(-1600); // Moves the VBox out of the screen to the left
-        slideIn.setToX(0); // Moves the VBox out of the screen to the left
+        // Adjust slide-out distance dynamically
+        if (isFullScreen) {
+            slideOut.setToX(-2000); // Slide out further if content is full
+        } else {
+            slideOut.setToX(-1600); // Default slide out distance
+        }
 
+        slideIn.setToX(0); // Default slide-in distance
+
+        // Configure and play animations
         slideOut.setCycleCount(1);
         slideIn.setCycleCount(1);
 
         slideOut.play();
         slideIn.play();
-
     }
+
 
     @FXML
     private void showGrid(){
