@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root"
+            stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.ocrdesktop.ui.subelements.DetailPageController">
+
+    <!-- Main Content Area -->
+    <AnchorPane fx:id="mainContent" styleClass="detail_page-main_body"
+                AnchorPane.bottomAnchor="0.0"
+                AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0"
+                AnchorPane.topAnchor="0.0">
+
+        <!-- Header Section -->
+        <HBox fx:id="header" alignment="CENTER" prefHeight="56.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <AnchorPane styleClass="header" HBox.hgrow="ALWAYS">
+                <!-- Logo -->
+                <ImageView fitHeight="47.0" fitWidth="88.0" layoutX="20.0" layoutY="5.0"
+                           pickOnBounds="true" preserveRatio="true"
+                           AnchorPane.leftAnchor="20.0">
+                    <Image url="@../images/Logo.png" />
+                </ImageView>
+
+                <!-- User Profile -->
+                <HBox fx:id="userProfile" alignment="CENTER" layoutX="477.0" layoutY="7.0"
+                      prefHeight="42.0" prefWidth="107.0" styleClass="profile_banner"
+                      AnchorPane.rightAnchor="20.0">
+                    <ImageView fitHeight="44.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/Ellipse%201.png" />
+                    </ImageView>
+                    <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
+                        <padding>
+                            <Insets left="7.0" />
+                        </padding>
+                        <Label text="Gasser" textFill="WHITE" />
+                        <Label text="Company" textFill="WHITE" />
+                    </VBox>
+                </HBox>
+
+                <!-- Back Navigation -->
+                <StackPane onMouseClicked="#navigateBack" styleClass="hover-hand" AnchorPane.leftAnchor="20.0">
+                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="50.0" width="50.0" />
+                    <Text text="&lt;" style="-fx-font-size: 24;" />
+                </StackPane>
+            </AnchorPane>
+        </HBox>
+
+        <!-- Title and Date Section -->
+        <Label fx:id="titleLabelView" layoutX="20.0" layoutY="80.0" styleClass="detail-page-title"
+               text="Detail Page Title" textAlignment="CENTER"
+               AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="80.0">
+            <font>
+                <Font size="27.0" />
+            </font>
+        </Label>
+        <Label fx:id="dateLabelView" layoutX="646.0" layoutY="80.0" styleClass="detail-page-date-label"
+               text="10-10-2024 (12:00PM)"
+               AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="80.0" />
+
+        <!-- Content and Photo Section -->
+        <HBox fx:id="contentAndPhoto" spacing="40.0" alignment="CENTER"
+              AnchorPane.bottomAnchor="100.0"
+              AnchorPane.leftAnchor="20.0"
+              AnchorPane.rightAnchor="20.0"
+              AnchorPane.topAnchor="120.0">
+
+            <!-- Photo Section -->
+            <StackPane fx:id="photoPane" alignment="CENTER" HBox.hgrow="ALWAYS">
+                <ImageView fx:id="photoView" fitWidth="550.0" fitHeight="550.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/logo_google.png" />
+                </ImageView>
+            </StackPane>
+
+            <!-- Content Section -->
+            <VBox fx:id="contentVBox" spacing="15.0" alignment="CENTER"
+                  prefWidth="300.0" HBox.hgrow="NEVER">
+                <padding>
+                    <Insets top="15.0" right="15.0" bottom="15.0" left="15.0" />
+                </padding>
+                <Label text="Detail Section Content" wrapText="true" alignment="CENTER" />
+                <!-- Add more detailed content as needed -->
+            </VBox>
+        </HBox>
+
+        <!-- Control Buttons -->
+        <HBox fx:id="controlButtonsPanel" alignment="CENTER" spacing="22.0"
+              AnchorPane.bottomAnchor="20.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0">
+            <Button mnemonicParsing="false" style="-fx-font-size: 20px; -fx-background-color: #B41C1C;"
+                    text="Cancel" onMouseClicked="#navigateBack" />
+            <Button mnemonicParsing="false" style="-fx-font-size: 20px;"
+                    text="Save Changes" onMouseClicked="#saveChanges" />
+        </HBox>
+    </AnchorPane>
+</AnchorPane>
