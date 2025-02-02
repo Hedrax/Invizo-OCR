@@ -115,6 +115,7 @@ public class MainController{
                 throw new RuntimeException("Error loading data for request ID: " + request.id, e);
             }
         }
+        System.out.println("main: "+ lst );
 
     }
 
@@ -142,10 +143,13 @@ public class MainController{
 
     @FXML
     private void Refresh(){
-        refreshData();
-        requestsListVBox.getChildren().clear();
-        loadDataFromDatabase();
-        System.out.printf("Refreshed!\n");
+        refreshData(() -> {
+            Platform.runLater(() -> {
+                requestsListVBox.getChildren().clear();
+                loadDataFromDatabase();
+                System.out.println("Refreshed!\n");
+            });
+        });
 
     }
     public void removeRequest(Request request) {

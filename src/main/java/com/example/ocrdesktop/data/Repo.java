@@ -237,7 +237,7 @@ public class Repo {
     }
 
     // Refresh data method
-    public static void refreshData() {
+    public static void refreshData(Runnable onSuccess) {
         // Initialize required variables
         final Timestamp[] timestamp = new Timestamp[1];
         final ObservableList<Request>[] emptyRequests = new ObservableList[]{FXCollections.observableArrayList()};
@@ -281,7 +281,9 @@ public class Repo {
         refreshTask.setOnSucceeded(e -> {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
-                System.out.println("lst after refresh: " + emptyRequests[0] + ", receipts: " + emptyReceipts[0]);
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
             });
         });
 
@@ -442,6 +444,6 @@ public class Repo {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        refreshData();
+        refreshData(null);
     }
 }
