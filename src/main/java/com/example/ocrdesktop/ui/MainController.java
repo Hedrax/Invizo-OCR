@@ -73,11 +73,7 @@ public class MainController{
                 }
             }
         });
-        // Load data from the database and populate the list
-        Platform.runLater(() -> {
-            lst.clear(); // Clear any existing items to avoid duplication
-            loadDataFromDatabase();
-        });
+       loadDataFromDatabase();
 
         setUpProfileInfo();
     }
@@ -120,16 +116,6 @@ public class MainController{
             }
         }
 
-        Platform.runLater(() -> {
-            requestsListVBox.getChildren().clear(); // Clear UI list before adding
-            for (Request request : lst) {
-                try {
-                    addRequestCell(request);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
 
@@ -157,13 +143,9 @@ public class MainController{
     @FXML
     private void Refresh(){
         refreshData();
-        Platform.runLater(() -> {
-            requestsListVBox.getChildren().clear();
-            lst.clear();
-            loadDataFromDatabase();
-            System.out.printf("Refreshed!\n");
-            System.out.printf(getReceiptTypeNames().toString());
-        });
+        requestsListVBox.getChildren().clear();
+        loadDataFromDatabase();
+        System.out.printf("Refreshed!\n");
 
     }
     public void removeRequest(Request request) {

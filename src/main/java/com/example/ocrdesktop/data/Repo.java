@@ -281,8 +281,7 @@ public class Repo {
         refreshTask.setOnSucceeded(e -> {
             Platform.runLater(() -> {
                 NavigationManager.getInstance().hideLoading();
-                //Sorry but it's so annoying to see this alert every time
-//                showAlert("Success", "Data refreshed successfully.", INFORMATION);
+                System.out.println("lst after refresh: " + emptyRequests[0] + ", receipts: " + emptyReceipts[0]);
             });
         });
 
@@ -388,15 +387,24 @@ public class Repo {
 
         remote.updateReceipts(request.receipts);
         remote.deleteReceipts(receiptsToDelete);
-        remote.updateRequest(request);
+
+        boolean allReceiptsDeleted = request.receipts.isEmpty() || request.receipts.size() == receiptsToDelete.size();
+
+        if (!allReceiptsDeleted) {
+            remote.updateRequest(request);
+        }
+
         try (Connection localConnection = getDatabaseConnection()) {
             // update the receipts in the local database
             updateReceipts(localConnection,request.receipts);
             // delete the receipts in the local database
             deleteReceipts(localConnection, (ObservableList<Receipt>) receiptsToDelete);
             // update the request in the local database
-            updateRequest(localConnection,request);
-
+            if (allReceiptsDeleted) {
+                deleteRequest(localConnection, request);
+            } else {
+                updateRequest(localConnection,request);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
