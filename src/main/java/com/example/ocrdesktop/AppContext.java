@@ -5,6 +5,7 @@ import com.example.ocrdesktop.ui.MainController;
 import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,9 +27,27 @@ public class AppContext {
     public String PhotoSavingDir = WorkingDir+ "/Receipts/";
     public String SheetsSavingDir = WorkingDir+ "/CSVs/";
 
+    public String AiModelsDir = WorkingDir+ "/AiResources/";
     public String AiExecutorPath = WorkingDir+ "/AiInterface.exe";
-    public String AiModelsPath = WorkingDir+ "/AiResources/";
     public String TestingJSONSPath = WorkingDir+ "/Testing JSONS/";
+    public String TempPath = WorkingDir+ "/Temp/";
+
+    public List<String> ReferencePaths = List.of(
+            AiExecutorPath,
+            AiModelsDir,
+            TestingJSONSPath,
+            TempPath,
+            JSONsSavingDir,
+            PhotoSavingDir,
+            SheetsSavingDir
+    );
+
+    //AI models names
+    public String DetectionModelName = "detection-XXXXXXXX-X.X.onnx";
+    public String RecognitionModelName = "recognition-XXXXXXXX-X.X.onnx";
+
+    public Float DetectionModelVersion = 1.0f;
+    public Float RecognitionModelVersion = 1.0f;
 
     // Properties to store globally accessible objects
     private final ReadOnlyObjectWrapper<Double> stageWidth = new ReadOnlyObjectWrapper<>(0.0);
