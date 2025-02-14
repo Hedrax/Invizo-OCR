@@ -3,7 +3,6 @@ package com.example.ocrdesktop.control;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.ui.DetailReceiptTypeController;
 import com.example.ocrdesktop.ui.DetailRequestController;
-import com.example.ocrdesktop.utils.AuthorizationInfo;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
 import javafx.animation.KeyFrame;
@@ -20,12 +19,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -148,24 +147,7 @@ public class NavigationManager {
         backStack.pop();
         navigate(backStack.peek());
     }
-    private void makeSavingDirs(){
-        checkDir(AppContext.getInstance().JSONsSavingDir);
-        checkDir(AppContext.getInstance().PhotoSavingDir);
-        checkDir(AppContext.getInstance().SheetsSavingDir);
-    }
 
-    private void checkDir(String directoryPath) {
-        // Create a File object for the directory
-        File directory = new File(directoryPath);
-
-        // Check if the directory exists
-        if (!directory.exists()) {
-            // Create the directory if it doesn't exist
-            if (!directory.mkdirs()) {
-                System.out.println("Failed to create directory: " + directoryPath);
-            }
-        }
-    }
 
     public void clearBackStack() {
         backStack.clear();
@@ -178,7 +160,7 @@ public class NavigationManager {
         start(currentStage);
     }
     public void start(Stage stage) throws IOException {
-        makeSavingDirs();
+        ConfigurationManager.getInstance().start();
         currentStage = stage;
         boolean isLoggedIn = AppContext.getInstance().isLoggedIn();
         if (isLoggedIn) {
