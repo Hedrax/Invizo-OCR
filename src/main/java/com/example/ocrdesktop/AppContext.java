@@ -26,6 +26,9 @@ public class AppContext {
     public String PhotoSavingDir = WorkingDir+ "/Receipts/";
     public String SheetsSavingDir = WorkingDir+ "/CSVs/";
 
+    public String AiExecutorPath = WorkingDir+ "/AiInterface.exe";
+    public String AiModelsPath = WorkingDir+ "/AiResources/";
+    public String TestingJSONSPath = WorkingDir+ "/Testing JSONS/";
 
     // Properties to store globally accessible objects
     private final ReadOnlyObjectWrapper<Double> stageWidth = new ReadOnlyObjectWrapper<>(0.0);
