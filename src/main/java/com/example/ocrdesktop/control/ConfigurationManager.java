@@ -33,8 +33,9 @@ public class ConfigurationManager {
         }
 
         // Regular expressions for extracting model name and version
-        Pattern detectionPattern = Pattern.compile("detection-([A-Za-z0-9]+)-(\\d+\\.\\d+)\\.onnx");
-        Pattern recognitionPattern = Pattern.compile("recognition-([A-Za-z0-9]+)-(\\d+\\.\\d+)\\.onnx");
+        Pattern detectionPattern = Pattern.compile("detection-([A-Za-z0-9-]+)-(\\d+\\.\\d+)\\.onnx");
+        Pattern recognitionPattern = Pattern.compile("recognition-([A-Za-z0-9-]+)-(\\d+\\.\\d+)\\.onnx");
+
 
         // Get all files in the directory
         File[] files = dir.listFiles((d, name) -> name.endsWith(".onnx"));
@@ -48,7 +49,6 @@ public class ConfigurationManager {
 
         for (File file : files) {
             String fileName = file.getName();
-
             // Match detection model
             Matcher detectionMatcher = detectionPattern.matcher(fileName);
             if (detectionMatcher.matches()) {
