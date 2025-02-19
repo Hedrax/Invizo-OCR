@@ -607,12 +607,22 @@ public class Local {
     }
 
 
+    public static void insertRequest(Connection localConnection, Request request) throws SQLException {
+        String insertUploadRequestsSQL =
+                "INSERT INTO upload_requests (request_id, status, uploaded_by_user_id, uploaded_at) " +
+                        "VALUES (?, ?, ?, ?) " +
+                        "ON CONFLICT(request_id) DO NOTHING"; // This prevents duplicate inserts
 
+        try (PreparedStatement preparedStatement = localConnection.prepareStatement(insertUploadRequestsSQL)) {
+            preparedStatement.setString(1, request.id);
+            preparedStatement.setString(2, request.status.toString());
+            preparedStatement.setString(3, request.uploaded_by_user_id);
+            preparedStatement.setTimestamp(4, new Timestamp(request.uploaded_at.getTime()));
+            preparedStatement.addBatch();
 
-
-
-
-
+            preparedStatement.executeBatch();
+        }
+    }
 
 
 
