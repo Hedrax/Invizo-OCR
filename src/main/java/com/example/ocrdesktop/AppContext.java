@@ -5,6 +5,7 @@ import com.example.ocrdesktop.ui.MainController;
 import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,34 +21,56 @@ public class AppContext {
     public final ExecutorService executorService = Executors.newFixedThreadPool(10);
     private MainController mainController;
 
+    private static String GITHUB_TOKEN = "your_personal_access_token";
+
     //Saving Directory Property
 
-    String WorkingDir = System.getProperty("user.dir");
-    public String JSONsSavingDir = WorkingDir+ "/JSONS/";
-    public String PhotoSavingDir = WorkingDir+ "/Receipts/";
-    public String SheetsSavingDir = WorkingDir+ "/CSVs/";
+    public static String WorkingDir = System.getProperty("user.dir");
+    public static String JSONsSavingDir = WorkingDir+ "/JSONS/";
+    public static String PhotoSavingDir = WorkingDir+ "/Receipts/";
+    public static String SheetsSavingDir = WorkingDir+ "/CSVs/";
 
-    public String AiModelsDir = WorkingDir+ "/AiResources/";
-    public String AiExecutorPath = WorkingDir+ "/AiInterface.exe";
-    public String TestingJSONSPath = WorkingDir+ "/Testing JSONS/";
-    public String TempPath = WorkingDir+ "/Temp/";
+    public static String AiResourcesDir = WorkingDir+ "/AiResources/";
+    public static String AiModelsDir = AiResourcesDir+ "models/";
+    public static String TempDir = WorkingDir+ "/Temp/";
+    public static String TestingJSONSDir = WorkingDir+ "/Testing JSONS/";
 
-    public List<String> ReferencePaths = List.of(
-            AiExecutorPath,
+    public static String PythonExeBinariesPath = AiResourcesDir+ "/AiInterface.exe";
+
+    //URLs references
+    public static String BaseGithubReleaseCheckupURL = "https://api.github.com/repos/Hedrax/Invizo-OCR/releases";
+
+    //instead of having multiple unknown or to be assigned dynamically variables for the model URLs, we can use a HashMap
+    //same goes for dynamic names of the .onnx files
+    public static HashMap<String, String> ReferenceMap = new HashMap<String, String>();
+
+    //List of Keys for the hashmap
+    //To remove any conflicts with the keys, we can use a constant string for the keys
+    public static String PythonExecutableZipIDKey = "PythonExecutablesURL";
+    public static String DetectionModelIDKey = "DetectionModelURL";
+    public static String RecognitionModelIDKey = "RecognitionModelURL";
+    //AI models names
+    public static String DetectionModelNameKey = "DetectionModelName";
+    public static String RecognitionModelNameKey = "RecognitionModelName";
+
+    public static Float DetectionModelVersion = -1.0f;
+    public static Float RecognitionModelVersion = -1.0f;
+
+
+    public static List<String> ReferencePaths = List.of(
+            AiResourcesDir,
             AiModelsDir,
-            TestingJSONSPath,
-            TempPath,
+            TestingJSONSDir,
+            TempDir,
             JSONsSavingDir,
             PhotoSavingDir,
             SheetsSavingDir
     );
 
-    //AI models names
-    public String DetectionModelName = "detection-XXXXXXXX-X.X.onnx";
-    public String RecognitionModelName = "recognition-XXXXXXXX-X.X.onnx";
+    //Update Status
+    public static boolean DetectionUpdateAvailable = false;
+    public static boolean RecognitionUpdateAvailable = false;
 
-    public Float DetectionModelVersion = 1.0f;
-    public Float RecognitionModelVersion = 1.0f;
 
     // Properties to store globally accessible objects
     private final ReadOnlyObjectWrapper<Double> stageWidth = new ReadOnlyObjectWrapper<>(0.0);
@@ -107,5 +130,13 @@ public class AppContext {
 
     public void setHeight(Double newWidth) {
         this.stageHeight.set(newWidth);
+    }
+
+    public void setGithubToken(String token) {
+        // Set the GitHub token
+    GITHUB_TOKEN = token;
+    }
+    public String getGithubToken() {
+        return GITHUB_TOKEN;
     }
 }
