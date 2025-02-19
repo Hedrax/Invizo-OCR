@@ -415,6 +415,15 @@ public class Repo {
 
     }
 
+    public void insertNewRequest(Request request) throws SQLException {
+        try (Connection localConnection = getDatabaseConnection()) {
+            insertRequest(localConnection, request);
+            refreshReceipt(localConnection, request.receipts);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Propagate the exception for further handling
+        }
+    }
     public List<ReceiptType> getReceiptTypes() throws SQLException {
         List<ReceiptType> receiptTypes = new ArrayList<>();
         // get all receiptTypes from the local database
