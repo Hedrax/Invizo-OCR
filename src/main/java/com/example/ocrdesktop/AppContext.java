@@ -53,6 +53,9 @@ public class AppContext {
     public static String DetectionModelNameKey = "DetectionModelName";
     public static String RecognitionModelNameKey = "RecognitionModelName";
 
+    public static String UpdateDetectionModelNameKey = "UpdateDetectionModelName";
+    public static String UpdateRecognitionModelNameKey = "UpdateRecognitionModelName";
+
     public static Float DetectionModelVersion = -1.0f;
     public static Float RecognitionModelVersion = -1.0f;
 
@@ -82,6 +85,15 @@ public class AppContext {
         }
         return instance;
     }
+
+    public static void updateDetectionModelPath() {;
+        ReferenceMap.put(DetectionModelNameKey, ReferenceMap.get(UpdateDetectionModelNameKey));
+    }
+
+    public static void updateRecognitionModelPath() {
+        ReferenceMap.put(RecognitionModelNameKey, ReferenceMap.get(UpdateRecognitionModelNameKey));
+    }
+
 
     public void setAuthorizationInfo(AuthorizationInfo authorizationInfo) {
         try {
