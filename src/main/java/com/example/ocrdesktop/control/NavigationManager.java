@@ -8,6 +8,7 @@ import com.example.ocrdesktop.utils.Request;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -22,9 +23,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -160,7 +159,7 @@ public class NavigationManager {
         start(currentStage);
     }
     public void start(Stage stage) throws IOException {
-        ConfigurationManager.getInstance().start();
+        setupConfigurations();
         currentStage = stage;
         boolean isLoggedIn = AppContext.getInstance().isLoggedIn();
         if (isLoggedIn) {
@@ -169,7 +168,18 @@ public class NavigationManager {
             startLogin();
         }
     }
-
+    private void setupConfigurations() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                ConfigurationManager.getInstance().start();
+                return null;
+            }
+        };
+        Thread backgroundThread = new Thread(task);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
+    }
     private void startLogin() throws IOException {
         if (this.currentStage != null) this.currentStage.close();
         this.currentStage = new Stage();
