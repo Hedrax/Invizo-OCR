@@ -2,6 +2,7 @@ package com.example.ocrdesktop.control;
 
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.utils.UnzipUtility;
+import javafx.concurrent.Task;
 import javafx.util.Pair;
 
 import java.io.File;
@@ -36,7 +37,7 @@ public class ConfigurationManager {
         // Check if the all directory exists
         checkDir();
         // Update the model names and versions and download the missing models
-        updateModelNamesAndVersions();
+        updateModelNamesAndVersionsCompute();
         // check if the python binaries are there
         checkPythonBinaries();
     }
@@ -63,8 +64,20 @@ public class ConfigurationManager {
         }
     }
 
-
     public void updateModelNamesAndVersions() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                updateModelNamesAndVersionsCompute();
+                return null;
+            }
+        };
+        Thread backgroundThread = new Thread(task);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
+    }
+
+    private void updateModelNamesAndVersionsCompute() {
         File dir = new File(AppContext.AiModelsDir);
         if (!dir.exists() || !dir.isDirectory()) {
             checkDir();
@@ -73,8 +86,8 @@ public class ConfigurationManager {
         // Get all files in the directory
         File[] files = dir.listFiles((d, name) -> name.endsWith(".onnx"));
 
-        Boolean detectionModelFound = false;
-        Boolean recognitionModelFound = false;
+        boolean detectionModelFound = false;
+        boolean recognitionModelFound = false;
 
         for (File file : files) {
             String fileName = file.getName();
@@ -131,18 +144,22 @@ public class ConfigurationManager {
         try {
             if (modelType == ModelType.DETECTION) {
                 // Download the detection model
-                downloadAsset(AppContext.ReferenceMap.get(AppContext.DetectionModelIDKey), AppContext.AiModelsDir + AppContext.DetectionModelNameKey);
-
+                downloadAsset(AppContext.ReferenceMap.get(AppContext.DetectionModelIDKey), AppContext.AiModelsDir + AppContext.ReferenceMap.get(AppContext.UpdateDetectionModelNameKey));
+                deleteFile(AppContext.AiModelsDir + AppContext.ReferenceMap.get(AppContext.DetectionModelNameKey));
+                AppContext.updateDetectionModelPath();
             } else if (modelType == ModelType.RECOGNITION) {
                 // Download the recognition model
-                downloadAsset(AppContext.ReferenceMap.get(AppContext.RecognitionModelIDKey), AppContext.AiModelsDir + AppContext.RecognitionModelIDKey);
+                downloadAsset(AppContext.ReferenceMap.get(AppContext.RecognitionModelIDKey), AppContext.AiModelsDir +  AppContext.ReferenceMap.get(AppContext.UpdateRecognitionModelNameKey));
+                deleteFile(AppContext.AiModelsDir + AppContext.ReferenceMap.get(AppContext.RecognitionModelNameKey));
+                AppContext.updateRecognitionModelPath();
             }
         }
         catch (Exception e) {
+            System.out.println("Failed to download " + modelType.toString() + " Model.");
             e.printStackTrace();
         }
-        //Todo
-        // make sure to update the version, name in the AppContext and delete the existing file after the download
+        System.out.println(modelType.toString() + " Model downloaded successfully");
+
     }
     private void checkAiUpdates(){
         //Check AI models versions if to be updated using link
