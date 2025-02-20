@@ -43,7 +43,6 @@ public class AIDependenciesChecker {
         try {
             System.out.println(AppContext.getInstance().getGithubToken());
             String jsonResponse = fetchURL(AppContext.BaseGithubReleaseCheckupURL);
-            System.out.println("Response: " + jsonResponse);
 
         // Parse JSON to find .onnx files
         JSONArray releases = new JSONArray(jsonResponse);
@@ -63,14 +62,16 @@ public class AIDependenciesChecker {
 
                     if (isDetection2Version.getValue() > AppContext.DetectionModelVersion) {
                         AppContext.DetectionUpdateAvailable = true;
+                        AppContext.ReferenceMap.put(AppContext.UpdateDetectionModelNameKey, fileName);
                     }
                 }
-                Pair<Boolean, Float> isRecognition2Version = isDetectionModel(fileName);
+                Pair<Boolean, Float> isRecognition2Version = isRecognitionModel(fileName);
                 if (isRecognition2Version.getKey()) {
                     AppContext.ReferenceMap.put(AppContext.RecognitionModelIDKey, id.toString());
 
                     if (isRecognition2Version.getValue() > AppContext.DetectionModelVersion) {
                         AppContext.RecognitionUpdateAvailable = true;
+                        AppContext.ReferenceMap.put(AppContext.UpdateRecognitionModelNameKey, fileName);
                     }
                 }
             } else if (fileName.endsWith(".zip")) {
