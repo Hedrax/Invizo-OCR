@@ -1,9 +1,9 @@
 package com.example.ocrdesktop.utils;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -19,6 +19,14 @@ public class AuthorizationInfo {
         this.company = company;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    //Saved AuthorizationInfo is only name of the user and organization in the portable version
+    public AuthorizationInfo(String username, String organizationName) {
+        this.currentUser = new User(UUID.randomUUID().toString(), username, "", User.Role.ROLE_COMPANY_ADMIN);
+        this.company = new Company(UUID.randomUUID().toString(), organizationName);
+        this.accessToken = "";
+        this.refreshToken = "";
     }
 
 
