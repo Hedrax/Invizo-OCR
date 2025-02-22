@@ -229,7 +229,6 @@ public class NavigationManager {
     // Simply add the path in static final string and a function like the below
     public static final String MAIN_PAGE = "/com/example/ocrdesktop/main_layout.fxml";
     public static final String DETAIL_ITEMS = "/com/example/ocrdesktop/detail_request.fxml";
-    public static final String SIGNUP_PAGE = "/com/example/ocrdesktop/SignUpPage.fxml";
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
     public static final String SHOW_CSVS = "/com/example/ocrdesktop/showCsvs.fxml";
     public static final String REQUESTS_PAGE = "/com/example/ocrdesktop/RequestsPage.fxml";
@@ -263,8 +262,6 @@ public class NavigationManager {
     }
 
     public void navigateToSHOWCSVs(){if (isAuthorized()) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
-    public void navigateToSignup(){navigate(SIGNUP_PAGE);}
-    public void navigateToLogin(){navigate(LOGIN_PAGE);}
     public void navigateToRequestsPage(){if (isAuthorized()) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
     public void navigateToIntroReceiptTypePage(){if (isAuthorized()) navigate(INTRO_TO_RECEIPT_TYPE); else System.out.println("Not Authorized");}
     public void navigateToUsersControllerPage(){if (isAuthorized()) navigate(USERS_CONTROLLER); else System.out.println("Not Authorized");}
