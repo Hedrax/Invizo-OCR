@@ -15,10 +15,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.ocrdesktop.data.Local.*;
@@ -66,20 +63,10 @@ public class Repo {
         }
         return response;
     }
-    public boolean authenticate(String email, String password) {
 
-        boolean isAuthenticated = remote.authenticate(email, password);
-        if (isAuthenticated) {
-            AuthorizationInfo authInfo = remote.getAuthorizationInfo();
-            if (authInfo != null) {
-                AppContext.getInstance().setAuthorizationInfo(authInfo);
-                return true;
-            } else {
-                System.err.println("Failed to fetch user info after authentication.");
-                return false;
-            }
-        }
-        return false;
+    //Changing logic to portable app without Authentication
+    public void authenticate(String username, String organization_name) {
+        AppContext.getInstance().setAuthorizationInfo(new AuthorizationInfo(username, organization_name));
     }
 
     public int registerNewSuperAdmin(String username, String invitationToken, String email, String password, String confirmPassword) {
