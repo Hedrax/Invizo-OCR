@@ -10,14 +10,14 @@
 
 <HBox alignment="CENTER_LEFT" snapToPixel="false" spacing="19.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.subelements.UserControlEntryController">
    <children>
-      <TextField fx:id="userLabel" editable="false" focusTraversable="false" prefWidth="150.0" snapToPixel="false" text="Username" HBox.hgrow="SOMETIMES">
+      <TextField fx:id="userLabel" editable="false" focusTraversable="false" prefWidth="150.0" promptText="Username" snapToPixel="false" HBox.hgrow="SOMETIMES">
          <font>
             <Font size="18.0" />
          </font>
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></TextField>
-      <TextField fx:id="emailTextField" focusTraversable="false" pickOnBounds="false" snapToPixel="false" text="Email" HBox.hgrow="ALWAYS">
+      <TextField fx:id="emailTextField" focusTraversable="false" pickOnBounds="false" promptText="Email" snapToPixel="false" HBox.hgrow="ALWAYS">
          <font>
             <Font size="18.0" />
          </font></TextField>
