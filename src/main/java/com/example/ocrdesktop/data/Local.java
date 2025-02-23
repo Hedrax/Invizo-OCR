@@ -379,7 +379,6 @@ public class Local {
             query = "SELECT * FROM upload_requests";
         }
 
-
         ObservableList<Request> requests = FXCollections.observableArrayList();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -398,6 +397,13 @@ public class Local {
                 }
             }
         }
+        requests.forEach((it)->{
+            try {
+                it.receipts = getReceiptsByRequestIdLocal(connection, it.id);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
         return requests;
     }
     public static ObservableList<Receipt> getReceiptsByRequestIdLocal(Connection connection, String requestId) throws SQLException {
