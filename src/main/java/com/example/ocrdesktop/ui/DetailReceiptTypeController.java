@@ -452,11 +452,9 @@ public class DetailReceiptTypeController {
                     protected String call() {
                         //send back to the backend agent
                         //if new, just send the new value
-                        int response;
-                        if (newReceiptType) response = repo.createReceiptType(receiptTypeJSON);
+                        if (newReceiptType) repo.createReceiptType(receiptTypeJSON);
                             //else delete old name id and insert new
-                        else response = repo.modifyReceiptType(receiptTypeJSON, oldName);
-                        if (response != 200) throw new RuntimeException("Error in receipt type operation ");
+                        repo.modifyReceiptType(receiptTypeJSON, oldName);
                         return "Receipt Type Operation Successful";
                     }
                 };
