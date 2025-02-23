@@ -73,20 +73,21 @@ public class MainController{
                 }
             }
         });
-       loadDataFromDatabase();
+       refreshRequestsFromDB();
 
         setUpProfileInfo();
     }
-    private void loadDataFromDatabase() {
+    private void refreshRequestsFromDB() {
         lst.clear();
         // Initialize the ObservableList for Requests
-        ObservableList<Request> requests = FXCollections.observableArrayList();
+        ObservableList<Request> requests;
         try {
             // Fetch requests with the specified status
             requests = getRequestByStatus(String.valueOf(Request.RequestStatus.PENDING));
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching requests by status", e);
         }
+
 
         for (Request request : requests) {
             try {
@@ -143,14 +144,14 @@ public class MainController{
 
     @FXML
     private void Refresh(){
-        refreshData(() -> {
+        Runnable runnable = () -> {
             Platform.runLater(() -> {
                 requestsListVBox.getChildren().clear();
-                loadDataFromDatabase();
+                refreshRequestsFromDB();
                 System.out.println("Refreshed!\n");
             });
-        });
-
+        };
+        runnable.run();
     }
     public void removeRequest(Request request) {
         Platform.runLater(() -> {
