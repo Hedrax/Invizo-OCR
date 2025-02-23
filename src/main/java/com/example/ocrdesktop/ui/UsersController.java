@@ -77,8 +77,9 @@ public class UsersController {
         isMenuVisible = !isMenuVisible; // Toggle the menu state
     }
 
+    //no remote data refreshing needed in the portable solution
     void getDataFromRepo(){
-        lst.addAll(repo.getUsers());
+        lst.addAll(AppContext.getInstance().getAuthorizationInfo().currentUser);
     }
 
     private void deleteUser(User user, HBox pane){
@@ -251,7 +252,7 @@ public class UsersController {
                 apiTask = new Task<>() {
                     @Override
                     protected String call(){
-                        repo.addUser(user);
+//                        repo.addUser(user);
                         return "Success";
                     }
                 };
@@ -261,16 +262,16 @@ public class UsersController {
                     apiTask = new Task<>() {
                         @Override
                         protected String call(){
-                            if (repo.updateUser(user)){
-                                return "User Updated Successfully!";
-                            } else {
-                                //roll back  changes
-                                lst.set(lst.indexOf(userMap.get(user.id)), user);
-                                throw new RuntimeException("Failed to Update user");
-                            }
+//                            if (repo.updateUser(user)){
+//                                return "User Updated Successfully!";
+//                            } else {
+//                                //roll back  changes
+//                                lst.set(lst.indexOf(userMap.get(user.id)), user);
+//                                throw new RuntimeException("Failed to Update user");
+//                            }
+                            return "";
                         }
                     };
-
                 }
             }
             if (apiTask == null) {
@@ -291,10 +292,11 @@ public class UsersController {
 
         }
 
+        //We can't delete the only user using the app
         apiTask = new Task<>() {
             @Override
             protected String call() {
-                repo.deleteUsers(deletedUsers);
+//                repo.deleteUsers(deletedUsers);
                 return "Success";
             }
         };
