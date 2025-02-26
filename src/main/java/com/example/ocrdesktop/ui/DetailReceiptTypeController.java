@@ -34,7 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.Math.max;
 import static javafx.collections.FXCollections.observableArrayList;
 
-public class DetailReceiptTypeController {
+public class
+DetailReceiptTypeController {
     public Dictionary <String, ENTRY_TYPE> typeDictStr2Entry = new Hashtable<>();
     public Dictionary <ENTRY_TYPE, String> typeDictEntry2Str = new Hashtable<>();
     public ImageView imageView;
@@ -224,6 +225,7 @@ public class DetailReceiptTypeController {
         // Add supported file extensions
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"),
+                new FileChooser.ExtensionFilter("JSON ready Files", "*.json"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         fileChooser.setInitialDirectory(new File(AppContext.getInstance().JSONsSavingDir));
@@ -234,8 +236,12 @@ public class DetailReceiptTypeController {
 
         // Update the label with the file path or show "No file selected" if canceled
         if (selectedFile != null) {
-            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
             imageFilePath = selectedFile.getAbsolutePath();
+            if (imageFilePath.endsWith(".json")){
+                setData(new ReceiptTypeJSON(imageFilePath));
+                newReceiptType = true;
+                return;
+            }
             filePathLabel.setText(imageFilePath);
             Image image = new Image(
                     selectedFile.toURI().toString(),812, 614, true, true);
@@ -403,7 +409,6 @@ public class DetailReceiptTypeController {
         HashMap<String, Integer> resultMap = new HashMap<>();
         AtomicInteger i = new AtomicInteger(0);
         boolean createNew = true;
-        System.out.println("ReceiptTypeJSON: " +  (receiptTypeJSON != null));
         if (receiptTypeJSON != null){
             HashMap<String, Integer> oldMap = receiptTypeJSON.getMap();
             for (Map.Entry<String, Integer> entry : oldMap.entrySet()) {
