@@ -1,8 +1,11 @@
 package com.example.ocrdesktop.data;
 
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.nio.file.Path;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,8 +59,8 @@ public class Local {
 
     public static void refreshReceipt(Connection localConnection, ObservableList<Receipt> receipts) throws SQLException {
         String insertOrUpdateReceiptSQL =
-                "INSERT OR REPLACE INTO receipt (receipt_id, receipt_type_id, request_id, image_url, status, ocr_data, approved_by_user_id, approved_at) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "INSERT OR REPLACE INTO receipt (receipt_id, receipt_type_id, request_id, image_url, status, ocr_data, approved_by_user_id, approved_at, image_path) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(insertOrUpdateReceiptSQL)) {
             for (Receipt receipt : receipts) {
@@ -74,6 +77,9 @@ public class Local {
                 preparedStatement.setString(7, receipt.approvedByUserId);
                 preparedStatement.setTimestamp(8, receipt.approvedAt);
 
+                String imagePath = isBroken(receipt.imagePath) ? null : receipt.imagePath.toString();
+                preparedStatement.setString(9, receipt.imagePath.toString());
+
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
@@ -81,6 +87,10 @@ public class Local {
             e.printStackTrace();
             throw new SQLException("Error while inserting or updating receipt records.", e);
         }
+    }
+
+    private static boolean isBroken(Path imagePath) {
+        return imagePath.toString().equals(AppContext.BrokenImagePath);
     }
 
     // Manually convert Map to a JSON-like string
@@ -131,6 +141,7 @@ public class Local {
                     String typeName = resultSet.getString("receipt_type_id");
                     String requestId = resultSet.getString("request_id");
                     String imageUrl = resultSet.getString("image_url");
+                    String imagePath = resultSet.getString("image_path");
                     String status = resultSet.getString("status");
                     String ocrData = resultSet.getString("ocr_data");
                     String approvedByUserId = resultSet.getString("approved_by_user_id");
@@ -139,14 +150,13 @@ public class Local {
                     // Parse OCR data
                     HashMap<Integer, String> parsedOcrData = parseOcrDataToIntegerKey(ocrData);
                     // Create Receipt object
-                    Receipt receipt = new Receipt(receiptId, typeName, requestId, imageUrl, status, parsedOcrData, approvedByUserId, approvedAt);
+                    Receipt receipt = new Receipt(receiptId, typeName, requestId, imageUrl, status, parsedOcrData, approvedByUserId, approvedAt, imagePath);
                     receipts.add(receipt);
                 }
             }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(receipts);
         return receipts;
     }
     public static ObservableList<Request> getRequestsByDateAndTypeLocal(Connection connection, String receiptTypeName, String dateFrom, String dateTo) throws SQLException {
@@ -420,6 +430,7 @@ public class Local {
                     String receiptTypeId = resultSet.getString("receipt_type_id");
                     String request_id = resultSet.getString("request_id");
                     String imageUrl = resultSet.getString("image_url");
+                    String imagePath = resultSet.getString("image_path");
                     String status = resultSet.getString("status");
                     String approvedByUserId = resultSet.getString("approved_by_user_id");
                     Timestamp approvedAt = resultSet.getTimestamp("approved_at");
@@ -436,7 +447,8 @@ public class Local {
                             status,
                             ocrData,
                             approvedByUserId,
-                            approvedAt
+                            approvedAt,
+                            imagePath
                     );
                     receipts.add(receipt);
                 }
@@ -458,7 +470,7 @@ public class Local {
     public static void updateReceipts(Connection localConnection, ObservableList<Receipt> receipts) throws SQLException {
         // SQL query to update receipt
         String updateReceiptSQL =
-                "UPDATE receipt SET receipt_type_id = ?, request_id = ?, image_url = ?, status = ?, ocr_data = ?, approved_by_user_id = ?, approved_at = ? " +
+                "UPDATE receipt SET receipt_type_id = ?, request_id = ?, image_url = ?, status = ?, ocr_data = ?, approved_by_user_id = ?, approved_at = ?, image_path = ?" +
                         "WHERE receipt_id = ?";
 
         try (PreparedStatement preparedStatement = localConnection.prepareStatement(updateReceiptSQL)) {
@@ -476,7 +488,10 @@ public class Local {
 
                 preparedStatement.setString(6, receipt.approvedByUserId);  // approved_by_user_id
                 preparedStatement.setTimestamp(7, receipt.approvedAt);  // approved_at
-                preparedStatement.setString(8, receipt.receiptId);  // receipt_id (for WHERE clause)
+                preparedStatement.setString(8, receipt.imagePath.toString());  // image_url
+
+                preparedStatement.setString(9, receipt.receiptId);  // receipt_id (for WHERE clause)
+
 
                 // Execute the update for this receipt
                 preparedStatement.addBatch();

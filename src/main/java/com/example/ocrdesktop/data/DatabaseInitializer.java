@@ -15,7 +15,7 @@ public class DatabaseInitializer {
                 createTables(statement);
                 System.out.println("Database initialized successfully!");
             } else {
-                System.out.println("Database is already initialized.");
+                System.out.println("There exists a local database");
             }
 
         } catch (SQLException e) {
@@ -64,6 +64,7 @@ public class DatabaseInitializer {
                         "ocr_data TEXT, " +
                         "approved_by_user_id TEXT, " +
                         "approved_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                        "image_path TEXT, " +
                         "FOREIGN KEY (receipt_type_id) REFERENCES receipt_type (id) ON DELETE SET NULL," +
                         "FOREIGN KEY (request_id) REFERENCES upload_requests (request_id) ON DELETE SET NULL " +
                         ");";
