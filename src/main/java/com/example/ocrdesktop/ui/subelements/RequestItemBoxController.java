@@ -81,28 +81,9 @@ public class RequestItemBoxController {
     }
     @FXML
     void navigate_to_detail() {
-        NavigationManager.getInstance().navigateToDetail(receipt, this::handleReceiptUpdate);
-        try {
-            // Load the detail page FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/detail_receipt_layout.fxml"));
-            AnchorPane detailPage = loader.load();
-
-            // Get the controller and pass the receipt data
-            DetailReceiptController controller = loader.getController();
-            controller.setData(this.receipt, this::handleReceiptUpdate);
-
-            // Replace the current scene with the detail page
-            customVbox.getScene().setRoot(detailPage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        NavigationManager.getInstance().navigateToDetailReceiptPage(receipt);
     }
 
-    private void handleReceiptUpdate(Receipt updatedReceipt) {
-        // Update the receipt data in the RequestItemBoxController
-        this.receipt = updatedReceipt;
-        updateCustomVBox(); // Refresh the UI to reflect changes
-    }
     @FXML
     void deleteItem(){
         deleted.set(true);
