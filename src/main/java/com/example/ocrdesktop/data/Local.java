@@ -71,7 +71,7 @@ public class Local {
                 preparedStatement.setString(5, receipt.status.toString());
 
                 // Manually serialize the Map<String, String> ocrData to a simple JSON-like string
-                String ocrDataJson = mapToJsonString(receipt.ocrData);
+                String ocrDataJson = mapToJsonString(new HashMap<>(receipt.ocrData));
                 preparedStatement.setString(6, ocrDataJson); // Store as JSON string
 
                 preparedStatement.setString(7, receipt.approvedByUserId);
@@ -483,7 +483,7 @@ public class Local {
                 preparedStatement.setString(4, receipt.status.toString());  // status (converted to string)
 
                 // Serialize the ocrData (Map<String, String>) to a JSON-like string
-                String ocrDataJson = mapToJsonString(receipt.ocrData);  // Helper function to convert Map to JSON string
+                String ocrDataJson = mapToJsonString(new HashMap<>(receipt.ocrData));  // Helper function to convert Map to JSON string
                 preparedStatement.setString(5, ocrDataJson);  // Store OCR data as JSON string
 
                 preparedStatement.setString(6, receipt.approvedByUserId);  // approved_by_user_id

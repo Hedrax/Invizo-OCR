@@ -5,6 +5,10 @@ import com.example.ocrdesktop.ui.DetailReceiptController;
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.ReceiptType;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -39,6 +43,9 @@ public class RequestItemBoxController {
         this.receipt = receipt;
         this.confirmed.set(receipt.status == Receipt.ReceiptStatus.APPROVED);
         this.receiptType = receiptType;
+        this.receipt.isConfirmed.addListener((obs, old, val)->{
+            if (val) confirm();
+        });
         updateCustomVBox();
     }
 
@@ -58,9 +65,21 @@ public class RequestItemBoxController {
             RequestEditItemInbox controller = loader.getController();
             controller.setData(idxOfColumn , columnName, value);
 
-            controller.value.textProperty().addListener((obs, old, val)->
-                    receipt.ocrData.put(idxOfColumn, val));
+            receipt.isConfirmed.addListener((obs, old, val)->{
+                controller.value.setEditable(!val);
+            });
+            //Alot of overhead on the listener but it is the simplest way to do it with minimal changes
+            // and won't affect the performance given the size of the application processes
+            receipt.ocrData.addListener((MapChangeListener<? super Integer, ? super String>) change -> {
+                if (change.wasAdded() && change.getKey().equals(idxOfColumn)) {
+                    controller.value.setText(change.getValueAdded());
+                }
+            });
 
+            controller.value.textProperty().addListener((obs, old, val)-> {
+                if (old.equals(val)) return;
+                receipt.ocrData.put(idxOfColumn, val);
+            });
             customVbox.getChildren().add(pane);
         }catch (IOException ignore){}
     }
@@ -68,6 +87,7 @@ public class RequestItemBoxController {
 
     void callBackChanges(){
         confirmed.set(true);
+        receipt.isConfirmed.set(true);
     }
     void disableButton(){
         this.confirmButton.setDisable(true);

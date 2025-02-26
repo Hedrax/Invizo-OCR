@@ -67,6 +67,8 @@ public class DetailReceiptController {
             RequestEditItemInbox controller = loader.getController();
             controller.setData(idxOfColumn , columnName, value);
 
+            controller.value.setEditable(receipt.status != Receipt.ReceiptStatus.APPROVED);
+
             controller.value.textProperty().addListener((obs, old, val)->
                     receipt.ocrData.put(idxOfColumn, val));
 
@@ -104,7 +106,7 @@ public class DetailReceiptController {
 
     @FXML
     private void confirmReceipt() {
-        receipt.status = Receipt.ReceiptStatus.APPROVED;
+        receipt.isConfirmed.set(true);
         navigateBack(); // Go back to the previous page
     }
 

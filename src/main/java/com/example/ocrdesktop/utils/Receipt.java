@@ -1,6 +1,11 @@
 package com.example.ocrdesktop.utils;
 
 import com.example.ocrdesktop.AppContext;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -14,10 +19,11 @@ public class Receipt {
     public String requestId;
     public String imageUrl = "";
     public ReceiptStatus status = ReceiptStatus.PENDING; // Can be converted to an Enum if needed
-    public HashMap<Integer, String> ocrData = new HashMap<>();
+    public ObservableMap<Integer, String> ocrData = FXCollections.observableHashMap();
     public String approvedByUserId;
     public Timestamp approvedAt; // Use String for simplicity, convert to Date/Timestamp as needed
     public Path imagePath;
+    public BooleanProperty isConfirmed = new SimpleBooleanProperty(status == ReceiptStatus.APPROVED);
     // note that there are two Receipt constructor
     // these constructor for ui
     // saving cached images in the dir to make it more efficient to retrieve the path
@@ -30,7 +36,7 @@ public class Receipt {
 
         this.status = ReceiptStatus.valueOf(status);
         if (ocrData != null) {
-            this.ocrData = ocrData;
+            this.ocrData = FXCollections.observableMap(ocrData);
         }
         this.approvedByUserId = approvedByUserId;
         this.approvedAt = approvedAt;
@@ -55,7 +61,7 @@ public class Receipt {
     // Implementing clone method as it's apparently not supported
     public Receipt copy() {
         return new Receipt(this.receiptId, this.receiptTypeId, this.requestId, this.imageUrl, this.status.toString(),
-                this.ocrData, this.approvedByUserId, this.approvedAt, this.imagePath.toString());
+                 new HashMap<>(this.ocrData), this.approvedByUserId, this.approvedAt, this.imagePath.toString());
     }
 
 
