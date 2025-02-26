@@ -10,13 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.function.Consumer;
 
 public class DetailReceiptController {
     @FXML private Label titleLabelView;
@@ -25,11 +23,8 @@ public class DetailReceiptController {
     @FXML private VBox contentVBox;
 
     private Receipt receipt;
-    private Consumer<Receipt> onSaveCallback; // Callback to notify changes
-
-    public void setData(Receipt receipt, Consumer<Receipt> onSaveCallback) {
+    public void setData(Receipt receipt) {
         this.receipt = receipt;
-        this.onSaveCallback = onSaveCallback;
 
         if (receipt != null) {
             // Update UI with receipt data
@@ -85,11 +80,8 @@ public class DetailReceiptController {
     }
 
     @FXML
-    private void saveChanges(MouseEvent mouseEvent) {
-        if (receipt != null && onSaveCallback != null) {
-            // Notify the callback with the updated receipt
-            onSaveCallback.accept(receipt);
-        }
+    private void confirmReceipt() {
+        receipt.status = Receipt.ReceiptStatus.APPROVED;
         navigateBack(); // Go back to the previous page
     }
 

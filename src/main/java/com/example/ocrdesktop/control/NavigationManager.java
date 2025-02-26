@@ -1,8 +1,10 @@
 package com.example.ocrdesktop.control;
 
 import com.example.ocrdesktop.AppContext;
+import com.example.ocrdesktop.ui.DetailReceiptController;
 import com.example.ocrdesktop.ui.DetailReceiptTypeController;
 import com.example.ocrdesktop.ui.DetailRequestController;
+import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
 import javafx.animation.FadeTransition;
@@ -281,6 +283,7 @@ public class NavigationManager {
     public static final String USERS_CONTROLLER = "/com/example/ocrdesktop/users_controller.fxml";
     public static final String INTRO_TO_RECEIPT_TYPE = "/com/example/ocrdesktop/receipt_types_layout.fxml";
     public static final String NEW_REQUEST_PAGE = "/com/example/ocrdesktop/newRequestDetail.fxml";
+    public static final String DETAIL_RECEIPT_PAGE = "/com/example/ocrdesktop/detail_receipt_layout.fxml";
 
 
     //NAVIGATION FUNCTIONS
@@ -306,6 +309,17 @@ public class NavigationManager {
         }
         else System.out.println("Not Authorized");
     }
+    public void navigateToDetailReceiptPage(Receipt receipt){
+        if (isAuthorized()){
+            DetailReceiptController controller = (DetailReceiptController) navigate(DETAIL_RECEIPT_PAGE);
+            if  (controller == null) System.out.println("Controller is null");
+            else {
+                if (receipt != null){
+                    controller.setData(receipt);
+                }
+            }
+        }
+        else System.out.println("Not Authorized");}
 
     public void navigateToSHOWCSVs(){if (isAuthorized()) navigate(SHOW_CSVS); else System.out.println("Not Authorized");}
     public void navigateToRequestsPage(){if (isAuthorized()) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}

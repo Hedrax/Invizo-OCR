@@ -73,7 +73,7 @@
         <!-- Control Buttons -->
         <HBox fx:id="controlButtonsPanel" alignment="CENTER" spacing="22.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <Button mnemonicParsing="false" onMouseClicked="#navigateBack" style="-fx-font-size: 18px; -fx-background-color: #B41C1C;" text="Cancel" />
-            <Button mnemonicParsing="false" onMouseClicked="#saveChanges" style="-fx-font-size: 18px;" text="Confirm" />
+            <Button mnemonicParsing="false" onMouseClicked="#confirmReceipt" style="-fx-font-size: 18px;" text="Confirm" />
         </HBox>
     </AnchorPane>
 </AnchorPane>

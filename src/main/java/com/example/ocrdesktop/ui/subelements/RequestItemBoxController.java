@@ -1,5 +1,7 @@
 package com.example.ocrdesktop.ui.subelements;
 
+import com.example.ocrdesktop.control.NavigationManager;
+import com.example.ocrdesktop.ui.DetailReceiptController;
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.ReceiptType;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -79,13 +81,14 @@ public class RequestItemBoxController {
     }
     @FXML
     void navigate_to_detail() {
+        NavigationManager.getInstance().navigateToDetail(receipt, this::handleReceiptUpdate);
         try {
             // Load the detail page FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/detailPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ocrdesktop/detail_receipt_layout.fxml"));
             AnchorPane detailPage = loader.load();
 
             // Get the controller and pass the receipt data
-            DetailPageController controller = loader.getController();
+            DetailReceiptController controller = loader.getController();
             controller.setData(this.receipt, this::handleReceiptUpdate);
 
             // Replace the current scene with the detail page
