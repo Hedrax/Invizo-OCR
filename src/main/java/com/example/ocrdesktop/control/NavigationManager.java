@@ -5,6 +5,7 @@ import com.example.ocrdesktop.ui.DetailReceiptTypeController;
 import com.example.ocrdesktop.ui.DetailRequestController;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -20,6 +21,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -222,11 +224,54 @@ public class NavigationManager {
         });
     }
 
+    public Stage getStage() {
+        return currentStage;
+    }
+
+    public void showSnackBar(String message) {
+        Label snackBar = new Label(message);
+        snackBar.setTextFill(Color.WHITE);
+        snackBar.setFont(new Font(14));
+        snackBar.setStyle("-fx-background-color: black; -fx-padding: 10px 20px; -fx-background-radius: 5;");
+
+        snackBar.setOpacity(0); // Start invisible
+
+        // Position snackBar at the bottom of the scene
+        StackPane.setAlignment(snackBar, Pos.TOP_CENTER);
+        snackBar.setTranslateY(-20); // Slight lift from bottom
+
+        // Fade In
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), snackBar);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        // Fade Out after 5 seconds
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(1000), snackBar);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setDelay(Duration.seconds(4)); // Wait 4 seconds before fading out
+        Parent root = currentStage.getScene().getRoot();
+        if (root instanceof VBox) {
+            ((VBox) root).getChildren().add(snackBar);
+            fadeOut.setOnFinished(e -> ((VBox) root).getChildren().remove(snackBar)); // Remove after fade
+
+        } else if (root instanceof StackPane) {
+            ((StackPane) root).getChildren().add(snackBar);
+            fadeOut.setOnFinished(e -> ((StackPane) root).getChildren().remove(snackBar)); // Remove after fade
+        } else if (root instanceof AnchorPane) {
+            ((AnchorPane) root).getChildren().add(snackBar);
+            fadeOut.setOnFinished(e -> ((AnchorPane) root).getChildren().remove(snackBar)); // Remove after fade
+        } else {
+            throw new IllegalStateException("Unsupported root node type.");
+        }
+        fadeIn.setOnFinished(e -> fadeOut.play()); // Start fade out after fade in
+        fadeIn.play(); // Start the fade-in animation
+    }
+
+
 
     //Modifiable
     //Pages paths
-    //TODO to add a page
-    // Simply add the path in static final string and a function like the below
     public static final String MAIN_PAGE = "/com/example/ocrdesktop/main_layout.fxml";
     public static final String DETAIL_ITEMS = "/com/example/ocrdesktop/detail_request.fxml";
     public static final String LOGIN_PAGE = "/com/example/ocrdesktop/LoginPage.fxml";
@@ -235,6 +280,7 @@ public class NavigationManager {
     public static final String DETAIL_RECEIPT_TYPE = "/com/example/ocrdesktop/detail_receipt_type.fxml";
     public static final String USERS_CONTROLLER = "/com/example/ocrdesktop/users_controller.fxml";
     public static final String INTRO_TO_RECEIPT_TYPE = "/com/example/ocrdesktop/receipt_types_layout.fxml";
+    public static final String NEW_REQUEST_PAGE = "/com/example/ocrdesktop/newRequestDetail.fxml";
 
 
     //NAVIGATION FUNCTIONS
@@ -265,4 +311,5 @@ public class NavigationManager {
     public void navigateToRequestsPage(){if (isAuthorized()) navigate(REQUESTS_PAGE); else System.out.println("Not Authorized");}
     public void navigateToIntroReceiptTypePage(){if (isAuthorized()) navigate(INTRO_TO_RECEIPT_TYPE); else System.out.println("Not Authorized");}
     public void navigateToUsersControllerPage(){if (isAuthorized()) navigate(USERS_CONTROLLER); else System.out.println("Not Authorized");}
+    public void navigateToNewRequestPage(){if (isAuthorized()) navigate(NEW_REQUEST_PAGE); else System.out.println("Not Authorized");}
 }
