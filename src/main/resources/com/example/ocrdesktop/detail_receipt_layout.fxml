@@ -58,22 +58,26 @@
                        <Image url="@../images/broken-image.png" />
                    </ImageView>
                </StackPane>
-   
-                  <!-- Content Section -->
-               <VBox fx:id="contentVBox" alignment="CENTER" prefWidth="300.0" spacing="15.0">
-                   <padding>
-                       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                   </padding>
-                   <Label alignment="CENTER" text="Detail Section Content" wrapText="true" />
-                   <!-- Add more detailed content as needed -->
-               </VBox>
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefWidth="300.0">
+               <content>
+         
+                        <!-- Content Section -->
+                     <VBox fx:id="contentVBox" alignment="CENTER" spacing="15.0">
+                         <Label alignment="CENTER" text="Detail Section Content" wrapText="true" />
+                         <!-- Add more detailed content as needed -->
+                     </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="70.0" />
+               </padding>
+            </ScrollPane>
          </items>
       </SplitPane>
 
         <!-- Control Buttons -->
         <HBox fx:id="controlButtonsPanel" alignment="CENTER" spacing="22.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Button mnemonicParsing="false" onMouseClicked="#navigateBack" style="-fx-font-size: 18px; -fx-background-color: #B41C1C;" text="Cancel" />
-            <Button mnemonicParsing="false" onMouseClicked="#confirmReceipt" style="-fx-font-size: 18px;" text="Confirm" />
+            <Button mnemonicParsing="false" onMouseClicked="#cancel" style="-fx-font-size: 18px; -fx-background-color: #B41C1C;" text="Cancel" />
+            <Button fx:id="confirmButton" mnemonicParsing="false" onMouseClicked="#confirmReceipt" style="-fx-font-size: 18px;" text="Confirm" />
         </HBox>
     </AnchorPane>
 </AnchorPane>

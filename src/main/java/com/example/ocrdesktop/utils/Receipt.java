@@ -52,6 +52,11 @@ public class Receipt {
             this.imagePath = Path.of(AppContext.BrokenImagePath);
         }
     }
+    // Implementing clone method as it's apparently not supported
+    public Receipt copy() {
+        return new Receipt(this.receiptId, this.receiptTypeId, this.requestId, this.imageUrl, this.status.toString(),
+                this.ocrData, this.approvedByUserId, this.approvedAt, this.imagePath.toString());
+    }
 
 
     public enum ReceiptStatus {
