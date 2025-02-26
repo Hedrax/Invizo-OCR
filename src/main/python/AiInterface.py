@@ -1,65 +1,103 @@
-from cv2 import imread
+import json
+import logging
 from os import path as osp
+from sys import stdin
+from cv2 import imread
+from onnxruntime import InferenceSession
 from utils import *
 from MainModule import *
 from processor import *
-from sys import stdin
-import json
-from onnxruntime import InferenceSession
-import logging
 
-logging.basicConfig(level=logging.ERROR)
+# Function to configure logging
+def setup_logging(temp_path):
+    log_file = osp.join(temp_path, "process.log")
+    logging.basicConfig(
+        filename=log_file,
+        filemode="a",  # Append mode
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        level=logging.INFO
+    )
+    console_handler = logging.StreamHandler()  # Also print to console
+    console_handler.setLevel(logging.INFO)
+    logging.getLogger().addHandler(console_handler)
 
-
-#input is a json including {temp_path, ai_detection_path, ai_recognition_path, name,  shapes, imageData, imageHeight, imageWidth, "receipts": [{file_name, image_path}]}
+# Input is a JSON including:
+# {temp_path, ai_detection_path, ai_recognition_path, name, shapes, imageData, imageHeight, imageWidth, "receipts": [{file_name, image_path}]}
 def process_request(dataList):
-    validity = validateTemplateJson(dataList)
-    if validity != 'valid':
-        raise Exception(f"Invalid file format: {validity}")
+    try:
+        temp_path = dataList['temp_path']
+        setup_logging(temp_path)
+        logging.info("Starting process_request function.")
 
-    temp_path = dataList['temp_path']
-    #loading the models
-    detection_session = InferenceSession(dataList['ai_detection_path'])
-    ocr_session = InferenceSession(dataList['ai_recognition_path'])
-
-    name, boundingBoxes, pilImage = readJson(dataList)
-    templateImage = convertPIL2CV(pilImage)
-
-    for data in dataList["receipts"]:
-        #validating upcoming data
-        validity = validateJson(data)
+        # Validate main template JSON
+        logging.info("Validating template JSON.")
+        validity = validateTemplateJson(dataList)
         if validity != 'valid':
-            continue
+            logging.error(f"Invalid template JSON format: {validity}")
+            raise Exception(f"Invalid file format: {validity}")
 
+        # Load AI models
+        logging.info("Loading AI detection model.")
+        detection_session = InferenceSession(dataList['ai_detection_path'])
 
-        # Read an image from file
-        test_image = imread(data['image_path'])
-        if test_image is None:
-            continue
+        logging.info("Loading AI OCR model.")
+        ocr_session = InferenceSession(dataList['ai_recognition_path'])
 
-        preprocessed_image = preprocess_image(test_image)
+        # Read JSON content
+        logging.info("Extracting data from template JSON.")
+        name, boundingBoxes, pilImage = readJson(dataList)
 
-        #roT : Region of Text
-        # roTImage {'label', 'image', 'type', "id", 'possibilities', 'text'}
-        roTImages = detectRegionOfText(templateImage, boundingBoxes, test_image, preprocessed_image)
+        # Convert PIL image to OpenCV format
+        logging.info("Converting PIL image to OpenCV format.")
+        templateImage = convertPIL2CV(pilImage)
 
-        #process ocr
-        #output roTImage format {'label', 'image', 'type', 'possibilities', 'text'}
-        roTImages = processOCR(roTImages, detection_session, ocr_session)
-        # print(roTImages)
+        # Process each receipt
+        for data in dataList["receipts"]:
+            try:
+                logging.info(f"Processing receipt: {data['file_name']}")
 
-        #processing the output with type to optimize prediction
-        # roTImage {'label', 'image', 'type', "id", 'possibilities', 'text'}
-        results = enhancePrediction(roTImages)
+                # Validate JSON structure for each receipt
+                validity = validateJson(data)
+                if validity != 'valid':
+                    logging.warning(f"Skipping receipt {data['file_name']} due to invalid format: {validity}")
+                    continue
 
-        # Save the results to the specified path
-        path = temp_path + data['file_name']
+                # Read the image file
+                logging.info(f"Reading image from: {data['image_path']}")
+                test_image = imread(data['image_path'])
+                if test_image is None:
+                    logging.error(f"Failed to read image: {data['image_path']}. Skipping.")
+                    continue
 
-        with open(path, "w", encoding="utf-8") as file:
-            json.dump(results, file, indent=4, ensure_ascii=False)
-        #Output {'id', 'text'}
-        #output into a json file in temp_path
+                # Preprocess the image
+                logging.info("Preprocessing image.")
+                preprocessed_image = preprocess_image(test_image)
 
+                # Detect regions of text (RoT)
+                logging.info("Detecting regions of text in the image.")
+                roTImages = detectRegionOfText(templateImage, boundingBoxes, test_image, preprocessed_image)
+
+                # Process OCR on detected text regions
+                logging.info("Running OCR on detected text regions.")
+                roTImages = processOCR(roTImages, detection_session, ocr_session)
+
+                # Enhance predictions for better accuracy
+                logging.info("Enhancing OCR predictions.")
+                results = enhancePrediction(roTImages)
+
+                # Save the results to the specified path
+                output_path = osp.join(temp_path, data['file_name'])
+                logging.info(f"Saving processed results to: {output_path}")
+                with open(output_path, "w", encoding="utf-8") as file:
+                    json.dump(results, file, indent=4, ensure_ascii=False)
+
+            except Exception as e:
+                logging.error(f"Error processing receipt {data['file_name']}: {str(e)}", exc_info=True)
+
+        logging.info("Processing completed successfully.")
+
+    except Exception as e:
+        logging.critical(f"Fatal error in process_request: {str(e)}", exc_info=True)
 
 
 if __name__ == "__main__":
