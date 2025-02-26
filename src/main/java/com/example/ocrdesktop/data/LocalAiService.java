@@ -1,9 +1,11 @@
 package com.example.ocrdesktop.data;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.ConfigurationManager;
+import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.utils.CachingManager;
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.Request;
+import javafx.concurrent.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.*;
@@ -15,7 +17,6 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LocalAiService {
-    AppContext appContext = AppContext.getInstance();
     Repo repo = new Repo();
 
     // Private static instance of the class
@@ -32,23 +33,31 @@ public class LocalAiService {
 
     // Process requests sequentially
     public synchronized void processRequests() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                while (!queue.isEmpty()) {
+                    Request request = queue.poll(); // Get and remove the first request
+                    if (request != null) {
+                        computeRequest(request);
+                    }
+                    assert request != null;
+                    try {
+                        repo.insertNewRequest(request);
+                        NavigationManager.getInstance().showSnackBar("A Request successfully processed");
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                isProcessing.set(false);
+                return null;
+            }
+        };
+        Thread backgroundThread = new Thread(task);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
 
-        while (!queue.isEmpty()) {
-            Request request = queue.poll(); // Get and remove the first request
-            if (request != null) {
-                computeRequest(request);
-            }
-            assert request != null;
-            System.out.println(request.receipts.get(0).ocrData.toString());
-            try {
-                repo.insertNewRequest(request);
-
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        isProcessing.set(false);
     }
     public static synchronized LocalAiService getInstance() {
         if (instance == null) {
@@ -58,40 +67,40 @@ public class LocalAiService {
     }
 
     private void computeRequest(Request request) {
-        try {
-            System.out.println("Computing request: " + request.id);
-            // Create process builder
-            ProcessBuilder builder = new ProcessBuilder(AppContext.PythonExeBinariesPath);
-            builder.redirectErrorStream(true);
-
-            JSONObject inputJson = request.receiptType.getJSON().getJsonTemplate();
-            addInfo2JSON(inputJson);
-
-            JSONArray receiptJsonObject = new JSONArray();
+            // The AI process specifically OCR process is quite expensive, therefor we're operating on each receipt
+            // separately without modifying the existing python code ;).
             for (Receipt receipt : request.receipts) {
-                String file_name =  CachingManager.getInstance().CheckOrCacheImage(request, receipt.imageUrl).toString();
-                addReceiptInfo2JSON(receiptJsonObject, file_name, receipt);
+                try {
+                    // Create process builder
+                    ProcessBuilder builder = new ProcessBuilder(AppContext.PythonExeBinariesPath);
+                    builder.redirectErrorStream(true);
+
+                    JSONObject inputJson = request.receiptType.getJSON().getJsonTemplate();
+                    addInfo2JSON(inputJson);
+                    JSONArray receiptJsonObject = new JSONArray();
+                    String file_name = String.valueOf(receipt.imagePath);
+                    addReceiptInfo2JSON(receiptJsonObject, file_name, receipt);
+                    inputJson.put("receipts", receiptJsonObject);
+                    // Start process
+                    Process process = builder.start();
+
+                    // Write JSON input to the process
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+                    writer.write(inputJson.toString());
+                    writer.flush();
+                    writer.close();
+
+                    // Wait for the process to complete
+                    int exitCode = process.waitFor();
+                    if (!Objects.equals(exitCode, 0)) {
+                        //report error and still continue to the next step as it should recover the completed receipts computation ;)
+                        System.out.println("OCR Process failed with exit code: " + exitCode);
+                    }
+                }catch (Exception e) {
+                e.printStackTrace();
+                }
             }
-            inputJson.put("receipts", receiptJsonObject);
-            // Start process
-            Process process = builder.start();
 
-            // Write JSON input to the process
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-            writer.write(inputJson.toString());
-            writer.flush();
-            writer.close();
-
-            // Wait for the process to complete
-            int exitCode = process.waitFor();
-            if (!Objects.equals(exitCode, 0)) {
-                //report error and still continue to the next step as it should recover the completed receipts computation ;)
-                System.out.println("OCR Process failed with exit code: " + exitCode);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         read_temp_files(request);
 
     }
@@ -151,13 +160,13 @@ public class LocalAiService {
 
     //Exception is thrown if the AI model is missing, which is expected the calling function
     private void addInfo2JSON(JSONObject input) throws Exception {
-        if (AppContext.ReferenceMap.get(AppContext.DetectionModelNameKey) != null ||
-                AppContext.ReferenceMap.get(AppContext.DetectionModelNameKey) != null) {
+        if (AppContext.ReferenceMap.get(AppContext.DetectionModelNameKey) == null ||
+                AppContext.ReferenceMap.get(AppContext.RecognitionModelNameKey) == null) {
             ConfigurationManager.getInstance().updateModelNamesAndVersions();
             throw new Exception("AI model Missing, Attempting to download");
         }
-        input.put("ai_detection_path", AppContext.ReferenceMap.get(AppContext.DetectionModelNameKey));
-        input.put("ai_recognition_path", AppContext.AiModelsDir + AppContext.RecognitionModelNameKey);
+        input.put("ai_detection_path", AppContext.AiModelsDir + AppContext.ReferenceMap.get(AppContext.DetectionModelNameKey));
+        input.put("ai_recognition_path",  AppContext.AiModelsDir + AppContext.ReferenceMap.get(AppContext.RecognitionModelNameKey));
         input.put("temp_path", AppContext.TempDir);
 
     }
