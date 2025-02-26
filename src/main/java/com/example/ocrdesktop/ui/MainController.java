@@ -116,7 +116,6 @@ public class MainController{
                 throw new RuntimeException("Error loading data for request ID: " + request.id, e);
             }
         }
-        System.out.println("main: "+ lst );
 
     }
 
@@ -153,6 +152,7 @@ public class MainController{
         };
         runnable.run();
     }
+
     public void removeRequest(Request request) {
         Platform.runLater(() -> {
             lst.remove(request);
@@ -186,6 +186,8 @@ public class MainController{
     private void navigateToProfile(){}
     @FXML
     private void navigateToSettings(){}
+    @FXML
+    private void navigateToNewRequest(){NavigationManager.getInstance().navigateToNewRequestPage();}
     @FXML
     private void Logout(){
         try {

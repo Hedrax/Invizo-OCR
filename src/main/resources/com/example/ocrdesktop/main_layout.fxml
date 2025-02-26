@@ -41,10 +41,10 @@
         </HBox>
         <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="main_body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0">
             <Label layoutX="29.0" layoutY="15.0" prefHeight="71.0" prefWidth="318.0" styleClass="welcome-text" text="Welcome Username," AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="15.0" />
-            <Label fx:id="view_items_button" alignment="CENTER" layoutX="623.0" layoutY="42.0" onMouseClicked="#navigateToAllRequests" prefHeight="39.0" prefWidth="206.0" styleClass="view-items-button" text="View Items" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0" />
+            <Label alignment="CENTER" layoutX="623.0" layoutY="42.0" onMouseClicked="#navigateToAllRequests" prefHeight="39.0" prefWidth="206.0" styleClass="view-items-button" text="View Items" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0" />
             <AnchorPane layoutX="40.0" layoutY="106.0" prefHeight="373.0" prefWidth="791.0" styleClass="recent-items" AnchorPane.bottomAnchor="29.799999999999955" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="103.0">
-                <Label alignment="CENTER" layoutX="42.0" layoutY="23.0" styleClass="sub-title" text="Recent Items" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="18.0" />
-                <Label alignment="CENTER" layoutX="588.0" layoutY="23.0" onMouseClicked="#Refresh" prefHeight="38.0" prefWidth="170.0" styleClass="confirm-all" text="Refresh" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="18.0" />
+                <Label alignment="CENTER" layoutX="42.0" layoutY="23.0" styleClass="sub-title" text="Recent Items" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="12.0" />
+                <Label alignment="CENTER" layoutX="588.0" layoutY="23.0" onMouseClicked="#navigateToNewRequest" prefHeight="38.0" prefWidth="170.0" styleClass="confirm-all" text="Create New Request" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="13.0" />
             <ScrollPane fx:id="scrollPane" cacheHint="QUALITY" cacheShape="false" fitToHeight="true" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" layoutX="264.0" layoutY="115.0" snapToPixel="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="61.0">
                <content>
 
