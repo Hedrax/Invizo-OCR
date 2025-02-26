@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.DetailReceiptController">
+
+    <!-- Main Content Area -->
+    <AnchorPane fx:id="mainContent" styleClass="detail_page-main_body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+        <!-- Header Section -->
+        <HBox fx:id="header" alignment="CENTER" prefHeight="56.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane styleClass="header" HBox.hgrow="ALWAYS">
+                <!-- Logo -->
+                <ImageView fitHeight="47.0" fitWidth="88.0" layoutX="70.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="70.0">
+                    <Image url="@../images/Logo.png" />
+                </ImageView>
+
+                <!-- User Profile -->
+                <HBox fx:id="userProfile" alignment="CENTER" layoutX="477.0" layoutY="7.0" prefHeight="42.0" prefWidth="107.0" styleClass="profile_banner" AnchorPane.rightAnchor="20.0">
+                    <ImageView fitHeight="44.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/Ellipse%201.png" />
+                    </ImageView>
+                    <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
+                        <padding>
+                            <Insets left="7.0" />
+                        </padding>
+                        <Label text="Gasser" textFill="WHITE" />
+                        <Label text="Company" textFill="WHITE" />
+                    </VBox>
+                </HBox>
+
+                <!-- Back Navigation -->
+                <StackPane onMouseClicked="#navigateBack" styleClass="hover-hand" AnchorPane.leftAnchor="20.0">
+                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="50.0" width="50.0" />
+                    <Text style="-fx-font-size: 24;" text="&lt;" />
+                </StackPane>
+            </AnchorPane>
+        </HBox>
+
+        <!-- Title and Date Section -->
+        <Label fx:id="titleLabelView" layoutX="20.0" layoutY="75.0" styleClass="detail-page-title" text="Document of Receipt Type" textAlignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="75.0">
+            <font>
+                <Font size="27.0" />
+            </font>
+        </Label>
+        <Label fx:id="dateLabelView" layoutX="646.0" layoutY="80.0" styleClass="detail-page-date-label" text="10-10-2024 (12:00PM)" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="80.0" />
+      <SplitPane dividerPositions="0.5" layoutX="409.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="130.0">
+         <items>
+   
+                  <!-- Photo Section -->
+               <StackPane fx:id="photoPane" alignment="CENTER">
+                   <ImageView fx:id="photoView" fitHeight="550.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true">
+                       <Image url="@../images/broken-image.png" />
+                   </ImageView>
+               </StackPane>
+   
+                  <!-- Content Section -->
+               <VBox fx:id="contentVBox" alignment="CENTER" prefWidth="300.0" spacing="15.0">
+                   <padding>
+                       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                   </padding>
+                   <Label alignment="CENTER" text="Detail Section Content" wrapText="true" />
+                   <!-- Add more detailed content as needed -->
+               </VBox>
+         </items>
+      </SplitPane>
+
+        <!-- Control Buttons -->
+        <HBox fx:id="controlButtonsPanel" alignment="CENTER" spacing="22.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <Button mnemonicParsing="false" onMouseClicked="#navigateBack" style="-fx-font-size: 18px; -fx-background-color: #B41C1C;" text="Cancel" />
+            <Button mnemonicParsing="false" onMouseClicked="#saveChanges" style="-fx-font-size: 18px;" text="Confirm" />
+        </HBox>
+    </AnchorPane>
+</AnchorPane>

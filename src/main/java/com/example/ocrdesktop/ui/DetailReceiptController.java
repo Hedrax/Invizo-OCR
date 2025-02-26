@@ -1,8 +1,6 @@
-package com.example.ocrdesktop.ui.subelements;
+package com.example.ocrdesktop.ui;
 
-import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
-import com.example.ocrdesktop.data.Repo;
 import com.example.ocrdesktop.utils.Receipt;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -20,7 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.function.Consumer;
 
-public class DetailPageController {
+public class DetailReceiptController {
     @FXML private Label titleLabelView;
     @FXML private Label dateLabelView;
     @FXML private ImageView photoView;
