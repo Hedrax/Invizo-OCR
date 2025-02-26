@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="root" id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="871.0" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ocrdesktop.ui.NewRequestDetail">
+    <AnchorPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox id="header" alignment="CENTER" prefHeight="56.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane id="header" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="56.0" styleClass="header" stylesheets="@../style/style.css" HBox.hgrow="ALWAYS">
+                <ImageView fitHeight="47.0" fitWidth="88.0" layoutX="55.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="55.0">
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                    <Image url="@../images/Logo.png" />
+                </ImageView>
+                <HBox id="user_profile_pane" alignment="CENTER" layoutX="477.0" layoutY="7.0" onMouseClicked="#navigateToProfile" prefHeight="42.0" prefWidth="107.0" styleClass="profile_banner" AnchorPane.rightAnchor="22.0">
+                    <ImageView fitHeight="44.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/Ellipse%201.png" />
+                    </ImageView>
+                    <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
+                        <opaqueInsets>
+                            <Insets />
+                        </opaqueInsets>
+                        <padding>
+                            <Insets left="7.0" />
+                        </padding>
+                        <Label text="Gasser" textFill="WHITE" />
+                        <Label text="company" textFill="WHITE" />
+                    </VBox>
+                </HBox>
+                <StackPane layoutX="-75.0" layoutY="-47.0" onMouseClicked="#navigateBack" styleClass="hover-hand" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="50.0" stroke="TRANSPARENT" strokeType="INSIDE" width="50.0" />
+                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="&lt;" textAlignment="CENTER" wrappingWidth="19.83837890625">
+                        <font>
+                            <Font name="System Italic" size="34.0" />
+                        </font>
+                    </Text>
+                </StackPane>
+            </AnchorPane>
+        </HBox>
+        <SplitPane dividerPositions="0.6788589832068093" layoutX="235.0" layoutY="229.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="56.0">
+            <AnchorPane fx:id="itemsAreaAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <ScrollPane layoutX="219.0" layoutY="109.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="43.0">
+                    <GridPane fx:id="receiptsGridView">
+                    </GridPane>
+                </ScrollPane>
+                <StackPane onMouseClicked="#addNewReceipts" prefHeight="40.0" prefWidth="43.0" style="-fx-background-color: #18A661; -fx-background-radius: 10px;" styleClass="hover-hand" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="20.0">
+                    <Text boundsType="VISUAL" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="+" textOrigin="CENTER" wrappingWidth="16.41796875" StackPane.alignment="CENTER">
+                        <font>
+                            <Font size="37.0" />
+                        </font>
+                        <StackPane.margin>
+                            <Insets />
+                        </StackPane.margin>
+                    </Text>
+                </StackPane>
+                <Label layoutX="14.0" layoutY="14.0" style="-fx-font-size: 26px;" styleClass="sub-title" text="Selected Documents Photos" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <padding>
+                        <Insets bottom="4.0" left="12.0" right="12.0" top="4.0" />
+                    </padding>
+                </Label>
+            </AnchorPane>
+            <SplitPane dividerPositions="0.6609968354430379" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                <AnchorPane fx:id="propertyAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <Label fx:id="zeroSelectionLabel" alignment="CENTER" contentDisplay="CENTER" layoutY="268.0" style="-fx-font-size: 22px; -fx-text-alignment: center;" styleClass="sub-title" text="Please Add a Document First before operating" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <StackPane fx:id="croppingStack" snapToPixel="false" AnchorPane.bottomAnchor="45.79999999999998" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                        <ImageView fx:id="targetImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                        <Pane fx:id="overlayPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="0.0" prefWidth="0.0" style="-fx-fill: transparent;" />
+                    </StackPane>
+
+                    <StackPane fx:id="resetButton" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="12.0">
+                        <ImageView fitHeight="134.0" fitWidth="28.0" onMousePressed="#resetSelection" pickOnBounds="true" preserveRatio="true" styleClass="hover-hand">
+                            <Image url="@../images/refresh.png" />
+                        </ImageView>
+                    </StackPane>
+                    <!-- Control Buttons -->
+                    <HBox alignment="CENTER" prefWidth="277.0" spacing="30.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                        <Button mnemonicParsing="false" onMouseClicked="#deleteSelection" style="-fx-font-size: 16px; -fx-background-color: #B41C1C;" text="Delete">
+                            <HBox.margin>
+                                <Insets />
+                            </HBox.margin>
+                            <padding>
+                                <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#cropCurrentImage" style="-fx-font-size: 16px;" text="Crop">
+                            <padding>
+                                <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+                            </padding>
+                        </Button>
+                    </HBox>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <Label style="-fx-font-size: 26px;" styleClass="sub-title" text="Request Details" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <padding>
+                            <Insets bottom="4.0" left="11.0" right="12.0" top="4.0" />
+                        </padding>
+                    </Label>
+                    <Label fx:id="requestIdLabel" layoutX="10.0" layoutY="10.0" style="-fx-font-size: 14px;" styleClass="sub-title" text="Request ID:" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="49.0">
+                        <padding>
+                            <Insets bottom="4.0" left="13.0" top="4.0" />
+                        </padding>
+                    </Label>
+
+                    <ChoiceBox fx:id="typeCheckBox" layoutX="10.0" layoutY="62.0" prefHeight="30.0" prefWidth="201.0" snapToPixel="false" value="Create New Type.." AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="81.0">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Create New Type.." />
+                            </FXCollections>
+                        </items>
+                    </ChoiceBox>
+                    <Button mnemonicParsing="false" onMouseClicked="#confirmRequest" style="-fx-font-size: 14px;" text="Confirm Request" AnchorPane.bottomAnchor="13.0" AnchorPane.rightAnchor="10.0">
+                        <padding>
+                            <Insets bottom="6.0" left="16.0" right="16.0" top="6.0" />
+                        </padding>
+                    </Button>
+                </AnchorPane>
+            </SplitPane>
+
+        </SplitPane>
+    </AnchorPane>
+</AnchorPane>
