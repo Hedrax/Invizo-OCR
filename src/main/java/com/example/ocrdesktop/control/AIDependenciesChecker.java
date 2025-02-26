@@ -41,7 +41,6 @@ public class AIDependenciesChecker {
     public void CheckUpdates() {
         // Fetch the latest release info
         try {
-            System.out.println(AppContext.getInstance().getGithubToken());
             String jsonResponse = fetchURL(AppContext.BaseGithubReleaseCheckupURL);
 
         // Parse JSON to find .onnx files

@@ -87,7 +87,6 @@ public class ShowCsvsController {
 
         // Load data from the database
         ObservableList<Receipt> data = loadDataFromDatabase(receiptType, startDate.toString(), endDate.toString());
-        System.out.println(data.get(0).ocrData);
         displayCSVData(data);
     }
 
