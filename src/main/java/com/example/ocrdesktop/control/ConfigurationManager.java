@@ -95,7 +95,7 @@ public class ConfigurationManager {
             Pair<Boolean, Float> detectionStatus = AIDependenciesChecker.getInstance().isDetectionModel(fileName);
             //key is the match, value is the version
             if (detectionStatus.getKey()) {
-                AppContext.DetectionModelNameKey = fileName;
+                AppContext.ReferenceMap.put(AppContext.DetectionModelNameKey,fileName);
                 AppContext.DetectionModelVersion = detectionStatus.getValue();
                 detectionModelFound = true;
             }
@@ -105,7 +105,7 @@ public class ConfigurationManager {
             Pair<Boolean, Float> recognitionStatus = AIDependenciesChecker.getInstance().isRecognitionModel(fileName);
             //key is the match, value is the version
             if (recognitionStatus.getKey()) {
-                AppContext.RecognitionModelNameKey = fileName;
+                AppContext.ReferenceMap.put(AppContext.RecognitionModelNameKey,fileName);
                 AppContext.RecognitionModelVersion = recognitionStatus.getValue();
                 recognitionModelFound = true;
             }
@@ -155,11 +155,9 @@ public class ConfigurationManager {
             }
         }
         catch (Exception e) {
-            System.out.println("Failed to download " + modelType.toString() + " Model.");
             e.printStackTrace();
         }
-        System.out.println(modelType.toString() + " Model downloaded successfully");
-
+        NavigationManager.getInstance().showSnackBar(modelType.toString() + " Model downloaded successfully");
     }
     private void checkAiUpdates(){
         //Check AI models versions if to be updated using link
