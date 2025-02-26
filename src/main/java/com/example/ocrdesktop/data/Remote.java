@@ -198,6 +198,7 @@ public class Remote {
                                 );
                             }
 
+                            //if got something from the remote it won't have a path
                             Receipt receipt = new Receipt(
                                     receiptId,
                                     receiptTypeId,
@@ -206,7 +207,8 @@ public class Remote {
                                     receiptStatus,
                                     ocrData,
                                     approvedBy,
-                                    approvedAt
+                                    approvedAt,
+                                    null
                             );
 
                             requestReceipts.add(receipt);
