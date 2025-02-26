@@ -57,7 +57,7 @@ public class DetailRequestController {
     private int nextWidth = 0;
 
     public void addNewCell(Receipt receipt) {
-        receipt.imagePath = CachingManager.getInstance().CheckOrCacheImage(request, receipt.imageUrl);
+        receipt.imagePath = CachingManager.getInstance().CheckOrCacheImage(request, receipt);
 
         Image image;
         try {

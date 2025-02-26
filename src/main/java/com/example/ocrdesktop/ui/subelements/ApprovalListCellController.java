@@ -52,9 +52,10 @@ public class ApprovalListCellController extends ListCell<Request>{
 
 //        It only works with the absolute path
         try {
+
             this.item_image.setImage(new Image(
                     Files.newInputStream(
-                            CachingManager.getInstance().CheckOrCacheImage(request, request.receipts.get(0).imageUrl)
+                            CachingManager.getInstance().CheckOrCacheImage(request, request.receipts.get(0))
                     )
             ));
         }catch (Exception e){
