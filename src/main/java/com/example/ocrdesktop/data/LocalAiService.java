@@ -2,9 +2,9 @@ package com.example.ocrdesktop.data;
 import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.ConfigurationManager;
 import com.example.ocrdesktop.control.NavigationManager;
-import com.example.ocrdesktop.utils.CachingManager;
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.Request;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,11 +44,11 @@ public class LocalAiService {
                     assert request != null;
                     try {
                         repo.insertNewRequest(request);
-                        NavigationManager.getInstance().showSnackBar("A Request successfully processed");
                     }
                     catch (Exception e) {
                         e.printStackTrace();
                     }
+                    showSnackBarRequestCompleted();
                 }
                 isProcessing.set(false);
                 return null;
@@ -64,6 +64,12 @@ public class LocalAiService {
             instance = new LocalAiService();
         }
         return instance;
+    }
+
+    private void showSnackBarRequestCompleted() {
+        Platform.runLater(() ->{
+            NavigationManager.getInstance().showSnackBar("Request processed successfully.");
+        });
     }
 
     private void computeRequest(Request request) {

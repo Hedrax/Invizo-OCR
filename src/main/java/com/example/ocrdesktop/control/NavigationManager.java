@@ -239,9 +239,6 @@ public class NavigationManager {
         snackBar.setOpacity(0); // Start invisible
 
         // Position snackBar at the bottom of the scene
-        StackPane.setAlignment(snackBar, Pos.TOP_CENTER);
-        snackBar.setTranslateY(-20); // Slight lift from bottom
-
         // Fade In
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), snackBar);
         fadeIn.setFromValue(0);
@@ -252,15 +249,25 @@ public class NavigationManager {
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
         fadeOut.setDelay(Duration.seconds(4)); // Wait 4 seconds before fading out
+
         Parent root = currentStage.getScene().getRoot();
         if (root instanceof VBox) {
             ((VBox) root).getChildren().add(snackBar);
             fadeOut.setOnFinished(e -> ((VBox) root).getChildren().remove(snackBar)); // Remove after fade
 
         } else if (root instanceof StackPane) {
+            // Position snackBar at the top of the scene
+            StackPane.setAlignment(snackBar, Pos.BOTTOM_CENTER);
+            snackBar.setPrefWidth(((StackPane) root).getWidth());
+
             ((StackPane) root).getChildren().add(snackBar);
             fadeOut.setOnFinished(e -> ((StackPane) root).getChildren().remove(snackBar)); // Remove after fade
         } else if (root instanceof AnchorPane) {
+            // Position snackBar at the bottom of the scene
+            AnchorPane.setBottomAnchor(snackBar, 0.0);
+            AnchorPane.setRightAnchor(snackBar, 0.0);
+            AnchorPane.setLeftAnchor(snackBar, 0.0);
+
             ((AnchorPane) root).getChildren().add(snackBar);
             fadeOut.setOnFinished(e -> ((AnchorPane) root).getChildren().remove(snackBar)); // Remove after fade
         } else {
