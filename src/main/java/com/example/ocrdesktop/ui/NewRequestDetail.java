@@ -19,8 +19,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -186,6 +185,7 @@ public class NewRequestDetail {
         // Wrap the ImageView in a StackPane for alignment and padding
         StackPane cell = new StackPane(imageView);
         cell.setPrefWidth(CELL_WIDTH);
+
         cell.setPadding(new Insets(PADDING_VALUE)); // Optional: Add padding around the image
 
         // Calculate the position of the next cell column by column
@@ -255,6 +255,7 @@ public class NewRequestDetail {
 
     public void resetSelection() {
         imageItems.get(currentIdx).resetImage();
+        targetImageView.setImage(imageItems.get(currentIdx).currImage);
     }
 
     private void redrawGridView() {
@@ -275,8 +276,12 @@ public class NewRequestDetail {
     }
 
 
-    public void cropCurrentImage() {
-        imageItems.get(currentIdx).cropImage(x1, y1, x2, y2, x3, y3, x4, y4);
+    public void rotateCurrentImage() {
+        ImageItem imageItem = imageItems.get(currentIdx);
+        targetImageView.setImage(imageItem.rotateImage());
+
+        //can't exceed the limit of the image items when we rotate in the images section
+        imageItem.getImageView().setFitHeight(CELL_HEIGHT);
     }
 
 
@@ -352,11 +357,28 @@ public class NewRequestDetail {
 
         public void resetImage(){
             currImage = orginImage;
+            refreshImage();
+        }
+        private void refreshImage(){
             imageView.setImage(currImage);
         }
-        public void cropImage(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4){
-            //TODO: Implement the cropping process using the 4 points coordinates
-            currImage = imageView.getImage();
+        public Image rotateImage(){
+            int width = (int) currImage.getWidth();
+            int height = (int) currImage.getHeight();
+
+            WritableImage rotatedImage = new WritableImage(height, width); // Swap dimensions
+            PixelReader reader = currImage.getPixelReader();
+            PixelWriter writer = rotatedImage.getPixelWriter();
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    writer.setArgb(height - y - 1, x, reader.getArgb(x, y)); // Rotate pixels
+                }
+            }
+            currImage = rotatedImage;
+
+            refreshImage();
+            return currImage;
         }
 
         public Receipt getReceipt(){
