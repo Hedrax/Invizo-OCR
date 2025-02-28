@@ -20,6 +20,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -246,11 +250,105 @@ DetailReceiptTypeController {
             Image image = new Image(
                     selectedFile.toURI().toString(),812, 614, true, true);
 
-            setImage(image);
+            //only show the cropping when it's brand-new image not a ready togo json
+            showCroppingDialog(image);
         } else {
             filePathLabel.setText("No file selected");
         }
     }
+    void showCroppingDialog(Image image){
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Selection of document template");
+
+        dialog.setHeaderText("Drag the red dots to select the area of the document template \'Neglecting the background of the image\'");
+        // Create ImageView
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(image.getWidth());
+        imageView.setFitHeight(image.getHeight());
+
+        // Create overlay Pane
+        Pane overlayPane = new Pane();
+        overlayPane.setPrefSize(image.getWidth(), image.getHeight());
+
+        // Create quadrilateral overlay (fills entire pane)
+        Polygon quadrilateral = new Polygon(
+                0, 0,
+                image.getWidth(), 0,
+                image.getWidth(), image.getHeight(),
+                0, image.getHeight()
+        );
+        quadrilateral.setFill(Color.RED.deriveColor(0, 1, 1, 0.3)); // Semi-transparent red overlay
+
+        // Create draggable corner dots
+        Circle topLeft = createDraggableDot(0, 0, quadrilateral, 0);
+        Circle topRight = createDraggableDot(image.getWidth(), 0, quadrilateral, 1);
+        Circle bottomRight = createDraggableDot(image.getWidth(), image.getHeight(), quadrilateral, 2);
+        Circle bottomLeft = createDraggableDot(0, image.getHeight(), quadrilateral, 3);
+
+        // Add all elements to the overlay pane
+        overlayPane.getChildren().addAll(quadrilateral, topLeft, topRight, bottomLeft, bottomRight);
+
+        // StackPane to overlay the image and pane
+        StackPane stackPane = new StackPane(imageView, overlayPane);
+
+        dialog.getDialogPane().setContent(stackPane);
+
+        // Create buttons
+        ButtonType selectButtonType = new ButtonType("Select", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(selectButtonType, cancelButtonType);
+
+        // Get actual buttons and set actions
+        Button selectButton = (Button) dialog.getDialogPane().lookupButton(selectButtonType);
+        Button cancelButton = (Button) dialog.getDialogPane().lookupButton(cancelButtonType);
+
+        selectButton.setOnAction(e -> {
+            // Set the image and close the dialog
+            setImage(image);
+            dialog.setResult(selectButtonType);
+        });
+        cancelButton.setOnAction(e -> {
+            // Close the dialog
+            dialog.setResult(cancelButtonType);
+        });
+
+        // Show the dialog
+        dialog.showAndWait();
+    }
+
+    // Helper function to create draggable dots
+    private Circle createDraggableDot(double x, double y, Polygon polygon, int index) {
+        Circle dot = new Circle(x, y, 6, Color.RED);
+        dot.setStroke(Color.DARKRED);
+        dot.setStrokeWidth(2);
+        dot.setOnMouseDragged(event -> updateDotPosition(dot, event, polygon, index));
+        return dot;
+    }
+
+    // Update the dot position and adjust polygon shape dynamically
+    private void updateDotPosition(Circle dot, MouseEvent event, Polygon polygon, int index) {
+        double newX = event.getX();
+        double newY = event.getY();
+
+        // Keep the dot within bounds (Fix: Use polygon's parent bounds!)
+        Pane parent = (Pane) polygon.getParent();
+        double maxWidth = parent.getLayoutBounds().getWidth();
+        double maxHeight = parent.getLayoutBounds().getHeight();
+
+        if (newX < 0) newX = 0;
+        if (newY < 0) newY = 0;
+        if (newX > maxWidth) newX = maxWidth;
+        if (newY > maxHeight) newY = maxHeight;
+
+        dot.setCenterX(newX);
+        dot.setCenterY(newY);
+
+        // Update polygon points based on dot movements
+        polygon.getPoints().set(index * 2, newX);
+        polygon.getPoints().set(index * 2 + 1, newY);
+    }
+
+
     void setImage(Image image){
         imageView.setFitHeight(image.getHeight());
         imageView.setFitWidth(image.getWidth());
