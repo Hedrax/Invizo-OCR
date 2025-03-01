@@ -79,7 +79,7 @@ public class MainController{
     }
 
     public void refreshRequests(){
-        refreshRequestsFromDB();
+        Refresh();
     }
     private void refreshRequestsFromDB() {
         lst.clear();

@@ -94,7 +94,14 @@ public class RequestsController {
         setUpProfileInfo();
     }
     public void refreshRequests(){
-        loadDataFromDatabase();
+        Runnable runnable = () -> {
+            Platform.runLater(() -> {
+                requestsListVBox.getChildren().clear();
+                loadDataFromDatabase();
+                System.out.println("Refreshed!\n");
+            });
+        };
+        runnable.run();
     }
     private void loadDataFromDatabase() {
         lst.clear();
