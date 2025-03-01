@@ -4,6 +4,7 @@ import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.utils.UnzipUtility;
 import javafx.concurrent.Task;
 import javafx.util.Pair;
+import org.opencv.core.Core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +21,9 @@ import java.util.Scanner;
 
 
 public class ConfigurationManager {
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
     // Private static instance of the class
     private static ConfigurationManager instance;
     // Public method to get the single instance of the class
