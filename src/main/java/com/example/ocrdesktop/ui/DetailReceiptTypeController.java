@@ -10,9 +10,14 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -26,7 +31,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
+import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -304,7 +317,7 @@ DetailReceiptTypeController {
 
         selectButton.setOnAction(e -> {
             // Set the image and close the dialog
-            setImage(image);
+            setImage(perspectiveCrop(image, topLeft, topRight, bottomRight, bottomLeft));
             dialog.setResult(selectButtonType);
         });
         cancelButton.setOnAction(e -> {
@@ -347,6 +360,83 @@ DetailReceiptTypeController {
         polygon.getPoints().set(index * 2, newX);
         polygon.getPoints().set(index * 2 + 1, newY);
     }
+
+
+    public Image perspectiveCrop(Image inputImage, Circle topLeft, Circle topRight, Circle bottomRight, Circle bottomLeft) {
+        // Convert JavaFX Image to OpenCV Mat
+        Mat matImage = javafxImageToMat(inputImage);
+
+        MatOfPoint2f srcPoints = new MatOfPoint2f(
+                new Point(topLeft.getCenterX(), topLeft.getCenterY()),
+                new Point(topRight.getCenterX(), topRight.getCenterY()),
+                new Point(bottomRight.getCenterX(), bottomRight.getCenterY()),
+                new Point(bottomLeft.getCenterX(), bottomLeft.getCenterY())
+        );
+
+        // Define the destination points (a perfect rectangle)
+        double width = topRight.getCenterX() - topLeft.getCenterX();
+        double height = bottomLeft.getCenterY() - topLeft.getCenterY();
+
+
+        MatOfPoint2f dstPoints = new MatOfPoint2f(
+                new Point(0, 0),
+                new Point(width, 0),
+                new Point(width, height),
+                new Point(0, height)
+        );
+
+        // Compute the perspective transformation matrix
+        Mat transformMatrix = Imgproc.getPerspectiveTransform(srcPoints, dstPoints);
+
+        // Apply the transformation
+        Mat outputMat = new Mat();
+        Imgproc.warpPerspective(matImage, outputMat, transformMatrix, new Size(width, height));
+
+        // Convert back to JavaFX Image
+        return matToJavaFXImage(outputMat);
+    }
+
+    // Helper: Convert JavaFX Image to OpenCV Mat
+    private Mat javafxImageToMat(Image image) {
+        // Convert JavaFX Image to BufferedImage
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+
+        // Ensure BufferedImage is in TYPE_3BYTE_BGR format (compatible with OpenCV)
+        BufferedImage bgrImage = new BufferedImage(
+                bufferedImage.getWidth(), bufferedImage.getHeight(),
+                BufferedImage.TYPE_3BYTE_BGR
+        );
+
+        // Convert ARGB to BGR
+        ColorConvertOp colorConvert = new ColorConvertOp(
+                ColorSpace.getInstance(ColorSpace.CS_sRGB), null
+        );
+        colorConvert.filter(bufferedImage, bgrImage);
+
+        // Extract pixel data
+        byte[] pixels = ((DataBufferByte) bgrImage.getRaster().getDataBuffer()).getData();
+
+        // Create OpenCV Mat
+        Mat mat = new Mat(bgrImage.getHeight(), bgrImage.getWidth(), CvType.CV_8UC3);
+        mat.put(0, 0, pixels);
+
+        return mat;
+    }
+
+
+    // Helper: Convert OpenCV Mat to JavaFX Image
+    private Image matToJavaFXImage(Mat mat) {
+        try {
+            MatOfByte buffer = new MatOfByte();
+            Imgcodecs.imencode(".png", mat, buffer);
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer.toArray());
+            return new Image(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
     void setImage(Image image){
