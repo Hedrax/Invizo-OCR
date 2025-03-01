@@ -1,5 +1,6 @@
 package com.example.ocrdesktop.ui.subelements;
 
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.ui.DetailReceiptController;
 import com.example.ocrdesktop.utils.Receipt;
@@ -37,7 +38,7 @@ public class RequestItemBoxController {
             image.setImage(new Image(
                     Files.newInputStream(receipt.imagePath)));
         }catch (IOException e){
-            e.printStackTrace();
+            image.setImage(new Image(getClass().getResource(AppContext.BrokenImagePath).toExternalForm()));
         }
         image.setPreserveRatio(true);
         this.receipt = receipt;

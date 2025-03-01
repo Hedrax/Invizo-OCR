@@ -273,6 +273,7 @@ public class NewRequestDetail {
         ImageItem imageItem = imageItems.get(currentIdx);
         targetImageView.setImage(imageItem.rotateImage());
 
+
         //can't exceed the limit of the image items when we rotate in the images section
         imageItem.getImageView().setFitHeight(CELL_HEIGHT);
     }

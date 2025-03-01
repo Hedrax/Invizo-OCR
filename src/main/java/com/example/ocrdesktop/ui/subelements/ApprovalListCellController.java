@@ -1,5 +1,6 @@
 package com.example.ocrdesktop.ui.subelements;
 
+import com.example.ocrdesktop.AppContext;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.utils.CachingManager;
 import com.example.ocrdesktop.utils.Request;
@@ -59,7 +60,7 @@ public class ApprovalListCellController extends ListCell<Request>{
                     )
             ));
         }catch (Exception e){
-            e.printStackTrace();
+            this.item_image.setImage(new Image(getClass().getResource(AppContext.BrokenImagePath).toExternalForm()));
         }
     }
 
