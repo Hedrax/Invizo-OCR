@@ -1,9 +1,7 @@
 package com.example.ocrdesktop.control;
 
 import com.example.ocrdesktop.AppContext;
-import com.example.ocrdesktop.ui.DetailReceiptController;
-import com.example.ocrdesktop.ui.DetailReceiptTypeController;
-import com.example.ocrdesktop.ui.DetailRequestController;
+import com.example.ocrdesktop.ui.*;
 import com.example.ocrdesktop.utils.Receipt;
 import com.example.ocrdesktop.utils.ReceiptTypeJSON;
 import com.example.ocrdesktop.utils.Request;
@@ -154,6 +152,26 @@ public class NavigationManager {
 
     public void clearBackStack() {
         backStack.clear();
+    }
+
+    public void refreshRequestsPage() {
+        FXMLLoader fxmlLoader = backStack.peek();
+        if (fxmlLoader.getController() instanceof RequestsController) {
+            ((RequestsController) fxmlLoader.getController()).refreshRequests();
+        }
+        if (fxmlLoader.getController() instanceof MainController) {
+            ((MainController) fxmlLoader.getController()).refreshRequests();
+        }
+    }
+
+    public void refreshReceiptTemplateLists() {
+        FXMLLoader fxmlLoader = backStack.peek();
+        if (fxmlLoader.getController() instanceof ReceiptTypesViewerController) {
+            ((ReceiptTypesViewerController) fxmlLoader.getController()).refreshReceiptTypes();
+        }
+        if (fxmlLoader.getController() instanceof NewRequestDetail) {
+            ((NewRequestDetail) fxmlLoader.getController()).refreshReceiptTypes();
+        }
     }
 
     //high-end functions

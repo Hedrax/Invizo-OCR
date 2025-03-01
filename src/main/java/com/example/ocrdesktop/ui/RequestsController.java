@@ -93,6 +93,9 @@ public class RequestsController {
         });
         setUpProfileInfo();
     }
+    public void refreshRequests(){
+        loadDataFromDatabase();
+    }
     private void loadDataFromDatabase() {
         lst.clear();
         // Initialize the ObservableList for Requests

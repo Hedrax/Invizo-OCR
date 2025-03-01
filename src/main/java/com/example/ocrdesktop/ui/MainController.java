@@ -77,6 +77,10 @@ public class MainController{
 
         setUpProfileInfo();
     }
+
+    public void refreshRequests(){
+        refreshRequestsFromDB();
+    }
     private void refreshRequestsFromDB() {
         lst.clear();
         // Initialize the ObservableList for Requests

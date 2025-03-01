@@ -89,16 +89,9 @@ public class NewRequestDetail {
     private void setupListeners() {
         setupSplitWidthListener(itemsAreaAnchorPane, true);
         setupSplitWidthListener(propertyAnchorPane, false);
-        onScreenListener();
     }
 
-    private void onScreenListener(){
-        root.visibleProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                refreshReceiptTypes();
-            }
-        });
-    }
+
 
     private void setupSplitWidthListener(AnchorPane itemsAreaAnchorPane, boolean isLeftGrid) {
         // PauseTransition with a delay (e.g., 500ms)
@@ -127,7 +120,7 @@ public class NewRequestDetail {
         requestIdLabel.setText("Request ID: " + requestID);
     }
 
-    private void refreshReceiptTypes() {
+    public void refreshReceiptTypes() {
         fetchReceiptTypes();
         updateReceiptTypesCheckBoxUI();
 

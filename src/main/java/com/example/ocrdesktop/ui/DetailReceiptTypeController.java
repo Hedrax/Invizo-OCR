@@ -663,6 +663,7 @@ DetailReceiptTypeController {
                         //caching the new file...
                         receiptTypeJSON.saveJSONLocally();
                         NavigationManager.getInstance().goBack();
+                        NavigationManager.getInstance().refreshReceiptTemplateLists();
                     });
                 });
                 apiTask.setOnFailed(e -> {

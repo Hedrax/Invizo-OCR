@@ -49,6 +49,7 @@ public class LocalAiService {
                         e.printStackTrace();
                     }
                     showSnackBarRequestCompleted();
+                    refreshRequestsUIs();
                 }
                 isProcessing.set(false);
                 return null;
@@ -72,6 +73,11 @@ public class LocalAiService {
         });
     }
 
+    private void refreshRequestsUIs() {
+        Platform.runLater(() ->{
+            NavigationManager.getInstance().refreshRequestsPage();
+        });
+    }
     private void computeRequest(Request request) {
             // The AI process specifically OCR process is quite expensive, therefor we're operating on each receipt
             // separately without modifying the existing python code ;).

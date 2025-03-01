@@ -74,6 +74,9 @@ public class ReceiptTypesViewerController {
             throw new RuntimeException(e);
         }
     }
+    public void refreshReceiptTypes(){
+        refreshCheckBox();
+    }
     @FXML
     private void refreshCheckBox() {
         restoreReceiptTypes();
