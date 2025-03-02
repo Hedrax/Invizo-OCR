@@ -67,7 +67,7 @@ public class NewRequestDetail {
 
     private final int PADDING_VALUE = 5;
     private final int CELL_WIDTH = 210;  // Fixed cell width
-    private final int CELL_HEIGHT = 220; // Fixed cell height
+    private final int CELL_HEIGHT = CELL_WIDTH; // Fixed cell height
 
 
     //Future Feature: Implement undo and redo for the image items
@@ -170,14 +170,23 @@ public class NewRequestDetail {
         });
     }
 
-    public void addNewCell(ImageView imageView) {
-        imageView.setFitWidth(CELL_WIDTH);
-//        imageView.setFitHeight(CELL_HEIGHT);
+    private void checkImageViewRatios(ImageView imageView) {
+        if (imageView.getImage().getWidth() > imageView.getImage().getHeight()) {
+            imageView.setFitWidth(CELL_WIDTH);
+        }else {
+            imageView.setFitHeight(CELL_HEIGHT);
+        }
         imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+    }
+    public void addNewCell(ImageView imageView) {
+
+        checkImageViewRatios(imageView);
 
         // Wrap the ImageView in a StackPane for alignment and padding
         StackPane cell = new StackPane(imageView);
-        cell.setPrefWidth(CELL_WIDTH);
+//        cell.setPrefWidth(CELL_WIDTH);
+//        cell.setPrefHeight(CELL_HEIGHT);
 
         cell.setPadding(new Insets(PADDING_VALUE)); // Optional: Add padding around the image
 
@@ -274,8 +283,9 @@ public class NewRequestDetail {
         targetImageView.setImage(imageItem.rotateImage());
 
 
+
         //can't exceed the limit of the image items when we rotate in the images section
-        imageItem.getImageView().setFitHeight(CELL_HEIGHT);
+        checkImageViewRatios(imageItem.getImageView());
     }
 
 

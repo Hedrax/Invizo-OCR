@@ -40,8 +40,10 @@ public class LocalAiService {
                     Request request = queue.poll(); // Get and remove the first request
                     if (request != null) {
                         computeRequest(request);
+                        if (request.receipts.isEmpty()) {
+                            continue;
+                        }
                     }
-                    assert request != null;
                     try {
                         repo.insertNewRequest(request);
                     }
@@ -164,6 +166,10 @@ public class LocalAiService {
                 } catch (Exception e) {
                     System.out.println("Error parsing JSON content for receipt: ");
                 }
+            }
+            else {
+                System.out.println("No content found for receipt: " + receipt.receiptId);
+                request.receipts.remove(receipt);
             }
         });
         //Now request is ready to be sent to the local database

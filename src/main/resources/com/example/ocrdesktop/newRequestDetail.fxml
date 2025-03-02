@@ -45,7 +45,7 @@
                 </StackPane>
             </AnchorPane>
         </HBox>
-        <SplitPane dividerPositions="0.6788589832068093" layoutX="235.0" layoutY="229.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="56.0">
+        <SplitPane dividerPositions="0.5189786059351276" layoutX="235.0" layoutY="229.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="56.0">
             <AnchorPane fx:id="itemsAreaAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                 <ScrollPane layoutX="219.0" layoutY="109.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="43.0">
                     <GridPane fx:id="receiptsGridView">
@@ -71,7 +71,7 @@
                 <AnchorPane fx:id="propertyAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <Label fx:id="zeroSelectionLabel" alignment="CENTER" contentDisplay="CENTER" layoutY="268.0" style="-fx-font-size: 22px; -fx-text-alignment: center;" styleClass="sub-title" text="Please Add a Document First before operating" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                     <StackPane fx:id="croppingStack" snapToPixel="false" AnchorPane.bottomAnchor="45.79999999999998" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
-                        <ImageView fx:id="targetImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="targetImageView" fitHeight="150.0" fitWidth="200.0" preserveRatio="true" smooth="false" />
                         <Pane fx:id="overlayPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="0.0" prefWidth="0.0" style="-fx-fill: transparent;" />
                     </StackPane>
 
