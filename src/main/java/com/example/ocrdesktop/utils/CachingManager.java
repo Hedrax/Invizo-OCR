@@ -3,6 +3,7 @@ package com.example.ocrdesktop.utils;
 import com.example.ocrdesktop.AppContext;
 import javafx.scene.image.Image;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -84,12 +85,22 @@ public class CachingManager {
             // Convert JavaFX Image to BufferedImage
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
 
+            // Ensure it has an RGB color model (no alpha)
+            BufferedImage rgbImage = new BufferedImage(
+                    bufferedImage.getWidth(),
+                    bufferedImage.getHeight(),
+                    BufferedImage.TYPE_INT_RGB);
+
+            // Draw the original image onto the new RGB BufferedImage
+            Graphics2D g = rgbImage.createGraphics();
+            g.drawImage(bufferedImage, 0, 0, null);
+            g.dispose();
+
             // Ensure the parent directory exists
             outputFile.getParentFile().mkdirs();
 
-            // Save as PNG (Change format to "jpg" if needed)
-            ImageIO.write(bufferedImage, "jpg", outputFile);
-
+            // Save as JPG
+            System.out.println(ImageIO.write(rgbImage, "jpg", outputFile));
         } catch (IOException e) {
             System.out.println("Failed to save the image.");
             e.printStackTrace();
