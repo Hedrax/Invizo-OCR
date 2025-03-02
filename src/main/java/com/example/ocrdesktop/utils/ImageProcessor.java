@@ -2,9 +2,9 @@ package com.example.ocrdesktop.utils;
 
 import com.example.ocrdesktop.data.LocalAiService;
 import javafx.scene.image.*;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
+import javafx.scene.shape.Circle;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
 public class ImageProcessor {
 
@@ -20,6 +20,41 @@ public class ImageProcessor {
         image = matToImage(rotatedMat);
 
         return image;
+    }
+
+
+    public static Image perspectiveCrop(Image inputImage, Circle topLeft, Circle topRight, Circle bottomRight, Circle bottomLeft) {
+        // Convert JavaFX Image to OpenCV Mat
+        Mat matImage = imageToMat(inputImage);
+
+        MatOfPoint2f srcPoints = new MatOfPoint2f(
+                new Point(topLeft.getCenterX(), topLeft.getCenterY()),
+                new Point(topRight.getCenterX(), topRight.getCenterY()),
+                new Point(bottomRight.getCenterX(), bottomRight.getCenterY()),
+                new Point(bottomLeft.getCenterX(), bottomLeft.getCenterY())
+        );
+
+        // Define the destination points (a perfect rectangle)
+        double width = topRight.getCenterX() - topLeft.getCenterX();
+        double height = bottomLeft.getCenterY() - topLeft.getCenterY();
+
+
+        MatOfPoint2f dstPoints = new MatOfPoint2f(
+                new Point(0, 0),
+                new Point(width, 0),
+                new Point(width, height),
+                new Point(0, height)
+        );
+
+        // Compute the perspective transformation matrix
+        Mat transformMatrix = Imgproc.getPerspectiveTransform(srcPoints, dstPoints);
+
+        // Apply the transformation
+        Mat outputMat = new Mat();
+        Imgproc.warpPerspective(matImage, outputMat, transformMatrix, new Size(width, height));
+
+        // Convert back to JavaFX Image
+        return matToImage(outputMat);
     }
 
     // Converts JavaFX Image to OpenCV Mat
