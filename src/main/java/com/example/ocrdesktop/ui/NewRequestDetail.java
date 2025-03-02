@@ -4,10 +4,7 @@ package com.example.ocrdesktop.ui;
 import com.example.ocrdesktop.control.NavigationManager;
 import com.example.ocrdesktop.data.LocalAiService;
 import com.example.ocrdesktop.data.Repo;
-import com.example.ocrdesktop.utils.CachingManager;
-import com.example.ocrdesktop.utils.Receipt;
-import com.example.ocrdesktop.utils.ReceiptType;
-import com.example.ocrdesktop.utils.Request;
+import com.example.ocrdesktop.utils.*;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
@@ -367,20 +364,7 @@ public class NewRequestDetail {
             imageView.setImage(currImage);
         }
         public Image rotateImage(){
-            int width = (int) currImage.getWidth();
-            int height = (int) currImage.getHeight();
-
-            WritableImage rotatedImage = new WritableImage(height, width); // Swap dimensions
-            PixelReader reader = currImage.getPixelReader();
-            PixelWriter writer = rotatedImage.getPixelWriter();
-
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    writer.setArgb(height - y - 1, x, reader.getArgb(x, y)); // Rotate pixels
-                }
-            }
-            currImage = rotatedImage;
-
+            currImage = ImageProcessor.rotateImage(currImage);
             refreshImage();
             return currImage;
         }
