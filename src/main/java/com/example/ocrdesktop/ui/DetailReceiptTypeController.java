@@ -573,14 +573,18 @@ DetailReceiptTypeController {
         NavigationManager.getInstance().goBack();
     }
     public void confirmReceipt() {
-        //local validation
-        if (validation() && validateName()){
+        if (validation()){
+            if (newReceiptType && validateName()){
+                showAlert("The name of the receipt type is already taken");
+                return;
+            }
             //create and save JSON locally
             ReceiptTypeJSON receiptTypeJSON = createReceipt();
             if (receiptTypeJSON == null){
                 System.out.println("Error in the created JSON file");
             }
             else{
+                System.out.println("Receipt Type JSON Created Successfully");
                 NavigationManager.getInstance().showLoading();
                 Task<Object> apiTask = new Task<>() {
                     @Override
