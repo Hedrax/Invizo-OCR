@@ -68,6 +68,11 @@ DetailReceiptTypeController {
     private Button selectTemplateButton;
     @FXML
     private Label filePathLabel;
+
+    public Label profileNameTopBanner;
+    public Label profileCompanyTopBanner;
+
+
     private String oldName;
     String imageFilePath;
     ObservableList<TextFieldBoundingBox> boundingBoxes = observableArrayList();
@@ -546,6 +551,19 @@ DetailReceiptTypeController {
         setupListView();
         setupTextFields();
         setCheckBox();
+
+        setUpProfileInfo();
+    }
+
+    @FXML
+    private void setUpProfileInfo(){
+        String userName = AppContext.getInstance().getAuthorizationInfo().currentUser.userName;
+        String organizationName = AppContext.getInstance().getAuthorizationInfo().company.name;
+        String role = AppContext.getInstance().getAuthorizationInfo().currentUser.role.toString().replaceFirst("ROLE_", "").replace("_", " ");
+        Platform.runLater(() -> {
+            profileNameTopBanner.setText(userName);
+            profileCompanyTopBanner.setText(organizationName);
+        });
     }
     //navigation
     @FXML

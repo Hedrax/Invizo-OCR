@@ -23,6 +23,7 @@
                  <ImageView fitHeight="44.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
                      <Image url="@../images/Ellipse%201.png" />
                  </ImageView>
+
                  <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
                      <opaqueInsets>
                          <Insets />
@@ -30,8 +31,8 @@
                      <padding>
                          <Insets left="7.0" />
                      </padding>
-                     <Label text="Gasser" textFill="WHITE" />
-                     <Label text="company" textFill="WHITE" />
+                     <Label fx:id="profileNameTopBanner" text="Gasser" textFill="WHITE" />
+                     <Label fx:id="profileCompanyTopBanner" text="company" textFill="WHITE" />
                  </VBox>
              </HBox>
              <StackPane layoutX="-75.0" layoutY="-47.0" onMouseClicked="#navigateBack" styleClass="hover-hand" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
