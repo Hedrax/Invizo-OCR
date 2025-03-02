@@ -103,5 +103,9 @@ def process_request(dataList):
 if __name__ == "__main__":
     print("running")
     # Read JSON input from stdin (useful when called from Java or another script)
-    input_data = json.loads(stdin.read())
+    path_json = json.loads(stdin.read())
+
+    with open(path_json['path'], "r", encoding="utf-8") as file:
+        input_data = json.load(file)
+
     process_request(input_data)

@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -89,18 +90,23 @@ public class LocalAiService {
                     ProcessBuilder builder = new ProcessBuilder(AppContext.PythonExeBinariesPath);
                     builder.redirectErrorStream(true);
 
-                    JSONObject inputJson = request.receiptType.getJSON().getJsonTemplate();
-                    addInfo2JSON(inputJson);
-                    JSONArray receiptJsonObject = new JSONArray();
-                    String file_name = String.valueOf(receipt.imagePath);
-                    addReceiptInfo2JSON(receiptJsonObject, file_name, receipt);
-                    inputJson.put("receipts", receiptJsonObject);
+                    // Creating the JSON input
+                    JSONObject inputJson = createInputJSON(request, receipt);
+
+                    //temporarily input file for inter-process communication
+                    File inputJSONPATH = new File(AppContext.TempDir + request.id + ".json");
+                    saveJSON(inputJson, inputJSONPATH);
+
                     // Start process
                     Process process = builder.start();
 
                     // Write JSON input to the process
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-                    writer.write(inputJson.toString());
+                    JSONObject pathJSON = new JSONObject();
+
+                    //passing the path of the file in a structured Json
+                    pathJSON.put("path", inputJSONPATH.getAbsolutePath());
+                    writer.write(pathJSON.toString());
                     writer.flush();
                     writer.close();
 
@@ -110,6 +116,8 @@ public class LocalAiService {
                         //report error and still continue to the next step as it should recover the completed receipts computation ;)
                         System.out.println("OCR Process failed with exit code: " + exitCode);
                     }
+                    //deleting the temporary file after each iteration
+                    inputJSONPATH.delete();
                 }catch (Exception e) {
                 e.printStackTrace();
                 }
@@ -117,6 +125,33 @@ public class LocalAiService {
 
         read_temp_files(request);
 
+    }
+
+    // handling and creating the content of JSON input for the python process
+    private JSONObject createInputJSON(Request request, Receipt receipt) {
+        try {
+        JSONObject inputJson = request.receiptType.getJSON().getJsonTemplate();
+        addInfo2JSON(inputJson);
+        JSONArray receiptJsonObject = new JSONArray();
+        String file_name = String.valueOf(receipt.imagePath);
+        addReceiptInfo2JSON(receiptJsonObject, file_name, receipt);
+        inputJson.put("receipts", receiptJsonObject);
+            return inputJson;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void saveJSON(JSONObject json, File file) {
+        try {
+            // Create a FileWriter object to write to the file
+            FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
+            // Write the JSONObject to the file
+            fileWriter.write(json.toString(4));  // Pretty-print with indentation of 4 spaces
+            fileWriter.flush();  // Ensure all data is written to the file
+            fileWriter.close();  // Close the writer
+        }catch (Exception e){e.printStackTrace();}
     }
 
     private void read_temp_files(Request request) {
