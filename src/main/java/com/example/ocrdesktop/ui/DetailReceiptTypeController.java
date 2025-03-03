@@ -574,7 +574,7 @@ DetailReceiptTypeController {
     }
     public void confirmReceipt() {
         if (validation()){
-            if (newReceiptType && validateName()){
+            if (newReceiptType && !validateName()){
                 showAlert("The name of the receipt type is already taken");
                 return;
             }
