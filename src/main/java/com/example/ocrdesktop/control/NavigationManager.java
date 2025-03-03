@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -77,7 +78,7 @@ public class NavigationManager {
         // Loading label
         Label loadingLabel = new Label("Loading...");
         loadingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: black;");
-        loadingPane.getChildren().addLast(loadingLabel);
+        loadingPane.getChildren().add(loadingLabel);
         return  loadingPane;
     }
     public void showLoading() {
@@ -126,7 +127,7 @@ public class NavigationManager {
     }
     private Object navigate(String path){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
+            FXMLLoader fxmlLoader = new FXMLLoader(NavigationManager.class.getResource(path));
             Scene scene = new Scene(fxmlLoader.load(), currentStage.getWidth(), currentStage.getHeight());
             currentStage.setScene(scene);
             backStack.push(fxmlLoader);
@@ -220,8 +221,9 @@ public class NavigationManager {
         if (this.currentStage != null) this.currentStage.close();
         this.currentStage = new Stage();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MAIN_PAGE));
+        FXMLLoader fxmlLoader = new FXMLLoader(NavigationManager.class.getResource(MAIN_PAGE));
         Scene scene = new Scene(fxmlLoader.load(), 1080, 720);
+        currentStage.getIcons().add(new Image(getClass().getResourceAsStream(AppContext.LogoImagePath))); // Update path
         currentStage.setTitle("Invizo");
         currentStage.setScene(scene);
         currentStage.show();
