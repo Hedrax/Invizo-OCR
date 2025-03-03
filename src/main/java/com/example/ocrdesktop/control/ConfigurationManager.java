@@ -15,6 +15,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -23,6 +25,19 @@ import java.util.Scanner;
 public class ConfigurationManager {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+    public static void configureDatabaseConnection(){
+        // Force load the SQLite JDBC driver
+        try {
+            Class.forName("org.sqlite.JDBC");
+            // Open the database connection
+            DriverManager.getConnection("jdbc:sqlite:receipts.db");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("SQLite JDBC driver not found!", e);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException("Failed to connect to database!", e);
+        }
     }
     // Private static instance of the class
     private static ConfigurationManager instance;
