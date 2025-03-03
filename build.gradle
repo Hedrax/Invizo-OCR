@@ -61,6 +61,22 @@ dependencies {
 
 }
 
+
+jar {
+    archiveBaseName.set("Invizo")  // Change to your desired name
+    archiveVersion.set("0.2")              // Set version (optional)
+    archiveClassifier.set("")              // Leave empty for a standard JAR
+    manifest {
+        attributes(
+                "Main-Class": "com.example.ocrdesktop.MainApp"
+        )
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
@@ -72,6 +88,19 @@ jlink {
         name = 'app'
     }
 }
+task copyOpenCVLibs(type: Copy) {
+    from 'C:/opencv/'  // Path to the opencv folder
+    include 'opencv_java4110.dll'  // Including the dll of open CV in the build
+    into "$buildDir/libs"
+}
+
+// Ensure copyOpenCVLibs runs before these tasks
+tasks.named("distZip").configure { mustRunAfter(copyOpenCVLibs) }
+tasks.named("distTar").configure { mustRunAfter(copyOpenCVLibs) }
+tasks.named("startScripts").configure { mustRunAfter(copyOpenCVLibs) }
+
+// Make sure build depends on copyOpenCVLibs
+tasks.named("build").configure { dependsOn(copyOpenCVLibs) }
 
 jlinkZip {
     group = 'distribution'
