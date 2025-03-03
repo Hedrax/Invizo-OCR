@@ -5,7 +5,6 @@ import com.example.ocrdesktop.ui.MainController;
 import com.example.ocrdesktop.utils.AuthorizationInfo;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +38,7 @@ public class AppContext {
     public static String PythonExeBinariesPath = AiResourcesDir+ "/AiInterface.exe";
 
     public static String BrokenImagePath = "/com/example/images/broken-image.png";
+    public static String LogoImagePath = "/com/example/images/logo_square.png";
 
     //URLs references
     public static String BaseGithubReleaseCheckupURL = "https://api.github.com/repos/Hedrax/Invizo-OCR/releases";
