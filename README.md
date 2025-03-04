@@ -1,4 +1,4 @@
-# Invizo Portable version - Arabic Handwritten OCR Solution  
+# Invizo - Arabic Handwritten OCR Solution  
 
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)  
 ![Python](https://img.shields.io/badge/Python-3.x-blue.svg)  ![Java](https://img.shields.io/badge/Java-+11-blue.svg)  
